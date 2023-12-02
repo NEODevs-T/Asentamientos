@@ -9,47 +9,51 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Asentamientos
 build_property.RootNamespace = Asentamientos
-build_property.ProjectDir = C:\Users\gabriel.arcila\Documents\proyectos\Asentamientos\
+build_property.ProjectDir = C:\Users\javier.taborda\source\repos\Asentamientos\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\gabriel.arcila\Documents\proyectos\Asentamientos
+build_property.MSBuildProjectDirectory = C:\Users\javier.taborda\source\repos\Asentamientos
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/App.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Pages/Counter.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Layout/LoginLogoutButton.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTG9naW5Mb2dvdXRCdXR0b24ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Pages/Error.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Pages/Home.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Pages/Weather.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Pages/Weather.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Routes.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Routes.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/_Imports.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/_Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Layout/MainLayout.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Layout/MainLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-8m344dbff4
 
-[C:/Users/gabriel.arcila/Documents/proyectos/Asentamientos/Components/Layout/NavMenu.razor]
+[C:/Users/javier.taborda/source/repos/Asentamientos/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-pwtrsm8xr8

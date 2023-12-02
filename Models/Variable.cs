@@ -25,7 +25,7 @@ public partial class Variable
 
     public bool VisObser { get; set; }
 
-    public DateOnly VfechaCrea { get; set; }
+    public DateTime VfechaCrea { get; set; }
 
     public bool Vestado { get; set; }
 
@@ -41,5 +41,5 @@ public partial class Variable
 
     public virtual Unidad IdUnidadNavigation { get; set; } = null!;
 
-    public virtual ICollection<Rago> Ragos { get; set; } = new List<Rago>();
+    public virtual ICollection<Rango> Rangos { get; set; } = new List<Rango>();
 }

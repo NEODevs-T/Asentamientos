@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\Asentamientos.csproj": {}
+    "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\Asentamientos.csproj": {}
   },
   "projects": {
-    "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\Asentamientos.csproj": {
+    "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\Asentamientos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\Asentamientos.csproj",
+        "projectUniqueName": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\Asentamientos.csproj",
         "projectName": "Asentamientos",
-        "projectPath": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\Asentamientos.csproj",
-        "packagesPath": "C:\\Users\\gabriel.arcila\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\obj\\",
+        "projectPath": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\Asentamientos.csproj",
+        "packagesPath": "C:\\Users\\javier.taborda\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\gabriel.arcila\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\javier.taborda\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -44,6 +48,10 @@
               "target": "Package",
               "version": "[4.4.0, )"
             },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.AspNetCore.Components.Authorization": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -70,7 +78,7 @@
             },
             "Radzen.Blazor": {
               "target": "Package",
-              "version": "[4.21.3, )"
+              "version": "[4.22.1, )"
             }
           },
           "imports": [

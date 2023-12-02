@@ -1,24 +1,56 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Asentamientos.bundle.scp.css",
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Asentamientos.bundle.scp.css",
       "PackagePath": "staticwebassets\\Asentamientos.bundle.scp.css"
     },
     {
-      "Id": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\wwwroot\\app.css",
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\app.css",
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\gabriel.arcila\\Documents\\proyectos\\Asentamientos\\wwwroot\\favicon.png",
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\LogoGris.png",
+      "PackagePath": "staticwebassets\\images\\LogoGris.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\LogoNeo.png",
+      "PackagePath": "staticwebassets\\images\\LogoNeo.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\Neo.png",
+      "PackagePath": "staticwebassets\\images\\Neo.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\fondologin.jpg",
+      "PackagePath": "staticwebassets\\images\\fondologin.jpg"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\neo.ico",
+      "PackagePath": "staticwebassets\\images\\neo.ico"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\paveca.png",
+      "PackagePath": "staticwebassets\\images\\paveca.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\valores.png",
+      "PackagePath": "staticwebassets\\images\\valores.png"
+    },
+    {
+      "Id": "C:\\Users\\javier.taborda\\source\\repos\\Asentamientos\\wwwroot\\images\\vision.png",
+      "PackagePath": "staticwebassets\\images\\vision.png"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Asentamientos.Microsoft.AspNetCore.StaticWebAssets.props",

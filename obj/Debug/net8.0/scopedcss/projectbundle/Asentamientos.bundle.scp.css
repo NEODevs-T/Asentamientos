@@ -10,11 +10,12 @@ main[b-8m344dbff4] {
 }
 
 .sidebar[b-8m344dbff4] {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, #71A23F 5%, #007553 70%);
 }
 
 .top-row[b-8m344dbff4] {
     background-color: #f7f7f7;
+    /*background-image: linear-gradient(90deg, #71A23F 0%, #007553 70%);*/
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
     height: 3.5rem;
@@ -115,9 +116,9 @@ main[b-8m344dbff4] {
 
 .top-row[b-pwtrsm8xr8] {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    background-color: #71A23F !important;
 }
-
+    
 .navbar-brand[b-pwtrsm8xr8] {
     font-size: 1.1rem;
 }
