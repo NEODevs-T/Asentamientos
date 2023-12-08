@@ -1,23 +1,141 @@
 ﻿@inherits LayoutComponentBase
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<AuthorizeView>
+ 
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu />
+            </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <main>
+                <div class="top-row px-4">
+                    <strong>¡Hola @context.User.Identity?.Name!</strong>
+                    <RadzenButton Click=Logout Icon="logout" ButtonStyle="ButtonStyle.Danger" />
+                 </div>
+
+                <article class="content px-4">
+                    @Body
+                </article>
+            </main>
         </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+        <div id="blazor-error-ui">
+            An unhandled error has occurred.
+            <a href="" class="reload">Reload</a>
+            <a class="dismiss">🗙</a>
+        </div>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <main>
+            <div class="text-center fondo">
+                <RadzenTemplateForm Context="radzen" TItem="UserLoginDto" Data="@user" class="form-signin w-25 m-auto loginform ">
+
+                    <img class="mb-4" id="logoLogin" src="./images/Neo.png">
+                    <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
+
+                    <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Usuario</RadzenText>
+                    <RadzenTextBox Placeholder="Usuario" Name="UserName" id="usuario" @bind-Value="user.UserName" class="w-100" />
+
+                    <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Contraseña</RadzenText>
+                    <RadzenPassword @bind-Value=user.Password Name="Password" id="contraseña" Placeholder="Contraseña..." class="w-100" />
+
+                    <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=Login />
+                </RadzenTemplateForm>
+
+            </div>
+
+        </main>
+
+    </NotAuthorized>
+</AuthorizeView>
+<RadzenNotification />
+<RadzenDialog />
+
+@code {
+    [CascadingParameter]
+    private List<Claim> claims { get; set; }
+
+    private string _message = "", mensaje = "";
+    UserLoginDto user = new UserLoginDto();
+    private bool carga = false;
+    private NotifiRadzen Notificar = new NotifiRadzen();
+    //private bool _buttonDisabled = true;
+    //private BSAlert? _alertRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthStateProvider.GetAuthenticationStateAsync();
+        }
+    }
+
+    public async Task Login()
+    {
+        mensaje = "";
+        user.Proyecto = "Asentamientos";
+        if (user.UserName is not null)
+        {
+            carga = true;
+            var result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", user);
+            //var result = await Http.PostAsJsonAsync("http://localhost:5090/api/Auth/Login", user);
+            var ValidarToken = await result.Content.ReadAsStringAsync();
+
+            if (ValidarToken != null)
+            {
+
+                if (ValidarToken == "NotFoundUser")
+                {
+                    mensaje = "Verifique el usuario.";
+                    NotificationService.Notify(Notificar.Notificacion("advertencia", "Atención", mensaje));
+
+                    carga = false;
+                }
+                else if (ValidarToken == "WrongPassword")
+                {
+                    mensaje = "Contraseña Incorrecta.";
+                    NotificationService.Notify(Notificar.Notificacion("error", "Atención", mensaje));
+
+                    carga = false;
+                }
+                else if (ValidarToken == "null")
+                {
+
+                    mensaje = "Este usuario no está registrado en este proyecto.";
+                    NotificationService.Notify(Notificar.Notificacion("error", "Atención", mensaje));
+                    carga = false;
+                }
+                else
+                {
+                    mensaje = "Accediendo...";
+
+                    Console.WriteLine(ValidarToken);
+                    await LocalStorage.SetItemAsync("AsentamientosToken", ValidarToken);
+                    var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                    var userA = authState.User;
+                    claims = Enumerable.ToList(userA.Claims);
+                    user = new UserLoginDto();
+                    carga = false;
+                    mensaje = "";
+                    NavigationManager.NavigateTo("");
+                }
+            }
+
+        }
+
+
+
+    }
+    async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("AsentamientosToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+    }
+}
