@@ -15,8 +15,9 @@
 
             <main>
                 <div class="top-row px-4">
-                    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-                </div>
+                    <strong>¡Hola @context.User.Identity?.Name!</strong>
+                    <RadzenButton Click=Logout Icon="logout" ButtonStyle="ButtonStyle.Danger" />
+                 </div>
 
                 <article class="content px-4">
                     @Body
@@ -51,9 +52,6 @@
             </div>
 
         </main>
-
-        <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=Login />
-        <button class="btn btn-primary" @onclick="Login">Click me</button>
 
     </NotAuthorized>
 </AuthorizeView>
@@ -135,5 +133,9 @@
 
 
     }
-
+    async Task Logout()
+    {
+        await LocalStorage.RemoveItemAsync("AsentamientosToken");
+        await AuthStateProvider.GetAuthenticationStateAsync();
+    }
 }
