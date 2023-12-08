@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Asentamientos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+482e5a9897915f624290a90571f0a88431e4aafb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ff703a1fdfc8f0f28884158d059925c63da14595")]
 [assembly: System.Reflection.AssemblyProductAttribute("Asentamientos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Asentamientos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
