@@ -5,10 +5,8 @@
 @inject NavigationManager NavigationManager
 @inject NotificationService NotificationService
 
-<RadzenNotification />
-<RadzenDialog />
 <AuthorizeView>
-
+ 
     <Authorized>
         <div class="page">
             <div class="sidebar">
@@ -61,6 +59,7 @@
 </AuthorizeView>
 <RadzenNotification />
 <RadzenDialog />
+
 @code {
     [CascadingParameter]
     private List<Claim> claims { get; set; }
@@ -72,6 +71,13 @@
     //private bool _buttonDisabled = true;
     //private BSAlert? _alertRef;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthStateProvider.GetAuthenticationStateAsync();
+        }
+    }
 
     public async Task Login()
     {
@@ -111,7 +117,6 @@
                 else
                 {
                     mensaje = "Accediendo...";
-
 
                     Console.WriteLine(ValidarToken);
                     await LocalStorage.SetItemAsync("AsentamientosToken", ValidarToken);

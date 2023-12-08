@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+//using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 
@@ -11,37 +11,24 @@ namespace Asentamientos
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly ILocalStorageService _localStorage;
-        private readonly ProtectedLocalStorage _DataLocal;
+        //private readonly ProtectedLocalStorage _DataLocal;
         private readonly HttpClient _http;
 
 
 
 
-        public CustomAuthStateProvider(ILocalStorageService localStorage, HttpClient http, ProtectedLocalStorage DataLocal)
+        public CustomAuthStateProvider(ILocalStorageService localStorage, HttpClient http)
         {
             _localStorage = localStorage;
             _http = http;
-            _DataLocal = DataLocal;
+           
         }
 
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            string? token = null;
-
-            try
-            {
-
-                token = await _localStorage.GetItemAsStringAsync("AsentamientosWebToken");
-
-            }
-            catch (InvalidOperationException)
-            {
-
-
-            }
-            if (!string.IsNullOrEmpty(token))
-            {
+      
+                var token = await _localStorage.GetItemAsStringAsync("AsentamientosToken");
 
                 var identity = new ClaimsIdentity();
                 _http.DefaultRequestHeaders.Authorization = null;
@@ -58,19 +45,8 @@ namespace Asentamientos
 
                 NotifyAuthenticationStateChanged(Task.FromResult(state));
                 return state;
-            }
-            else
-            {
-                var identity = new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Authentication, "false") });
-                var user = new ClaimsPrincipal(identity);
-                _http.DefaultRequestHeaders.Authorization = null;
-
-                var state = new AuthenticationState(user);
-                NotifyAuthenticationStateChanged(Task.FromResult(state));
-                return state;
-            }
+         
             
-
         }
 
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
