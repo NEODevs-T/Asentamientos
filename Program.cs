@@ -1,12 +1,13 @@
-using Asentamientos;
-using Asentamientos.Components;
-using Asentamientos.Models;
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Blazored.LocalStorage;
 using Radzen;
+using Asentamientos;
+using Asentamientos.Services;
+using Asentamientos.Components;
+using Asentamientos.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

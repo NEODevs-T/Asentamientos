@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 
 
-namespace Asentamientos
+namespace Asentamientos.Services
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
@@ -21,13 +21,11 @@ namespace Asentamientos
         {
             _localStorage = localStorage;
             _http = http;
-           
         }
 
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-      
                 var token = await _localStorage.GetItemAsStringAsync("AsentamientosToken");
 
                 var identity = new ClaimsIdentity();
@@ -45,7 +43,6 @@ namespace Asentamientos
 
                 NotifyAuthenticationStateChanged(Task.FromResult(state));
                 return state;
-         
             
         }
 
