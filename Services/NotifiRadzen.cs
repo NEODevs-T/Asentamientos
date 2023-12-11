@@ -1,6 +1,6 @@
 ﻿using Radzen;
 
-namespace Asentamientos.Logic
+namespace Asentamientos.Services
 {
     public class NotifiRadzen
     {
