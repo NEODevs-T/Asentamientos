@@ -8,6 +8,8 @@ using Asentamientos;
 using Asentamientos.Services;
 using Asentamientos.Components;
 using Asentamientos.Models;
+using Asentamientos.Data;
+using Asentamientos.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();
+
+builder.Services.AddScoped<IProductosVData,ProductosVData>();
 
 
 
