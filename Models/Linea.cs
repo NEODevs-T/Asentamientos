@@ -17,5 +17,7 @@ public partial class Linea
 
     public string? Lofic { get; set; }
 
+    public virtual ICollection<EquipoEam> EquipoEams { get; set; } = new List<EquipoEam>();
+
     public virtual ICollection<Master> Masters { get; set; } = new List<Master>();
 }
