@@ -31,6 +31,8 @@ builder.Services.AddHttpClient();
 
 //*Data
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
+builder.Services.AddScoped<ISeccionesVData,SeccionesVData>();
+builder.Services.AddScoped<IRangoData,RangoData>();
 
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
