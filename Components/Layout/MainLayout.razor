@@ -113,6 +113,7 @@
                 else
                 {
                     mensaje = "Accediendo...";
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", mensaje));
 
                     Console.WriteLine(ValidarToken);
                     await LocalStorage.SetItemAsync("AsentamientosToken", ValidarToken);
@@ -121,7 +122,8 @@
                     claims = Enumerable.ToList(userA.Claims);
                     user = new UserLoginDto();
                     carga = false;
-                    mensaje = "";
+                    mensaje = "Bienvenido";
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", mensaje));
                     NavigationManager.NavigateTo("");
                 }
             }
