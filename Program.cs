@@ -15,15 +15,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+//* Radzen
 builder.Services.AddScoped<DialogService>();//para calendario de radzen
 builder.Services.AddScoped<NotificationService>();//para notificaciones de radzen
+
+//* Autenticador
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();
 
+//* Blazored
+builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddHttpClient();
+
+//*Data
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
 
+//* Services
+builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 
 
 var app = builder.Build();
