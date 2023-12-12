@@ -7,10 +7,9 @@ namespace Asentamientos.Data
 {
     public class ProductosVData : IProductosVData
     {
-        private HttpClient cliente { get; set; }
-        private HttpResponseMessage mensaje { get; set; }
-
-        private string url {get; set;}
+        private HttpClient cliente { get; set; } = new HttpClient();
+        private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
+        private string url {get; set;} = "";
         public async Task<List<ProductosV>> GetProductosPorLinea(int idLinea){
             List<ProductosV> productos;
             url = $"http://neo.paveca.com.ve/apineomaster/api/RangoControl/GetProductosPorLinea/{idLinea}";
@@ -21,9 +20,9 @@ namespace Asentamientos.Data
     }
     public class SeccionesVData : ISeccionesVData
     {
-        private HttpClient cliente { get; set; }
-        private HttpResponseMessage mensaje { get; set; }
-        private string url {get; set;}
+        private HttpClient cliente { get; set; } = new HttpClient();
+        private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
+        private string url {get; set;} = "";
         public async Task<List<SeccionesV>> GetSeccionesPorLinea(int idLinea){
             List<SeccionesV> secciones;
             url = $"http://neo.paveca.com.ve/apineomaster/api/RangoControl/GetSeccionesPorLinea/{idLinea}";
@@ -35,9 +34,9 @@ namespace Asentamientos.Data
     }
 
     public class RangoData : IRangoData{
-        private HttpClient cliente { get; set; }
-        private HttpResponseMessage mensaje { get; set; }
-        private string url {get; set;}
+        private HttpClient cliente { get; set; } = new HttpClient();
+        private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
+        private string url {get; set;} = "";
 
         public async Task<List<Rango>> GetRangoDeControl(FiltrosRangoControlDTO filtros){
             List<Rango> rangos;

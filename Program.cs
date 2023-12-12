@@ -33,6 +33,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
 builder.Services.AddScoped<ISeccionesVData,SeccionesVData>();
 builder.Services.AddScoped<IRangoData,RangoData>();
+builder.Services.AddScoped<IAsentamientoData,AsentamientoData>();
+builder.Services.AddScoped<IValoresDeAsentamientosVData,ValoresDeAsentamientosVData>();
 
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();

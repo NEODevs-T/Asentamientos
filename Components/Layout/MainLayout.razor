@@ -62,9 +62,8 @@
 
 @code {
     [CascadingParameter]
-    private List<Claim> claims { get; set; }
-
-    private string _message = "", mensaje = "";
+    private List<Claim> claims { get; set; } = new List<Claim>();
+    private string mensaje = "";
     UserLoginDto user = new UserLoginDto();
     private bool carga = false;
     //private bool _buttonDisabled = true;
