@@ -8,6 +8,8 @@ using Asentamientos;
 using Asentamientos.Services;
 using Asentamientos.Components;
 using Asentamientos.Models;
+using Asentamientos.Interface;
+using Asentamientos.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddScoped<DialogService>();//para calendario de radzen
 builder.Services.AddScoped<NotificationService>();//para notificaciones de radzen
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddScoped<IMaestra, MaestraData>();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddHttpClient();
 builder.Services.AddCascadingAuthenticationState();

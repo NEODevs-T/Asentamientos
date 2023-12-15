@@ -1,9 +1,14 @@
-﻿namespace Asentamientos.Interface
+﻿using Asentamientos.Models;
+using Asentamientos.ModelsViews;
+
+namespace Asentamientos.Interface
 {
-    public interface IMaestra
+    public interface IMaestra   
     {
-        Task GetPaises();
-        Task GetEmpresa();
-  
+        Task<List<Pai>> GetPaises();      
+        Task<List<EmpresasV>> GetEmpresas(int IdPais);      
+        Task<List<CentrosV>> GetCentros(int IdEmpresa);      
+        Task<List<DivisionesV>> GetDivisiones(int IdCentro);      
+        Task<List<LineaV>> GetLineas(int IdDivision);      
     }
 }
