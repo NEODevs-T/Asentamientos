@@ -3,6 +3,17 @@
 <PageTitle>Impresion de Asentamientos</PageTitle>
 <h1>Impresion</h1>
 
+<FiltrosAsentamientos idLinea="@idLinea" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
+
+@idProducto
+
+@idSeccion
+
 @code {
+    public int idProducto {get; set;} = 0;
+    public int idSeccion {get; set;} = 0;
+    public int idLinea {get; set;} = 1;
+    public List<ProductosV> productos = new List<ProductosV>();
+    public List<SeccionesV> secciones = new List<SeccionesV>();
 
 }
