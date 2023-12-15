@@ -100,10 +100,6 @@
             <p><em>Seleccione una División...</em></p>
         }
     </RadzenColumn>
-    <RadzenColumn>
-        <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Set />
-
-    </RadzenColumn>
 </RadzenRow>
 
 @code {
@@ -116,29 +112,10 @@
     public List<DivisionesV> divisiones { get; set; }
     public List<LineaV> lineas { get; set; }
 
-    [Parameter]
-    public EventCallback<int> OnChangepais { get; set; }//funcion para  retornar en el componente Padre
-    [Parameter]
-    public int valuepais { get; set; }//parametro retornado en el componente Padre
-    
-    [Parameter]
-    public EventCallback<int> OnChangeempresa { get; set; }
-    [Parameter]
+    public int valuepais { get; set; }
     public int valueempresas { get; set; }
-
-    [Parameter]
-    public EventCallback<int> OnChangecentros { get; set; }
-    [Parameter]
     public int valuecentros { get; set; }
-    
-    [Parameter]
-    public EventCallback<int> OnChangedivision { get; set; }
-    [Parameter]
     public int valuedivision { get; set; }
-    
-    [Parameter]
-    public EventCallback<int> OnChangelineas { get; set; }
-    [Parameter]
     public int valuelinea { get; set; }
 
     private async Task CreateData()
@@ -192,17 +169,5 @@
     void searchTextChanged(string text)
     {
         StateHasChanged();
-    }
-
-
-    private async Task Set()
-    {
-        
-        await OnChangepais.InvokeAsync(valuepais);
-        await OnChangeempresa.InvokeAsync(valueempresas);
-        await OnChangecentros.InvokeAsync(valuecentros);
-        await OnChangedivision.InvokeAsync(valuedivision);
-        await OnChangelineas.InvokeAsync(valuelinea);
-
     }
 }
