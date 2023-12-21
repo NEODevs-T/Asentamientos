@@ -1,0 +1,262 @@
+﻿@inject AuthenticationStateProvider AuthStateProvider
+@inject NotificationService NotificationService
+@inject IMaestra MaestraService
+<CascadingAuthenticationState>
+    <RadzenRow class="rz-text-align-Left">
+        <AuthorizeView Roles="Admin">
+
+            <RadzenColumn>
+                @if (pais == null)
+                {
+                    <CargandoSelect />
+
+                }
+                else
+                {
+                    <div class="rz-p-sm-2 rz-text-align-left">
+                        <RadzenLabel Text="País" />
+                        <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                        TValue="int" Data=pais TextProperty="Pnombre" ValueProperty="IdPais" AllowClear="true" @bind-Value=valuepais Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(async args=> await SetEmpresa())" >
+                        </RadzenDropDown>
+                    </div>
+
+                }
+            </RadzenColumn>
+
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin">
+
+            <RadzenColumn>
+                @if (valuepais > 0 && empresas is not null)
+                {
+                    <div class="rz-p-sm-2 rz-text-align-left">
+                        <RadzenLabel Text="Empresa" />
+                        <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                        TValue="int" Data=empresas TextProperty="Empresa" ValueProperty="IdEmpresa" AllowClear="true" @bind-Value=valueempresas Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetCentros())">
+                        </RadzenDropDown>
+                    </div>
+                }
+                else if (valuepais > 0 && empresas is null)
+                {
+
+                    <CargandoSelect />
+                }
+                else
+                {
+                    <p><em>Seleccione el País...</em></p>
+                }
+            </RadzenColumn>
+        </AuthorizeView>
+
+        <RadzenColumn>
+            @if (valueempresas > 0 && centros is not null)
+            {
+                <div class="rz-p-sm-2 rz-text-align-left">
+                    <RadzenLabel Text="Centros" />
+                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                    TValue="int" Data=centros TextProperty="Centro" ValueProperty="IdCentro" AllowClear="true" @bind-Value=valuecentros Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetDivisiones())">
+                    </RadzenDropDown>
+                </div>
+            }
+            else if (valueempresas > 0 && centros is null)
+            {
+
+                <CargandoSelect />
+            }
+            else
+            {
+                <p><em>Seleccione una Empresa...</em></p>
+            }
+        </RadzenColumn>
+
+        <RadzenColumn>
+            @if (valuecentros > 0 && divisiones is not null)
+            {
+                <div class="rz-p-sm-2 rz-text-align-left">
+                    <RadzenLabel Text="División" />
+                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                    TValue="int" Data=divisiones TextProperty="NDivision" ValueProperty="IdDivision" AllowClear="true" @bind-Value=valuedivision Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetLineas())">
+                    </RadzenDropDown>
+                </div>
+            }
+            else if (valuecentros > 0 && divisiones is null)
+            {
+
+                <CargandoSelect />
+            }
+            else
+            {
+                <p><em>Seleccione un Centro...</em></p>
+            }
+        </RadzenColumn>
+
+        <RadzenColumn>
+            @if (valuedivision > 0 && lineas is not null)
+            {
+                <div class="rz-p-sm-2 rz-text-align-left">
+                    <RadzenLabel Text="Línea" />
+                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                    TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))">
+                    </RadzenDropDown>
+                </div>
+            }
+            else if (valuedivision > 0 && lineas is null)
+            {
+
+                <CargandoSelect />
+            }
+            else
+            {
+                <p><em>Seleccione una División...</em></p>
+            }
+        </RadzenColumn>
+        <RadzenColumn>
+            <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Set />
+
+        </RadzenColumn>
+    </RadzenRow>
+</CascadingAuthenticationState>
+
+@code {
+    [CascadingParameter]
+    private List<Claim> claims { get; set; }
+
+    public List<Pai> pais { get; set; }
+    public List<EmpresasV> empresas { get; set; }
+    public List<CentrosV> centros { get; set; }
+    public List<DivisionesV> divisiones { get; set; }
+    public List<LineaV> lineas { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChangepais { get; set; }//funcion para  retornar en el componente Padre
+    [Parameter]
+    public int valuepais { get; set; }//parametro retornado en el componente Padre
+
+    [Parameter]
+    public EventCallback<int> OnChangeempresa { get; set; }
+    [Parameter]
+    public int valueempresas { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChangecentros { get; set; }
+    [Parameter]
+    public int valuecentros { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChangedivision { get; set; }
+    [Parameter]
+    public int valuedivision { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnChangelineas { get; set; }
+    [Parameter]
+    public int valuelinea { get; set; }
+
+    private async Task CreateData()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        claims = Enumerable.ToList(user.Claims);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await CreateData();
+
+        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+        {
+
+            pais = await MaestraService.GetPaises();
+        }
+        else
+        {
+            valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdPais")).Value);
+
+        }  
+        await SetEmpresa();
+    }
+
+    private async Task SetEmpresa()
+    {
+        if ( valuepais>0)
+        {
+            empresas = await MaestraService.GetEmpresas(valuepais);
+            valuecentros = 0;
+        }
+        else
+        {
+            valueempresas = 0;
+            await SetCentros();
+        }
+
+
+    }
+    private async Task SetCentros()
+    {
+        if (valueempresas > 0)
+        {
+
+            centros = await MaestraService.GetCentros(valueempresas);
+            valuedivision = 0;
+            valuelinea = 0;
+        }
+        else
+        {
+            valuecentros = 0;
+            await SetDivisiones();
+        }
+
+
+
+    }
+    private async Task SetDivisiones()
+    {
+
+        if (valuecentros > 0)
+        {          
+            divisiones = await MaestraService.GetDivisiones(valuecentros); 
+            valuelinea = 0;
+        }
+        else
+        {
+            valuedivision = 0;
+            await SetLineas();
+        }
+       
+
+    }
+    private async Task SetLineas()
+    {
+
+
+        if (valuedivision > 0)
+        {
+            lineas = await MaestraService.GetLineas(valuedivision);
+        }
+        else
+        {
+            valuelinea = 0;
+        }
+       
+
+    }
+    void searchTextChanged(string text)
+    {
+        StateHasChanged();
+    }
+
+
+    private async Task Set()
+    {
+
+        await OnChangepais.InvokeAsync(valuepais);
+        await OnChangeempresa.InvokeAsync(valueempresas);
+        await OnChangecentros.InvokeAsync(valuecentros);
+        await OnChangedivision.InvokeAsync(valuedivision);
+        await OnChangelineas.InvokeAsync(valuelinea);
+
+    }
+}

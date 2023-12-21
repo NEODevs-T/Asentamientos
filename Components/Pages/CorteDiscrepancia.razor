@@ -1,0 +1,47 @@
+﻿@inject AuthenticationStateProvider AuthStateProvider
+@inject NotificationService NotificationService
+
+@page "/cortediscrepancia"
+<h3>Corte de Discrepancias</h3>
+
+<FiltroMaestras OnChangepais="((int p) => this.valuepais = p)"
+                OnChangeempresa="((int e) => this.valueempresa = e)"
+                OnChangecentros="((int c) => this.valuecentros = c)"
+                OnChangedivision="((int d) => this.valuedivision = d)"
+                OnChangelineas="((int l) => this.valuelinea = l)" />
+
+@if (valuepais > 0)
+{
+    <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Prueba />
+}
+@code {
+    [CascadingParameter]
+    private List<Claim> claims { get; set; }
+
+    //parametros retornado en el componente Hijo
+    public int valuepais { get; set; }
+    public int valueempresa { get; set; }
+    public int valuecentros { get; set; }
+    public int valuedivision { get; set; }
+    public int valuelinea { get; set; }
+
+    public async Task Prueba()
+    {
+        valuepais = valuepais;
+    }
+    private async Task CreateData()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        claims = Enumerable.ToList(user.Claims);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await CreateData();
+
+    }
+
+}

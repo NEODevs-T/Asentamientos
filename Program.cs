@@ -1,15 +1,11 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Blazored.LocalStorage;
 using Radzen;
-using Asentamientos;
 using Asentamientos.Services;
 using Asentamientos.Components;
-using Asentamientos.Models;
 using Asentamientos.Data;
 using Asentamientos.Interface;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +26,8 @@ builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddHttpClient();
 
 //*Data
+builder.Services.AddScoped(hc => new HttpClient { BaseAddress = new Uri("http://neo.paveca.com.ve/apineomaster") });
+builder.Services.AddScoped<IMaestra, MaestraData>();
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
 builder.Services.AddScoped<ISeccionesVData,SeccionesVData>();
 builder.Services.AddScoped<IRangoData,RangoData>();

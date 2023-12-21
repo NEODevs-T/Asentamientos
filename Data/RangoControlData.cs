@@ -30,7 +30,7 @@ namespace Asentamientos.Data
             secciones = await cliente.GetFromJsonAsync<List<SeccionesV>>(url) ?? new List<SeccionesV>();
             return secciones;
         }
-    
+
     }
 
     public class RangoData : IRangoData{
@@ -38,7 +38,8 @@ namespace Asentamientos.Data
         private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
         private string url {get; set;} = "";
 
-        public async Task<List<Rango>> GetRangoDeControl(FiltrosRangoControlDTO filtros){
+        public async Task<List<Rango>> GetRangoDeControl(FiltrosRangoControlDTO filtros)
+        {
             List<Rango> rangos;
             url = $"http://neo.paveca.com.ve/apineomaster/api/RangoControl/GetRangoDeControl?producto={filtros.producto}&master={filtros.master}&tipo={filtros.tipo}&seccion={filtros.seccion}";
             cliente = new HttpClient();

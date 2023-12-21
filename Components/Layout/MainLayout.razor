@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject ILocalStorageService LocalStorage
@@ -48,7 +49,7 @@
                     <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Contraseña</RadzenText>
                     <RadzenPassword @bind-Value=user.Password Name="Password" id="contraseña" Placeholder="Contraseña..." class="w-100" />
 
-                    <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=Login />
+                    <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="false" Text="Iniciar" ButtonStyle="ButtonStyle.Success" Click=Login />
                 </RadzenTemplateForm>
 
             </div>
