@@ -1,12 +1,12 @@
 ﻿using Radzen;
+using Asentamientos.Interface;
 
 namespace Asentamientos.Services
 {
-    public class NotifiRadzen
+    public class NotifiRadzenServices : INotifiRadzenServices
     {
         public NotificationMessage Notificacion(string tipo, string mensaje, string detalle)
         {
-
 
             NotificationMessage notificacion = new NotificationMessage { };
             if (tipo == "error")

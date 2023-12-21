@@ -1,30 +1,39 @@
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Blazored.LocalStorage;
 using Radzen;
-using Asentamientos;
 using Asentamientos.Services;
 using Asentamientos.Components;
-using Asentamientos.Models;
-using Asentamientos.Interface;
 using Asentamientos.Data;
+using Asentamientos.Interface;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
-builder.Services.AddCascadingAuthenticationState();
+
+//* Radzen
 builder.Services.AddScoped<DialogService>();//para calendario de radzen
 builder.Services.AddScoped<NotificationService>();//para notificaciones de radzen
+
+//* Autenticador
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.AddScoped<IMaestra, MaestraData>();
+builder.Services.AddCascadingAuthenticationState();
+
+//* Blazored
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddScoped(hc=>new HttpClient { BaseAddress = new Uri("http://neo.paveca.com.ve/apineomaster") });
+
 builder.Services.AddHttpClient();
 
+//*Data
+builder.Services.AddScoped(hc => new HttpClient { BaseAddress = new Uri("http://neo.paveca.com.ve/apineomaster") });
+builder.Services.AddScoped<IMaestra, MaestraData>();
+builder.Services.AddScoped<IProductosVData,ProductosVData>();
+builder.Services.AddScoped<ISeccionesVData,SeccionesVData>();
+builder.Services.AddScoped<IRangoData,RangoData>();
 
+//* Services
+builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 
 
 var app = builder.Build();
