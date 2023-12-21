@@ -1,6 +1,8 @@
 ﻿using Asentamientos.Interface;
 using Asentamientos.Models;
 using Asentamientos.ModelsViews;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 
 
 namespace Asentamientos.Data
@@ -8,28 +10,27 @@ namespace Asentamientos.Data
     public class MaestraData : IMaestra
     {
         private readonly HttpClient _http;
-        public MaestraData(HttpClient http)
+        private readonly IHttpClientFactory _clientFactory;
+        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra/";
+
+        public MaestraData(HttpClient http, IHttpClientFactory clientFactory)
         {
             _http = http;
-
+            _clientFactory = clientFactory;
         }
         public async Task<List<Pai>> GetPaises()
         {
-            //var result = await _http.GetFromJsonAsync<List<Pai>>($"http://neo.paveca.com.ve/apineomaster/api/Maestra/GetPaises");          
-            //return result;
-            string baseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra/GetPaises";
-            List<Pai> result = null;
-
             try
             {
-                result = await _http.GetFromJsonAsync<List<Pai>>(baseUrl);
+                var client = _clientFactory.CreateClient();
+                var result = await client.GetFromJsonAsync<List<Pai>>($"{BaseUrl}GetPaises");             
+                return result ?? new List<Pai>();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                // Log or handle the exception
+                throw;
             }
-
-            return result ?? new List<Pai>();
         }
 
         public async Task<List<EmpresasV>> GetEmpresas(int IdPais)

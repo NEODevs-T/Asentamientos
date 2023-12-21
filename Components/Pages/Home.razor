@@ -1,31 +1,3 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
-
-<FiltroMaestras OnChangepais="((int p) => this.valuepais = p)"
-                OnChangeempresa="((int e) => this.valueempresa = e)"
-                OnChangecentros="((int c) => this.valuecentros = c)"
-                OnChangedivision="((int d) => this.valuedivision = d)"
-                OnChangelineas="((int l) => this.valuelinea = l)" />
-
-@if (valuepais > 0)
-{
-    <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Prueba />
-}
-@code {
-
-
-    //parametros retornado en el componente Hijo
-    public int valuepais { get; set; }
-    public int valueempresa { get; set; }
-    public int valuecentros { get; set; }
-    public int valuedivision { get; set; }
-    public int valuelinea { get; set; }
-
-    public async Task Prueba()
-    {
-        valuepais = valuepais;
-    }
-
-
-}
