@@ -27,7 +27,7 @@ builder.Services.AddHttpClient();
 
 //*Data
 builder.Services.AddScoped(hc => new HttpClient { BaseAddress = new Uri("http://neo.paveca.com.ve/apineomaster") });
-builder.Services.AddScoped<IMaestra, MaestraData>();
+builder.Services.AddScoped<IMaestraData, MaestraData>();
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
 builder.Services.AddScoped<ISeccionesVData,SeccionesVData>();
 builder.Services.AddScoped<IRangoData,RangoData>();

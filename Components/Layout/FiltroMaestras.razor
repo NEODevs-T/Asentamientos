@@ -1,6 +1,6 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 @inject NotificationService NotificationService
-@inject IMaestra MaestraService
+@inject IMaestraData MaestraService
 <CascadingAuthenticationState>
     <RadzenRow class="rz-text-align-Left">
         <AuthorizeView Roles="Admin">
@@ -16,7 +16,7 @@
                     <div class="rz-p-sm-2 rz-text-align-left">
                         <RadzenLabel Text="País" />
                         <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                        TValue="int" Data=pais TextProperty="Pnombre" ValueProperty="IdPais" AllowClear="true" @bind-Value=valuepais Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(async args=> await SetEmpresa())" >
+                                        TValue="int" Data=pais TextProperty="Pnombre" ValueProperty="IdPais" AllowClear="true" @bind-Value=valuepais Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(async args=> await SetEmpresa())">
                         </RadzenDropDown>
                     </div>
 
@@ -116,6 +116,11 @@
 
         </RadzenColumn>
     </RadzenRow>
+    @valuepais
+    @valueempresas
+    @valuecentros
+    @valuedivision
+    @valuelinea
 </CascadingAuthenticationState>
 
 @code {
@@ -161,6 +166,7 @@
 
     }
 
+
     protected override async Task OnInitializedAsync()
     {
 
@@ -175,72 +181,131 @@
         {
             valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdPais")).Value);
 
-        }  
+        }
         await SetEmpresa();
     }
 
     private async Task SetEmpresa()
     {
-        if ( valuepais>0)
+        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
         {
-            empresas = await MaestraService.GetEmpresas(valuepais);
-            valuecentros = 0;
+
+
+            if (valuepais > 0)
+            {
+                empresas = await MaestraService.GetEmpresas(valuepais);
+                valueempresas = 0;
+                valuecentros = 0;
+                valuedivision = 0;
+                valuelinea = 0;
+
+                if (divisiones is not null)
+                {
+                    divisiones.Clear();
+                }
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
+
+            }
+            else
+            {
+                valueempresas = 0;
+                valuecentros = 0;
+                await SetCentros();
+            }
         }
         else
         {
-            valueempresas = 0;
-            await SetCentros();
+            valueempresas = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdEmpresa")).Value);
         }
 
 
     }
     private async Task SetCentros()
     {
-        if (valueempresas > 0)
+        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
         {
 
-            centros = await MaestraService.GetCentros(valueempresas);
-            valuedivision = 0;
-            valuelinea = 0;
+
+            if (valueempresas > 0)
+            {
+
+                centros = await MaestraService.GetCentros(valueempresas);
+                valuecentros = 0;
+                valuedivision = 0;
+                valuelinea = 0;
+                
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
+
+            }
+            else
+            {
+                valuecentros = 0;
+                await SetDivisiones();
+            }
         }
         else
         {
-            valuecentros = 0;
-            await SetDivisiones();
+            valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdCentro")).Value);
+
         }
-
-
 
     }
     private async Task SetDivisiones()
     {
+        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+        {
+            if (valuecentros > 0)
+            {
+                divisiones = await MaestraService.GetDivisiones(valuecentros);
+                valuedivision = 0;
+                valuelinea = 0;
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
 
-        if (valuecentros > 0)
-        {          
-            divisiones = await MaestraService.GetDivisiones(valuecentros); 
-            valuelinea = 0;
+               
+            }
+            else
+            {
+                valuedivision = 0;
+                await SetLineas();
+            }
         }
+
         else
         {
-            valuedivision = 0;
-            await SetLineas();
+            valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdDivision")).Value);
+
         }
-       
 
     }
+
     private async Task SetLineas()
     {
 
-
-        if (valuedivision > 0)
+        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
         {
-            lineas = await MaestraService.GetLineas(valuedivision);
+            if (valuedivision > 0)
+            {
+                lineas = await MaestraService.GetLineas(valuedivision);
+            }
+            else
+            {
+                valuelinea = 0;
+            }
         }
         else
         {
-            valuelinea = 0;
+            valuelinea = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdLinea")).Value);
         }
-       
+
 
     }
     void searchTextChanged(string text)
@@ -259,4 +324,6 @@
         await OnChangelineas.InvokeAsync(valuelinea);
 
     }
+
+   
 }

@@ -3,7 +3,7 @@ using Asentamientos.ModelsViews;
 
 namespace Asentamientos.Interface
 {
-    public interface IMaestra   
+    public interface IMaestraData   
     {
         Task<List<Pai>> GetPaises();      
         Task<List<EmpresasV>> GetEmpresas(int IdPais);      
