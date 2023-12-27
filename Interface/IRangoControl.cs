@@ -18,4 +18,10 @@ namespace Asentamientos.Interface
     {
         Task<List<Rango>> GetRangoDeControl(FiltrosRangoControlDTO filtros);
     }
+
+    public interface IVaribleData
+    {
+        Task<List<VarClasificacionV>> GetClasificacionVarPorLinea(int idLinea);
+        Task<List<VarTipoV>> GetTipoVarPorLinea(int idLinea);
+    }
 }

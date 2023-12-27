@@ -12,6 +12,7 @@ namespace Asentamientos.Data
         private readonly HttpClient _http;
         private readonly IHttpClientFactory _clientFactory;
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra/";
+        private string url = "";
 
         public MaestraData(HttpClient http, IHttpClientFactory clientFactory)
         {
@@ -32,7 +33,6 @@ namespace Asentamientos.Data
                 throw;
             }
         }
-
         public async Task<List<EmpresasV>> GetEmpresas(int IdPais)
         {
             var result = await _http.GetFromJsonAsync<List<EmpresasV>>($"http://neo.paveca.com.ve/apineomaster/api/Maestra/GetEmpresas/{IdPais}");
@@ -57,6 +57,9 @@ namespace Asentamientos.Data
             return result;
         }
 
-      
+        public async Task<int> GetMaestraPorLinea(int idLinea){
+            url = $"http://neo.paveca.com.ve/apineomaster/api/maestra/GetMaestraPorLinea/{idLinea}";
+            return await _http.GetFromJsonAsync<int>(url);
+        }
     }
 }

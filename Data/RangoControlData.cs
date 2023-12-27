@@ -47,4 +47,29 @@ namespace Asentamientos.Data
             return rangos;
         }
     }
+
+    public class VariableData : IVaribleData {
+        private HttpClient cliente { get; set; } = new HttpClient();
+        private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
+        private string url {get; set;} = "";
+        
+        public async Task<List<VarClasificacionV>> GetClasificacionVarPorLinea(int idLinea)
+        {
+            List<VarClasificacionV> clasificaciones;
+            url = $"http://neo.paveca.com.ve/apineomaster/api/RangoControl/GetClasificacionVariblePorLinea/{idLinea}";
+            cliente = new HttpClient();
+            clasificaciones = await cliente.GetFromJsonAsync<List<VarClasificacionV>>(url) ?? new List<VarClasificacionV>();
+            return clasificaciones;
+        }
+
+        public async Task<List<VarTipoV>> GetTipoVarPorLinea(int idLinea)
+        {
+            List<VarTipoV> tipos;
+            url = $"http://neo.paveca.com.ve/apineomaster/api/RangoControl/GetTipoVariblePorLinea/{idLinea}";
+            cliente = new HttpClient();
+            tipos = await cliente.GetFromJsonAsync<List<VarTipoV>>(url) ?? new List<VarTipoV>();
+            return tipos;
+        }
+    }
+
 }

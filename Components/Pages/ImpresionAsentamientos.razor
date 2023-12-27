@@ -1,19 +1,91 @@
 @page "/Impresion"
+@inject NavigationManager NavigationManager
+@inject IRangoData RangoData
+@inject IMaestra MaestaData
+
+
 
 <PageTitle>Impresion de Asentamientos</PageTitle>
 <h1>Impresion</h1>
 
-<FiltrosAsentamientos idLinea="@idLinea" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
+<FiltroMaestras OnChangepais="((int p) => this.valuepais = p)" OnChangeempresa="((int e) => this.valueempresa = e)" OnChangecentros="((int c) => this.valuecentros = c)" OnChangedivision="((int d) => this.valuedivision = d)" OnChangelineas="((int l) => this.idLinea = l)" />
 
-@idProducto
+<br>
 
-@idSeccion
+@if(idLinea != 0){
+    <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
+}
+
+@if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
+    <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Consultar />
+}
+
+<br>
+<br>
+
+@if(band){
+    <RadzenDataGrid Data="@listaRango" TItem="Rango" AllowVirtualization="true" Style="height:400px"
+                AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                AllowSorting="true">
+
+                <Columns>
+                    <RadzenDataGridColumn Width="3%" TItem="Rango" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <RadzenText class="mb-0 tipografia">@(listaRango.IndexOf(data) + 1)</RadzenText>
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdSeccionNavigation.Snombre" Title="Sección" />
+                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.Vnombre" Title="Variable" />
+                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
+                    <RadzenDataGridColumn TItem="Rango" Title="2do Turno" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <input type="text" style="width: 50%; height:30px" disabled=true> 
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="Rango" Title="1er Turno" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" >
+                        <Template Context="data">
+                            <input type="text" style="width: 50%; height:30px" disabled=true>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+    </RadzenDataGrid>
+
+    <br>
+    <br>
+
+    <RadzenButton Variant="Variant.Outlined" Click=Impresion  Text="Impresión" ButtonStyle="ButtonStyle.Warning" />
+}
 
 @code {
+
+    public List<Rango> listaRango {get; set;} = new List<Rango>();
+
+    public bool band  {get; set;} =  false;
     public int idProducto {get; set;} = 0;
     public int idSeccion {get; set;} = 0;
-    public int idLinea {get; set;} = 1;
-    public List<ProductosV> productos = new List<ProductosV>();
-    public List<SeccionesV> secciones = new List<SeccionesV>();
+    public int idClasiVar {get; set;} = 0;
+    public int idLinea {get; set;} = 0;
+    public int valuepais { get; set; }
+    public int valueempresa { get; set; }
+    public int valuecentros { get; set; }
+    public int valuedivision { get; set; }
+
+    public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
+
+    private async Task Consultar()
+    {
+        band = false;
+        filtros = new FiltrosRangoControlDTO();
+        filtros.master = await MaestaData.GetMaestraPorLinea(idLinea);
+        filtros.producto = idProducto;
+        filtros.seccion = idSeccion;
+        filtros.tipo = idClasiVar;
+        listaRango = await RangoData.GetRangoDeControl(filtros);
+        band = true;
+    }
+
+    private void Impresion(){
+        NavigationManager.NavigateTo($"impresion/{idLinea}/{idProducto}/{idSeccion}/{idClasiVar}");
+    }
 
 }

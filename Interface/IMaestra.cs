@@ -9,6 +9,7 @@ namespace Asentamientos.Interface
         Task<List<EmpresasV>> GetEmpresas(int IdPais);      
         Task<List<CentrosV>> GetCentros(int IdEmpresa);      
         Task<List<DivisionesV>> GetDivisiones(int IdCentro);      
-        Task<List<LineaV>> GetLineas(int IdDivision);      
+        Task<List<LineaV>> GetLineas(int IdDivision);   
+        Task<int> GetMaestraPorLinea(int idLinea);  
     }
 }
