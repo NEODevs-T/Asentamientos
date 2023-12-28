@@ -28,6 +28,13 @@ a, .btn-link {
     background-position: center center;
 }
 
+/*check radzen color*/
+.rz-chkbox-box.rz-state-active {
+    background-color: #26b050 !important; 
+    border: 1px solid #aef3a7 !important; 
+}
+  
+
 .loginform {
     padding: 2%;
     background: rgba(228, 228, 228, 0.77) !important;
