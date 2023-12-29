@@ -1,4 +1,6 @@
-.table thead tr{
-    background-color: rgb(0, 120, 83);
-    color: white;
+:root {
+    --rz-grid-header-color: white !important;  /* Color del texto del encabezado */
+    --rz-grid-header-background-color: rgb(0, 120, 83) !important;  /* Color de fondo del encabezado */
+    --rz-grid-header-font-size: 1.1em !important;
+    --rz-grid-header-font-weight: 800;
 }
