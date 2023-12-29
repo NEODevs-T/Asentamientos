@@ -16,46 +16,28 @@ namespace Asentamientos.Logic
                 };
 
 
-        //public Dictionary<string, bool> ListasRol(string roleClaim)
-        //{
-        //    Dictionary<string, bool> result = new Dictionary<string, bool>();
-
-        //    foreach (var rol in roles)
-        //    {
-        //        if (result.ContainsKey("Super") && result["Super"] == true)
-        //        {
-        //            result[rol.Key] = true;
-        //        }
-        //        else if (result.ContainsKey("Pais") && result["Pais"] == true)
-        //        {
-        //            result[rol.Key] = true;
-        //        }
-        //        else if (result.ContainsKey(" Empresa") && result["Empresa"] == true)
-        //        {
-        //            result[rol.Key] = true;
-        //        }
-        //        else if (result.ContainsKey("Centro") && result["Centro"] == true)
-        //        {
-        //            result[rol.Key] = true;
-        //        }               
-        //        else
-        //        {
-        //            result[rol.Key] = rol.Value.Any(role => roleClaim.Contains(role));
-        //        }
-        //    }
-
-        //    return result;
-        //}
         public Dictionary<string, bool> ListasRol(string roleClaim)
         {
             Dictionary<string, bool> result = new Dictionary<string, bool>();
 
             foreach (var rol in roles)
             {
-                if (result.Any(r => r.Value == true && roles.Keys.ToList().IndexOf(r.Key) >= roles.Keys.ToList().IndexOf(rol.Key)))
+                if (result.ContainsKey("Super") && result["Super"] == true)
                 {
                     result[rol.Key] = true;
                 }
+                else if (result.ContainsKey("Pais") && result["Pais"] == true)
+                {
+                    result[rol.Key] = true;
+                }
+                else if (result.ContainsKey(" Empresa") && result["Empresa"] == true)
+                {
+                    result[rol.Key] = true;
+                }
+                else if (result.ContainsKey("Centro") && result["Centro"] == true)
+                {
+                    result[rol.Key] = true;
+                }               
                 else
                 {
                     result[rol.Key] = rol.Value.Any(role => roleClaim.Contains(role));
@@ -65,6 +47,7 @@ namespace Asentamientos.Logic
             return result;
         }
 
+       
 
     }
 }
