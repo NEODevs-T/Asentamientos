@@ -5,6 +5,7 @@ using Asentamientos.Services;
 using Asentamientos.Components;
 using Asentamientos.Data;
 using Asentamientos.Interface;
+using Asentamientos.Logic;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddHttpClient();
 
-//*Data
+//* Data
 builder.Services.AddScoped(hc => new HttpClient { BaseAddress = new Uri("http://neo.paveca.com.ve/apineomaster") });
 builder.Services.AddScoped<IMaestraData, MaestraData>();
 builder.Services.AddScoped<IProductosVData,ProductosVData>();
@@ -34,6 +35,9 @@ builder.Services.AddScoped<IRangoData,RangoData>();
 builder.Services.AddScoped<IAsentamientoData,AsentamientoData>();
 builder.Services.AddScoped<IValoresDeAsentamientosVData,ValoresDeAsentamientosVData>();
 builder.Services.AddScoped<ICorteDiscrepancia,CorteDiscrepaciaData>();
+
+//* Logic
+builder.Services.AddScoped<IRolLogic,RolLogic>();
 
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();

@@ -1,9 +1,11 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 @inject NotificationService NotificationService
 @inject IMaestraData MaestraService
+@inject IRolLogic RolLogicService
+
 <CascadingAuthenticationState>
     <RadzenRow class="rz-text-align-Left">
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="SuperAdmin, SuperUser">
 
             <RadzenColumn>
                 @if (pais == null)
@@ -25,7 +27,7 @@
 
         </AuthorizeView>
 
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="Admin,SuperAdmin, SuperUser">
 
             <RadzenColumn>
                 @if (valuepais > 0 && empresas is not null)
@@ -117,18 +119,24 @@
             </div>
         </RadzenColumn>
     </RadzenRow>
-   
+
 </CascadingAuthenticationState>
 
 @code {
     [CascadingParameter]
-    private List<Claim> claims { get; set; }
+    private List<Claim>? claims { get; set; }
 
-    public List<Pai> pais { get; set; }
-    public List<EmpresasV> empresas { get; set; }
-    public List<CentrosV> centros { get; set; }
-    public List<DivisionesV> divisiones { get; set; }
-    public List<LineaV> lineas { get; set; }
+    public List<Pai>? pais { get; set; }
+    public List<EmpresasV>? empresas { get; set; }
+    public List<CentrosV>? centros { get; set; }
+    public List<DivisionesV>? divisiones { get; set; }
+    public List<LineaV>? lineas { get; set; }
+
+    public List<string> rolesSuper = new List<string> { "SuperAdmin", "SuperUser" };
+    public List<string> rolesPais = new List<string> { "UserPais", "Admin" };
+    public List<string> rolesEmpresa = new List<string> { "UserEmpresa" };
+    public List<string> rolesCentro = new List<string> { "UserCentro" };
+    public List<string> rolesDivision = new List<string> { "UserDivision" };
 
     [Parameter]
     public EventCallback<int> OnChangepais { get; set; }//funcion para  retornar en el componente Padre
@@ -155,21 +163,29 @@
     [Parameter]
     public int valuelinea { get; set; }
 
+    public string? roleClaim { get; set; } //guardar el rol del usuario
+    public List<string> roles = new List<string>();//lista con rol a comparar
+    Dictionary<string, bool> permisos = new Dictionary<string, bool>();
+
     private async Task CreateData()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         claims = Enumerable.ToList(user.Claims);
+        //Obtner Rol
+        roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+
 
     }
 
 
     protected override async Task OnInitializedAsync()
     {
-
         await CreateData();
+        permisos = RolLogicService.ListasRol(roleClaim);
 
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+      
+        if (permisos["Super"])
         {
 
             pais = await MaestraService.GetPaises();
@@ -177,14 +193,18 @@
         else
         {
             valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdPais")).Value);
-
         }
         await SetEmpresa();
     }
+   
+  
+
+   
 
     private async Task SetEmpresa()
     {
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+      
+        if (permisos["Pais"])
         {
 
 
@@ -216,13 +236,14 @@
         else
         {
             valueempresas = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdEmpresa")).Value);
+            await SetCentros();
         }
 
 
     }
     private async Task SetCentros()
-    {
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+    {    
+        if (permisos["Empresa"])
         {
 
 
@@ -233,7 +254,7 @@
                 valuecentros = 0;
                 valuedivision = 0;
                 valuelinea = 0;
-                
+
                 if (lineas is not null)
                 {
                     lineas.Clear();
@@ -249,13 +270,13 @@
         else
         {
             valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdCentro")).Value);
-
+            await SetDivisiones();
         }
 
     }
     private async Task SetDivisiones()
     {
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+        if (permisos["Centro"])
         {
             if (valuecentros > 0)
             {
@@ -267,7 +288,7 @@
                     lineas.Clear();
                 }
 
-               
+
             }
             else
             {
@@ -279,7 +300,7 @@
         else
         {
             valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdDivision")).Value);
-
+            await SetLineas();
         }
 
     }
@@ -287,7 +308,7 @@
     private async Task SetLineas()
     {
 
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+        if (permisos["Division"])
         {
             if (valuedivision > 0)
             {
@@ -322,5 +343,6 @@
 
     }
 
-   
 }
+
+
