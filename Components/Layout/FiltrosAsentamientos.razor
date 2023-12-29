@@ -3,10 +3,10 @@
 @inject IVaribleData VariableData
 
 
-<RadzenRow class="rz-text-align-right">
+<RadzenRow class="rz-text-align-Left">
     <RadzenColumn Size="2">
         @if(productos is not null){
-            <div class="rz-text-align-left">
+            <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenLabel Text="Productos" />
                 <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                     TValue="int" Data=productos TextProperty="Producto" ValueProperty="IdProducto" AllowClear="true" @bind-Value=idProducto Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
@@ -18,7 +18,7 @@
     </RadzenColumn>
     <RadzenColumn Size="2">
         @if(secciones is not null){
-            <div class="rz-text-align-left">
+            <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenLabel Text="Secciones" />
                 <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                     TValue="int" Data=secciones TextProperty="Seccion" ValueProperty="IdSeccion" AllowClear="true" @bind-Value=idSeccion Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
@@ -31,7 +31,7 @@
 
     <RadzenColumn Size="2">
         @if(clasificacion is not null){
-            <div class="rz-text-align-left">
+            <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenLabel Text="Clasificacion" />
                 <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                     TValue="int" Data=clasificacion TextProperty="Clasificacion" ValueProperty="IdClasiVar" AllowClear="true" @bind-Value=idClasiVar Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">

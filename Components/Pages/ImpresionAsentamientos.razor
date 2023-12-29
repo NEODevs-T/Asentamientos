@@ -2,13 +2,12 @@
 @inject NavigationManager NavigationManager
 @inject IRangoData RangoData
 @inject IMaestra MaestaData
-
-
+@inject IAsentamientoData AsentamientoData
 
 <PageTitle>Impresion de Asentamientos</PageTitle>
 <h1>Impresion</h1>
 
-<FiltroMaestras OnChangepais="((int p) => this.valuepais = p)" OnChangeempresa="((int e) => this.valueempresa = e)" OnChangecentros="((int c) => this.valuecentros = c)" OnChangedivision="((int d) => this.valuedivision = d)" OnChangelineas="((int l) => this.idLinea = l)" />
+<FiltroMaestras OnChangelineas="((int l) => this.idLinea = l)" />
 
 <br>
 
@@ -59,16 +58,13 @@
 @code {
 
     public List<Rango> listaRango {get; set;} = new List<Rango>();
-
     public bool band  {get; set;} =  false;
+
+    public bool isAsentamientosHoy {get; set;} =  false;
     public int idProducto {get; set;} = 0;
     public int idSeccion {get; set;} = 0;
     public int idClasiVar {get; set;} = 0;
     public int idLinea {get; set;} = 0;
-    public int valuepais { get; set; }
-    public int valueempresa { get; set; }
-    public int valuecentros { get; set; }
-    public int valuedivision { get; set; }
 
     public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
 
@@ -81,6 +77,7 @@
         filtros.seccion = idSeccion;
         filtros.tipo = idClasiVar;
         listaRango = await RangoData.GetRangoDeControl(filtros);
+        //isAsentamientosHoy = await AsentamientoData.GetIsAsentamientoHoy();
         band = true;
     }
 
