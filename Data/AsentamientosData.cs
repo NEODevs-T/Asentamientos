@@ -7,29 +7,37 @@ namespace Asentamientos.Data
 {
     public class AsentamientoData : IAsentamientoData
     {
+        private readonly IHttpClientFactory _clientFactory;
+        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Asentamientos";
         private HttpClient cliente { get; set; } = new HttpClient();
+
         private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
         private string url {get; set;} = "";
+
+        public AsentamientoData(IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+        }
         public async Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros, FiltroGTDTO filtroGT){
             bool band;
-            url = $"http://neo.paveca.com.ve/apineomaster/api/Asentamientos/GetIsAsentamientoHoy?producto={filtros.producto}&master={filtros.master}&tipo={filtros.tipo}&seccion={filtros.seccion}&grupo={filtroGT.grupo}&turno={filtroGT.turno}";
-            cliente = new HttpClient();
+            url = $"{BaseUrl}/GetIsAsentamientoHoy?producto={filtros.producto}&master={filtros.master}&tipo={filtros.tipo}&seccion={filtros.seccion}&grupo={filtroGT.grupo}&turno={filtroGT.turno}";
+            cliente = _clientFactory.CreateClient();
             band = await cliente.GetFromJsonAsync<bool>(url);
             return band;
         }
 
         public async Task<bool> AddAsentamientosDelDia(InformeConAsentamientosDTO asentamientos){
             bool band;
-            url = "http://localhost:5021/api/Asentamientos/AddAsentamientosDelDia";
-            cliente = new HttpClient();
+            url = $"{BaseUrl}/AddAsentamientosDelDia";
+            cliente =  _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url,asentamientos);
             band = await mensaje.Content.ReadFromJsonAsync<bool>();
             return band;
         }
 
         public async Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos){
-            url = $"http://localhost:5021/api/Asentamientos/UpdateAsentamientosDelDia?idInforme={idInforme}";
-            cliente = new HttpClient();
+            url = $"{BaseUrl}/UpdateAsentamientosDelDia?idInforme={idInforme}";
+            cliente =  _clientFactory.CreateClient();
             mensaje = await cliente.PutAsJsonAsync(url,asentamientos);
             return await mensaje.Content.ReadAsStringAsync();
         }
@@ -37,15 +45,21 @@ namespace Asentamientos.Data
 
     public class ValoresDeAsentamientosVData : IValoresDeAsentamientosVData
     {
+        private readonly IHttpClientFactory _clientFactory;
         private HttpClient cliente { get; set; } = new HttpClient();
         private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
         private string url {get; set;} = "";
-        
+        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Asentamientos";  
+
+        public ValoresDeAsentamientosVData(IHttpClientFactory clientFactory)
+        {
+            _clientFactory = clientFactory;
+        }      
         public async Task<List<ValoresDeAsentamientosV>> GetAsentamientosViews(FiltroGTDTO filtro,DateOnly fecha){
             List<ValoresDeAsentamientosV> data;
             string fechaString = fecha.ToString("yyyy-MM-dd");
-            url = $"http://localhost:5021/api/Asentamientos/GetAsentamientosViews?grupo={filtro.grupo}&turno={filtro.turno}&Fecha={fechaString}";
-            cliente = new HttpClient();
+            url = $"{BaseUrl}/GetAsentamientosViews?grupo={filtro.grupo}&turno={filtro.turno}&Fecha={fechaString}";
+            cliente = _clientFactory.CreateClient();
             data = await cliente.GetFromJsonAsync<List<ValoresDeAsentamientosV>>(url) ?? new List<ValoresDeAsentamientosV>();
             return data;
         }
