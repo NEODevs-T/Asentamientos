@@ -2,7 +2,6 @@
 @inject NavigationManager NavigationManager
 @inject IRangoData RangoData
 @inject IMaestraData MaestaData
-@inject IAsentamientoData AsentamientoData
 
 <PageTitle>Impresion de Asentamientos</PageTitle>
 <h1>Impresion</h1>
@@ -53,6 +52,8 @@
     <br>
 
     <RadzenButton Variant="Variant.Outlined" Click=Impresion  Text="Impresión" ButtonStyle="ButtonStyle.Warning" />
+}else if(isCargando){
+    <Load/>
 }
 
 @code {
@@ -60,6 +61,7 @@
     public List<Rango> listaRango {get; set;} = new List<Rango>();
     public bool band  {get; set;} =  false;
 
+    public bool isCargando  {get; set;} =  false;
     public bool isAsentamientosHoy {get; set;} =  false;
     public int idProducto {get; set;} = 0;
     public int idSeccion {get; set;} = 0;
@@ -70,6 +72,7 @@
 
     private async Task Consultar()
     {
+        isCargando = true;
         band = false;
         filtros = new FiltrosRangoControlDTO();
         filtros.master = await MaestaData.GetMaestraPorLinea(idLinea);
@@ -77,8 +80,8 @@
         filtros.seccion = idSeccion;
         filtros.tipo = idClasiVar;
         listaRango = await RangoData.GetRangoDeControl(filtros);
-        //isAsentamientosHoy = await AsentamientoData.GetIsAsentamientoHoy();
         band = true;
+        isCargando = false;
     }
 
     private void Impresion(){

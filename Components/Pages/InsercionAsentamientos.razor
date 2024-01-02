@@ -1,6 +1,7 @@
 @inject IRangoData RangoData
 @inject IMaestraData MaestaData
 @inject NavigationManager NavigationManager
+@inject IAsentamientoData AsentamientoData
 @page "/Insercion"
 
 <PageTitle>Insercion de Asentamientos</PageTitle>
@@ -45,6 +46,8 @@
                     <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
                 </Columns>
     </RadzenDataGrid>
+}else if(isCargando){
+    <Load/>
 }
 
 
@@ -58,21 +61,34 @@
     public int min {get; set;} = 0;
     public int max {get; set;} = 1000;
     public double intValue {get; set;} = 0;
-    public bool band  {get; set;} =  false;
+    public bool band  {get; set;} = false;
+    public bool isCargando  {get; set;} = false;
+    public bool isAsentamientoHoy {get; set;} =  false;
     public string grupo {get; set;} = "";
     public string turno {get; set;} = "";
     public List<Rango> listaRango {get; set;} = new List<Rango>();
     public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
+    public FiltroGTDTO filtroGT = new FiltroGTDTO();
 
     private async Task Consultar()
     {
+        isCargando = true;
         band = false;
         filtros = new FiltrosRangoControlDTO();
+        filtroGT = new FiltroGTDTO();
         filtros.master = await MaestaData.GetMaestraPorLinea(idLinea);
         filtros.producto = idProducto;
         filtros.seccion = idSeccion;
         filtros.tipo = idClasiVar;
-        listaRango = await RangoData.GetRangoDeControl(filtros);
+        filtroGT.turno = turno;
+        filtroGT.grupo = grupo;
+
+        isAsentamientoHoy = await AsentamientoData.GetIsAsentamientoHoy(filtros,filtroGT);
+
+        if(!isAsentamientoHoy){
+            listaRango = await RangoData.GetRangoDeControl(filtros);
+        }
         band = true;
+        isCargando = false;
     }
 }
