@@ -1,9 +1,11 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 @inject NotificationService NotificationService
-@inject IMaestra MaestraService
+@inject IMaestraData MaestraService
+@inject IRolLogic RolLogicService
+
 <CascadingAuthenticationState>
     <RadzenRow class="rz-text-align-Left">
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="SuperAdmin, SuperUser">
 
             <RadzenColumn>
                 @if (pais == null)
@@ -16,7 +18,7 @@
                     <div class="rz-p-sm-2 rz-text-align-left">
                         <RadzenLabel Text="País" />
                         <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                        TValue="int" Data=pais TextProperty="Pnombre" ValueProperty="IdPais" AllowClear="true" @bind-Value=valuepais Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(async args=> await SetEmpresa())" >
+                                        TValue="int" Data=pais TextProperty="Pnombre" ValueProperty="IdPais" AllowClear="true" @bind-Value=valuepais Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(async args=> await SetEmpresa())">
                         </RadzenDropDown>
                     </div>
 
@@ -25,7 +27,7 @@
 
         </AuthorizeView>
 
-        <AuthorizeView Roles="Admin">
+        <AuthorizeView Roles="Admin,SuperAdmin, SuperUser">
 
             <RadzenColumn>
                 @if (valuepais > 0 && empresas is not null)
@@ -112,21 +114,29 @@
             }
         </RadzenColumn>
         <RadzenColumn>
-            <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Set />
-
+            <div class="rz-p-sm-2 rz-text-align-left">
+                <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Set />
+            </div>
         </RadzenColumn>
     </RadzenRow>
+
 </CascadingAuthenticationState>
 
 @code {
     [CascadingParameter]
-    private List<Claim> claims { get; set; }
+    private List<Claim>? claims { get; set; }
 
-    public List<Pai> pais { get; set; }
-    public List<EmpresasV> empresas { get; set; }
-    public List<CentrosV> centros { get; set; }
-    public List<DivisionesV> divisiones { get; set; }
-    public List<LineaV> lineas { get; set; }
+    public List<Pai>? pais { get; set; }
+    public List<EmpresasV>? empresas { get; set; }
+    public List<CentrosV>? centros { get; set; }
+    public List<DivisionesV>? divisiones { get; set; }
+    public List<LineaV>? lineas { get; set; }
+
+    public List<string> rolesSuper = new List<string> { "SuperAdmin", "SuperUser" };
+    public List<string> rolesPais = new List<string> { "UserPais", "Admin" };
+    public List<string> rolesEmpresa = new List<string> { "UserEmpresa" };
+    public List<string> rolesCentro = new List<string> { "UserCentro" };
+    public List<string> rolesDivision = new List<string> { "UserDivision" };
 
     [Parameter]
     public EventCallback<int> OnChangepais { get; set; }//funcion para  retornar en el componente Padre
@@ -153,20 +163,29 @@
     [Parameter]
     public int valuelinea { get; set; }
 
+    public string? roleClaim { get; set; } //guardar el rol del usuario
+    public List<string> roles = new List<string>();//lista con rol a comparar
+    Dictionary<string, bool> permisos = new Dictionary<string, bool>();
+
     private async Task CreateData()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         claims = Enumerable.ToList(user.Claims);
+        //Obtner Rol
+        roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+
 
     }
 
+
     protected override async Task OnInitializedAsync()
     {
-
         await CreateData();
+        permisos = RolLogicService.ListasRol(roleClaim);
 
-        if (claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value == "Admin")
+      
+        if (permisos["Super"])
         {
 
             pais = await MaestraService.GetPaises();
@@ -174,73 +193,137 @@
         else
         {
             valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdPais")).Value);
-
-        }  
+        }
         await SetEmpresa();
     }
+   
+  
+
+   
 
     private async Task SetEmpresa()
     {
-        if ( valuepais>0)
+      
+        if (permisos["Pais"])
         {
-            empresas = await MaestraService.GetEmpresas(valuepais);
-            valuecentros = 0;
+
+
+            if (valuepais > 0)
+            {
+                empresas = await MaestraService.GetEmpresas(valuepais);
+                valueempresas = 0;
+                valuecentros = 0;
+                valuedivision = 0;
+                valuelinea = 0;
+
+                if (divisiones is not null)
+                {
+                    divisiones.Clear();
+                }
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
+
+            }
+            else
+            {
+                valueempresas = 0;
+                valuecentros = 0;
+                await SetCentros();
+            }
         }
         else
         {
-            valueempresas = 0;
+            valueempresas = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdEmpresa")).Value);
             await SetCentros();
         }
 
 
     }
     private async Task SetCentros()
-    {
-        if (valueempresas > 0)
+    {    
+        if (permisos["Empresa"])
         {
 
-            centros = await MaestraService.GetCentros(valueempresas);
-            valuedivision = 0;
-            valuelinea = 0;
+
+            if (valueempresas > 0)
+            {
+
+                centros = await MaestraService.GetCentros(valueempresas);
+                valuecentros = 0;
+                valuedivision = 0;
+                valuelinea = 0;
+
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
+
+            }
+            else
+            {
+                valuecentros = 0;
+                await SetDivisiones();
+            }
         }
         else
         {
-            valuecentros = 0;
+            valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdCentro")).Value);
             await SetDivisiones();
         }
-
-
 
     }
     private async Task SetDivisiones()
     {
+        if (permisos["Centro"])
+        {
+            if (valuecentros > 0)
+            {
+                divisiones = await MaestraService.GetDivisiones(valuecentros);
+                valuedivision = 0;
+                valuelinea = 0;
+                if (lineas is not null)
+                {
+                    lineas.Clear();
+                }
 
-        if (valuecentros > 0)
-        {          
-            divisiones = await MaestraService.GetDivisiones(valuecentros); 
-            valuelinea = 0;
+
+            }
+            else
+            {
+                valuedivision = 0;
+                await SetLineas();
+            }
         }
+
         else
         {
-            valuedivision = 0;
+            valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdDivision")).Value);
             await SetLineas();
         }
 
-
     }
+
     private async Task SetLineas()
     {
 
-
-        if (valuedivision > 0)
+        if (permisos["Division"])
         {
-            lineas = await MaestraService.GetLineas(valuedivision);
+            if (valuedivision > 0)
+            {
+                lineas = await MaestraService.GetLineas(valuedivision);
+            }
+            else
+            {
+                valuelinea = 0;
+            }
         }
         else
         {
-            valuelinea = 0;
+            valuelinea = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdLinea")).Value);
         }
-       
+
 
     }
     void searchTextChanged(string text)
@@ -259,4 +342,7 @@
         await OnChangelineas.InvokeAsync(valuelinea);
 
     }
+
 }
+
+
