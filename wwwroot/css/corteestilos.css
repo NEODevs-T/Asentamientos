@@ -1,0 +1,20 @@
+.variableMax {
+    min-height: 72px;
+    border-radius: 4px;
+    box-shadow: 3px 0 4px -2px #888;
+    background-color: var(--rz-danger-light);
+}
+
+.variableMin {
+    border-radius: 4px;
+    box-shadow: 3px 0 4px -2px #888;
+    min-height: 72px;
+    background-color: var(--rz-warning-light);
+}
+
+.unidad-badge {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 8px;
+}

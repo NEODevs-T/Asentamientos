@@ -52,15 +52,30 @@
         </AuthorizeView>
 
         <RadzenColumn>
-            @if (valueempresas > 0 && centros is not null)
+
+            @if (valueempresas > 0 && (centros is not null || !string.IsNullOrEmpty(nombrecentro)))
             {
                 <div class="rz-p-sm-2 rz-text-align-left">
                     <RadzenLabel Text="Centros" />
-                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                    TValue="int" Data=centros TextProperty="Centro" ValueProperty="IdCentro" AllowClear="true" @bind-Value=valuecentros Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetDivisiones())">
-                    </RadzenDropDown>
+                    @if (!string.IsNullOrEmpty(nombrecentro))
+                    {
+                        <RadzenTextBox @bind-Value="nombrecentro" ReadOnly="true" Style="width: 100%; max-width: 350px;min-width: 90px;" />
+                    }
+                    else
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap" Style=" width: 100%; max-width: 350px;min-width: 90px; ">
+
+                           
+                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                            TValue="int" Data=centros TextProperty="Centro" ValueProperty="IdCentro" AllowClear="true" @bind-Value=valuecentros Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetDivisiones())">
+                            </RadzenDropDown>
+
+                        </RadzenStack>
+
+                    }
                 </div>
-            }
+
+            } 
             else if (valueempresas > 0 && centros is null)
             {
 
@@ -73,14 +88,36 @@
         </RadzenColumn>
 
         <RadzenColumn>
-            @if (valuecentros > 0 && divisiones is not null)
+            @if (valuecentros > 0 && (divisiones is not null || !string.IsNullOrEmpty(nombredivision)))
             {
                 <div class="rz-p-sm-2 rz-text-align-left">
-                    <RadzenLabel Text="División" />
-                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                    TValue="int" Data=divisiones TextProperty="NDivision" ValueProperty="IdDivision" AllowClear="true" @bind-Value=valuedivision Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetLineas())">
-                    </RadzenDropDown>
+                     <RadzenLabel Text="División" />
+                    @if (!string.IsNullOrEmpty(nombredivision))
+                    {
+                        <RadzenTextBox @bind-Value="nombredivision" ReadOnly="true" Style="width: 100%; max-width: 350px;min-width: 90px;" />
+                    }
+                    else
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap" Style=" width: 100%; max-width: 350px;min-width: 90px; ">
+
+                           
+                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                            TValue="int" Data=divisiones TextProperty="NDivision" ValueProperty="IdDivision" AllowClear="true" @bind-Value=valuedivision Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => SetLineas())">
+                            </RadzenDropDown>
+
+                        </RadzenStack>
+
+                    }
                 </div>
+
+            }
+            else if (valuecentros > 0 && !string.IsNullOrEmpty(nombredivision))
+            {
+                <RadzenFormField Variant="Variant.Text" Style="flex: 1;">
+                    <RadzenTextBox @bind-Value="nombredivision" Disabled="true" />
+                </RadzenFormField>
+
+
             }
             else if (valuecentros > 0 && divisiones is null)
             {
@@ -94,14 +131,32 @@
         </RadzenColumn>
 
         <RadzenColumn>
-            @if (valuedivision > 0 && lineas is not null)
+            @if (valuedivision > 0 && (lineas is not null || !string.IsNullOrEmpty(nombrelinea)))
             {
                 <div class="rz-p-sm-2 rz-text-align-left">
                     <RadzenLabel Text="Línea" />
-                    <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                    TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))">
-                    </RadzenDropDown>
+                    @if (!string.IsNullOrEmpty(nombrelinea))
+                    {
+                        <RadzenTextBox @bind-Value="nombrelinea" ReadOnly="true" Style="width: 100%; max-width: 350px;min-width: 90px;" />
+                    }
+                    else
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap" Style=" width: 100%; max-width: 350px;min-width: 90px; ">
+
+                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                                            TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))">
+                            </RadzenDropDown>
+
+                            @if (roleClaim == "SuperAdmin")
+                            {
+                                <RadzenButton Icon="remove" ButtonStyle="ButtonStyle.Warning" Shade="Shade.Dark" Variant="Variant.Text" Size="ButtonSize.Small" class="rz-border-radius-4 rz-shadow-4 mb-2" />
+                            }
+
+                        </RadzenStack>
+
+                    }
                 </div>
+
             }
             else if (valuedivision > 0 && lineas is null)
             {
@@ -115,7 +170,7 @@
         </RadzenColumn>
         <RadzenColumn>
             <div class="rz-p-sm-2 rz-text-align-left">
-                <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Set />
+                <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Filled" Disabled="false" Text="Filtrar" ButtonStyle="ButtonStyle.Success" Click=Set />
             </div>
         </RadzenColumn>
     </RadzenRow>
@@ -132,11 +187,6 @@
     public List<DivisionesV>? divisiones { get; set; }
     public List<LineaV>? lineas { get; set; }
 
-    public List<string> rolesSuper = new List<string> { "SuperAdmin", "SuperUser" };
-    public List<string> rolesPais = new List<string> { "UserPais", "Admin" };
-    public List<string> rolesEmpresa = new List<string> { "UserEmpresa" };
-    public List<string> rolesCentro = new List<string> { "UserCentro" };
-    public List<string> rolesDivision = new List<string> { "UserDivision" };
 
     [Parameter]
     public EventCallback<int> OnChangepais { get; set; }//funcion para  retornar en el componente Padre
@@ -162,6 +212,12 @@
     public EventCallback<int> OnChangelineas { get; set; }
     [Parameter]
     public int valuelinea { get; set; }
+    [Parameter]
+
+
+    public string? nombrecentro { get; set; } = null;
+    public string? nombredivision { get; set; } = null;
+    public string? nombrelinea { get; set; } = null;
 
     public string? roleClaim { get; set; } //guardar el rol del usuario
     public List<string> roles = new List<string>();//lista con rol a comparar
@@ -174,8 +230,7 @@
         claims = Enumerable.ToList(user.Claims);
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
-
-
+    
     }
 
 
@@ -184,7 +239,7 @@
         await CreateData();
         permisos = RolLogicService.ListasRol(roleClaim);
 
-      
+
         if (permisos["Super"])
         {
 
@@ -196,14 +251,14 @@
         }
         await SetEmpresa();
     }
-   
-  
 
-   
+
+
+
 
     private async Task SetEmpresa()
     {
-      
+
         if (permisos["Pais"])
         {
 
@@ -242,7 +297,7 @@
 
     }
     private async Task SetCentros()
-    {    
+    {
         if (permisos["Empresa"])
         {
 
@@ -270,6 +325,7 @@
         else
         {
             valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdCentro")).Value);
+            nombrecentro = claims.FirstOrDefault(c => c.Type.Contains("Centro")).Value;
             await SetDivisiones();
         }
 
@@ -300,6 +356,7 @@
         else
         {
             valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdDivision")).Value);
+            nombredivision = claims.FirstOrDefault(c => c.Type.Contains("Division")).Value;
             await SetLineas();
         }
 
@@ -322,6 +379,7 @@
         else
         {
             valuelinea = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdLinea")).Value);
+            nombrelinea = claims.FirstOrDefault(c => c.Type.Equals("Linea")).Value ;
         }
 
 
