@@ -1,0 +1,80 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="this" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+    <RadzenRow Gap="1rem">
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenStack>
+                <RadzenFormField Text="Categoría" >
+                    <RadzenDropDown TValue="int" Data=@categorias TextProperty="Cnombre" ValueProperty="IdCategori" @bind-Value=@idcategoria />
+                </RadzenFormField>  
+                
+                <RadzenFormField Text="Acción Correctiva">                 
+                    <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="accion" />                 
+                </RadzenFormField>               
+            </RadzenStack>
+        </RadzenColumn>
+        <RadzenColumn>
+
+            <RadzenText>¿Se relizó la acción correctiva?</RadzenText>
+            <RadzenSwitch @bind-Value=@value Change="Cambio" />@sino      
+            
+        </RadzenColumn>           
+    </RadzenRow>
+    <RadzenRow class="rz-pt-6 rz-pb-4">
+        <RadzenButton Size="ButtonSize.Medium" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success" Text="Registrar" />
+        <RadzenButton Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Danger" Text="Cerrar" Click="@(_ => Service.CloseSide())" />
+    </RadzenRow>  
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+</EditForm>
+@code {
+    [Inject] DialogService? Service { get; set; }
+    [Parameter]
+    public List<CategoriaDTO>? categorias { get; set; }
+    private bool IsValid;
+    private bool value =false;
+    private string sino="No";
+
+    private FueraRango? fueraRango;
+    //TODO:Colocar validaciones
+    [Required(ErrorMessage = "El campo categoría es requerido")]
+    int idcategoria;
+
+    [Required(ErrorMessage = "El campo Acción Correctiva es requerido")]
+    [StringLength(5, ErrorMessage = "El campo {0} no debe tener mas de {1} carácteres")]
+    public string accion { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        idcategoria = categorias.First().IdCategori;
+
+    }
+    public async Task Add()
+    {
+        if (IsValid)
+        {
+            fueraRango = new FueraRango();
+            await fueraRango.AddCorteDiscrepancia(idcategoria, accion);
+        }
+    }
+    private void OnValidSubmit()
+    {
+        IsValid = true;
+        Add();
+    }
+    private void OnInvalidSubmit()
+    {
+        IsValid = false;
+    }
+    private void Cambio()
+    {
+        if (value == true)
+        {
+            sino = "Sí";
+        }
+        else
+        {
+            sino = "No";
+        }
+    }
+}

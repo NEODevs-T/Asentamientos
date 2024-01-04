@@ -1,7 +1,10 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 @inject NotificationService NotificationService
-@inject ICorteDiscrepancia CorteDiscrepanciaDataService
+@inject DialogService DialogService
 @inject INotifiRadzenServices NotifiRadzenServices
+@inject ICorteDiscrepancia CorteDiscrepanciaDataService
+@using Asentamientos.Components
+
 
 @page "/fuerarango"
 
@@ -29,7 +32,7 @@
                 <RadzenRow Gap="0">
                     <RadzenColumn Size="12" SizeLG="3" Class="@GetClass(lista)">
                         <RadzenText TextStyle="TextStyle.DisplayH6" TagName="TagName.H5" class="rz-color-base-800">@(lista.IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre)</RadzenText>
-                        <RadzenText TextStyle="TextStyle.DisplayH5" TagName="TagName.H5" class="rz-color-base-900">@(lista.IdRangoNavigation.IdVariableNavigation.Vnombre)</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-base-900">@(lista.IdRangoNavigation.IdVariableNavigation.Vnombre)</RadzenText>
                     </RadzenColumn>
                     <RadzenColumn Size="12" SizeLG="6" Class="rz-p-4">
                         <RadzenRow Gap="0">
@@ -46,17 +49,34 @@
                                     <RadzenText TextStyle="TextStyle.H5">@(lista.IdRangoNavigation.Robj)</RadzenText>
                                 </RadzenColumn>
                                 <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-end">
-                                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter"   class="unidad-badge" Text=@($"{lista.IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre}") />
+                                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" class="unidad-badge" Text=@($"{lista.IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre}") />
                                 </RadzenColumn>
                             </RadzenRow>
                         </RadzenColumn>
+
                         <RadzenColumn Size="12" SizeLG="2" Class="rz-p-4">
-                            <RadzenButton  ButtonStyle="ButtonStyle.Success" Style="width: 100%">
+                        @if (lista.CorteDis.Count>0)
+                         {
+                            <RadzenColumn Size="12" SizeLG="6" Class="rz-p-4">
+                                <RadzenRow Gap="0">
+                                    <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
+                                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="rz-mb-0 rz-color-base-800">Categoria</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.H5">@(lista.CorteDis.First().IdCategoriNavigation.Cnombre)</RadzenText>
+                                    </RadzenColumn>
+                                    <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
+                                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="rz-mb-0 rz-color-base-800">Acción</RadzenText>
+                                        <RadzenText TextStyle="TextStyle.H5">@(lista.CorteDis.First().CdaccCorr)</RadzenText>
+                                    </RadzenColumn>
+                                    </RadzenRow>
+                                </RadzenColumn>
+                         }
+                        else
+                        {                          
+                            <RadzenButton ButtonStyle="ButtonStyle.Success" Style="width: 100%" Click=@( () => ShowDialog(lista.IdAsenta,lista.IdRangoNavigation.IdVariableNavigation.Vnombre) )>
                                 <RadzenIcon Icon="add_circle_outline" />
                                 Crear Corte
                             </RadzenButton>
-                            
-                            
+                        }
                         </RadzenColumn>
                     </RadzenRow>
                 </RadzenCard>
@@ -64,6 +84,11 @@
         </RadzenDataList>
 
 }
+
+
+
+
+
 @code {
     [CascadingParameter]
     private List<Claim>? claims { get; set; }
@@ -85,7 +110,7 @@
 
     //TODO: Crear registro de corte y filtros de conulta por fecha
     //string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string fecha1 = "2023-12-27";
+    string fecha1 = "2024-01-03";
 
     public async Task ConsultarAsentamientos()
     {
@@ -98,33 +123,46 @@
         var user = authState.User;
         claims = Enumerable.ToList(user.Claims);
 
-    }  
-
+    } 
     protected override async Task OnInitializedAsync()
     {
 
         await CreateData();
         await GetCategorias();
     }
+    async Task ShowDialog(int IdAse, string variable)
+    {
+        var result = await DialogService.OpenSideAsync<DialogSideContent>(
+            $"Registrar Corte: {variable}",
+        parameters: new Dictionary<string, object?>() { { "categorias", categorias } },
+        options: 
+            new SideDialogOptions { Position = DialogPosition.Right, ShowMask = true, CloseDialogOnOverlayClick = true }
+        );
+    
+       
+    }
+   
     protected async Task GetCategorias()
     {
-       categorias = await CorteDiscrepanciaDataService.GetCategorias();
+        categorias = await CorteDiscrepanciaDataService.GetCategorias();
     }
 
-    protected async Task AddCiorteDiscrepancia()
+    public async Task AddCorteDiscrepancia(int idcategoria, string accion)
     {
-        var result = await CorteDiscrepanciaDataService.AddCortesDiscrepancias(cortes);
-        if (result is bool && (bool)result)
-        {
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
-        }
-        else if (result is string)
-        {
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", $"Error: {result}"));
-        }
+        // var result = await CorteDiscrepanciaDataService.AddCortesDiscrepancias(cortes);
+        // if (result is bool && (bool)result)
+        // {
+        //     NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+        // }
+        // else if (result is string)
+        // {
+        //     NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", $"Error: {result}"));
+        // }
     }
- 
-        string GetClass(Asentum lista)
+
+
+
+    string GetClass(Asentum lista)
     {
         return lista.Avalor > lista.IdRangoNavigation.Rmax ? "rz-p-4 variableMax" : "rz-p-4 variableMin";
     }
@@ -138,4 +176,9 @@
     {
         return lista.Avalor > lista.IdRangoNavigation.Rmax ? lista.IdRangoNavigation.Rmax : lista.IdRangoNavigation.Rmin;
     }
+
+
+
+
+
 }

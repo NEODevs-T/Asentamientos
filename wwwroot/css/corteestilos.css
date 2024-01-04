@@ -18,3 +18,18 @@
     line-height: 20px;
     padding: 8px;
 }
+.textarea, .textarea:active {
+    resize: none !important;
+    height: 200px !important;
+    width: 500px !important; 
+   
+}
+.rz-switch.rz-switch-checked .rz-switch-circle {
+    background: #09c718 !important;
+}
+.rz-switch .rz-switch-circle .rz-switch-circle::before{
+    background: #888 !important; 
+}
+.rz-switch-circle::before {
+    background: #edeae9 !important;
+}

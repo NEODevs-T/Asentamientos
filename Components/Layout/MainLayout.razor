@@ -7,9 +7,11 @@
 @inject NotificationService NotificationService
 @inject IProductosVData ProductosVData
 @inject INotifiRadzenServices NotifiRadzenServices
-
+<RadzenDialog />
+<RadzenNotification />
 <AuthorizeView>
- 
+
+
     <Authorized>
         <div class="page">
             <div class="sidebar">
@@ -58,8 +60,8 @@
 
     </NotAuthorized>
 </AuthorizeView>
-<RadzenNotification />
-<RadzenDialog />
+
+
 
 @code {
     [CascadingParameter]
