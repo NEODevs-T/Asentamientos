@@ -7,7 +7,8 @@ namespace Asentamientos.DTOs
 {
     public class InformeConAsentamientosDTO
     {
-        public Models.InfoAse? InformaDeAsentamientos { get; set; } = null!;
-        public List<Models.Asentum>? Asentamientos { get; set; } = null!;
+        public InfoAseDTO InformaDeAsentamientosDTO { get; set; } = null!;
+        //public List<Asentum>? Asentamientos { get; set; } = null!;
+        public List<AsentumDTO>? AsentamientosDTO { get; set; } = null!;
     }
 }

@@ -6,8 +6,8 @@ namespace Asentamientos.Interface
 {
     public interface IAsentamientoData{
         Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros, FiltroGTDTO filtroGT);
-        Task<bool> AddAsentamientosDelDia(InformeConAsentamientosDTO asentamientos);
-        Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos);
+        Task<bool> AddAsentamientosDelDia(InfoAse infoAsentamientos, List<Asentum> listaAsentamiento);
+        // Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos);
     }
 
     public interface IValoresDeAsentamientosVData{
