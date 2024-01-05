@@ -19,7 +19,7 @@
     
     <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
 
-    @if(ficha.Equals("null") || ficha == "" || ficha.Equals("Admin")){
+    @if(ficha == "" || ficha.Equals("Admin")){
         <RadzenRow class="rz-text-align-Left">
             <RadzenColumn Size="2">
                 <div class="rz-p-sm-2 rz-text-align-left">
@@ -104,7 +104,9 @@
         if(user?.Identity is not null && user.Identity.IsAuthenticated){
             claims = user.Claims;
             ficha =  claims.FirstOrDefault(c => c.Type == "Ficha")?.Value ?? "0";
-            //claims.FindFirst(c => c.Type == "ficha")?.Value ?? "0";
+            if(ficha.Contains("Ficha")){
+                ficha = "";
+            }
         }
         
     }

@@ -1,0 +1,35 @@
+.variableMax {
+    min-height: 72px;
+    border-radius: 4px;
+    box-shadow: 3px 0 4px -2px #888;
+    background-color: var(--rz-danger-light);
+}
+
+.variableMin {
+    border-radius: 4px;
+    box-shadow: 3px 0 4px -2px #888;
+    min-height: 72px;
+    background-color: var(--rz-warning-light);
+}
+
+.unidad-badge {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 8px;
+}
+.textarea, .textarea:active {
+    resize: none !important;
+    height: 200px !important;
+    width: 500px !important; 
+   
+}
+.rz-switch.rz-switch-checked .rz-switch-circle {
+    background: #09c718 !important;
+}
+.rz-switch .rz-switch-circle .rz-switch-circle::before{
+    background: #888 !important; 
+}
+.rz-switch-circle::before {
+    background: #edeae9 !important;
+}
