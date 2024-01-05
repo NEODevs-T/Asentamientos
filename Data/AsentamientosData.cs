@@ -9,9 +9,10 @@ namespace Asentamientos.Data
     {
         private readonly IHttpClientFactory _clientFactory;
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Asentamientos";
+        //private const string BaseUrl = "http://localhost:5021/api/Asentamientos";
         private HttpClient cliente { get; set; } = new HttpClient();
 
-        private HttpResponseMessage mensaje { get; set; } = new HttpResponseMessage();
+        private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();
         private string url {get; set;} = "";
 
         public AsentamientoData(IHttpClientFactory clientFactory)
@@ -26,21 +27,41 @@ namespace Asentamientos.Data
             return band;
         }
 
-        public async Task<bool> AddAsentamientosDelDia(InformeConAsentamientosDTO asentamientos){
-            bool band;
+        public async Task<bool> AddAsentamientosDelDia(InfoAse infoAsentamientos, List<Asentum> listaAsentamiento){
+            bool band = false;
+            InformeConAsentamientosDTO asentamientosData = new InformeConAsentamientosDTO();
+            asentamientosData.InformaDeAsentamientosDTO = new InfoAseDTO();
+            asentamientosData.AsentamientosDTO = new List<AsentumDTO>();
+            
+            asentamientosData.InformaDeAsentamientosDTO.Iagrupo = infoAsentamientos.Iagrupo;
+            asentamientosData.InformaDeAsentamientosDTO.Iaturno = infoAsentamientos.Iaturno;
+            asentamientosData.InformaDeAsentamientosDTO.Iaficha = infoAsentamientos.Iaficha;
+            asentamientosData.InformaDeAsentamientosDTO.Iaobser = infoAsentamientos.Iaobser;
+
+            for (int i = 0; i < listaAsentamiento.Count; i++)
+            {
+                asentamientosData.AsentamientosDTO.Add(new AsentumDTO());
+                asentamientosData.AsentamientosDTO[i].Avalor =  listaAsentamiento[i].Avalor;
+                asentamientosData.AsentamientosDTO[i].AisActivo = listaAsentamiento[i].AisActivo;
+                asentamientosData.AsentamientosDTO[i].IdRango = listaAsentamiento[i].IdRango;
+            }
+
             url = $"{BaseUrl}/AddAsentamientosDelDia";
             cliente =  _clientFactory.CreateClient();
-            mensaje = await cliente.PostAsJsonAsync(url,asentamientos);
-            band = await mensaje.Content.ReadFromJsonAsync<bool>();
+            mensaje = await cliente.PostAsJsonAsync(url,asentamientosData);
+            //var error = await mensaje.Content.ReadAsStringAsync();
+            if(mensaje.IsSuccessStatusCode){
+                band = await mensaje.Content.ReadFromJsonAsync<bool>();
+            }
             return band;
         }
 
-        public async Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos){
-            url = $"{BaseUrl}/UpdateAsentamientosDelDia?idInforme={idInforme}";
-            cliente =  _clientFactory.CreateClient();
-            mensaje = await cliente.PutAsJsonAsync(url,asentamientos);
-            return await mensaje.Content.ReadAsStringAsync();
-        }
+        // public async Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos){
+        //     url = $"{BaseUrl}/UpdateAsentamientosDelDia?idInforme={idInforme}";
+        //     cliente =  _clientFactory.CreateClient();
+        //     mensaje = await cliente.PutAsJsonAsync(url,asentamientos);
+        //     return await mensaje.Content.ReadAsStringAsync();
+        // }
     }
 
     public class ValoresDeAsentamientosVData : IValoresDeAsentamientosVData

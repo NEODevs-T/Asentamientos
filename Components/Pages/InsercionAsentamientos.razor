@@ -1,10 +1,13 @@
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 @inject IRangoData RangoData
 @inject IMaestraData MaestaData
-@inject NavigationManager NavigationManager
 @inject IAsentamientoData AsentamientoData
-@page "/Insercion"
+@inject INotifiRadzenServices  NotifiRadzenServices
+@page "/Registro"
 
-<PageTitle>Insercion de Asentamientos</PageTitle>
+<PageTitle>Registro de Asentamientos</PageTitle>
 
 <h1>Asentamientos</h1>
 
@@ -15,6 +18,17 @@
     <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
     
     <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
+
+    @if(ficha.Equals("null") || ficha == "" || ficha.Equals("Admin")){
+        <RadzenRow class="rz-text-align-Left">
+            <RadzenColumn Size="2">
+                <div class="rz-p-sm-2 rz-text-align-left">
+                    <RadzenLabel Text="Ficha" />
+                    <RadzenTextBox Style="width: 100%; max-width: 350px;min-width: 90px;" @bind-Value=ficha/>
+                </div>
+            </RadzenColumn>
+        </RadzenRow>
+    }
 }
 
 
@@ -26,33 +40,41 @@
 
 
 @if(band){
-    <RadzenDataGrid class="table" Data="@listaRango" TItem="Rango" AllowVirtualization="true" Style="height:400px"
+    <RadzenDataGrid class="table" Data="@listaAsentamientos" TItem="Asentum" AllowVirtualization="true" Style="height:400px"
                 AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                 AllowSorting="true">
 
                 <Columns>
-                    <RadzenDataGridColumn Width="3%" TItem="Rango" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                    <RadzenDataGridColumn Width="3%" TItem="Asentum" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
-                            <RadzenText class="mb-0 tipografia">@(listaRango.IndexOf(data) + 1)</RadzenText>
+                            <RadzenText class="mb-0 tipografia">@(listaAsentamientos.IndexOf(data) + 1)</RadzenText>
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdSeccionNavigation.Snombre" Title="Sección" />
-                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.Vnombre" Title="Variable" />
-                    <RadzenDataGridColumn TItem="Rango" Title="Valor" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                    <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre" Title="Sección" />
+                    <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.Vnombre" Title="Variable" />
+                    <RadzenDataGridColumn TItem="Asentum" Title="Valor" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
-                            <RadzenNumeric Step="0.5" @bind-Value="@intValue" Min="@min" Max="@max" style="width: 25%;"/>
+                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="@Convert.ToDecimal(data.IdRangoNavigation.RlimMin)" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 25%;"/>
                         </Template>
                     </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
+                    <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
                 </Columns>
     </RadzenDataGrid>
+
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap">
+        <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=CargarDatos />
+    </RadzenStack>
+    
 }else if(isCargando){
     <Load/>
 }
 
 
 
+
 @code {
+    [CascadingParameter]
+    private IEnumerable<Claim>? claims { get; set; }
     public int idLinea {get; set;} = 0;
     public int idEmpresa {get; set;} = 0;
     public int idClasiVar {get; set;} = 0;
@@ -63,19 +85,41 @@
     public double intValue {get; set;} = 0;
     public bool band  {get; set;} = false;
     public bool isCargando  {get; set;} = false;
+    public bool isOk {get; set;} = false;
     public bool isAsentamientoHoy {get; set;} =  false;
     public string grupo {get; set;} = "";
     public string turno {get; set;} = "";
+    public string ficha {get; set;} = "";
     public List<Rango> listaRango {get; set;} = new List<Rango>();
-    public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
-    public FiltroGTDTO filtroGT = new FiltroGTDTO();
+    public FiltrosRangoControlDTO  filtros {get; set;} = new FiltrosRangoControlDTO();
+    public FiltroGTDTO filtroGT {get; set;} = new FiltroGTDTO();
+    public InformeConAsentamientosDTO asentamientos {get; set;} = new InformeConAsentamientosDTO();
+    public  List<Asentum> listaAsentamientos {get; set;} = new List<Asentum>();
+    public InfoAse informeAsentamientos {get; set;} = new InfoAse();
+    protected override async Task OnInitializedAsync()
+    {
+        
+        AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();;
+        ClaimsPrincipal? user = authState?.User;
+        if(user?.Identity is not null && user.Identity.IsAuthenticated){
+            claims = user.Claims;
+            ficha =  claims.FirstOrDefault(c => c.Type == "Ficha")?.Value ?? "0";
+            //claims.FindFirst(c => c.Type == "ficha")?.Value ?? "0";
+        }
+        
+    }
 
     private async Task Consultar()
     {
         isCargando = true;
         band = false;
+
         filtros = new FiltrosRangoControlDTO();
         filtroGT = new FiltroGTDTO();
+        informeAsentamientos = new InfoAse();
+        listaAsentamientos = new List<Asentum>();
+        Asentum valor;
+
         filtros.master = await MaestaData.GetMaestraPorLinea(idLinea);
         filtros.producto = idProducto;
         filtros.seccion = idSeccion;
@@ -87,8 +131,38 @@
 
         if(!isAsentamientoHoy){
             listaRango = await RangoData.GetRangoDeControl(filtros);
+            listaAsentamientos = new List<Asentum>(listaRango.Count());
+            for(int i = 0; listaAsentamientos.Capacity > i ; i++){
+                valor = new Asentum();
+                valor.IdRangoNavigation = listaRango[i];
+                valor.IdRango = valor.IdRangoNavigation.IdRango;
+                valor.AisActivo = true;
+                valor.Avalor =  listaRango[i].RlimMin;
+                listaAsentamientos.Add(valor);
+            }
+        }else{
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","Ya se realizo la carga de asentamientos por hoy."));
         }
+
         band = true;
         isCargando = false;
+    }
+
+    private async Task CargarDatos()
+    {
+        informeAsentamientos.Iagrupo = grupo;
+        informeAsentamientos.Iaturno = turno;
+        informeAsentamientos.Iaficha = ficha;
+        informeAsentamientos.Iaobser = "Prueba";
+        isOk = await AsentamientoData.AddAsentamientosDelDia(informeAsentamientos,listaAsentamientos);
+        if(isOk){
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
+            informeAsentamientos = new InfoAse();
+            listaAsentamientos = new List<Asentum>();
+            isCargando = false;
+            band = false;
+        }else{
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("error","","Erro al insertar. Intente nuevamente"));
+        }
     }
 }

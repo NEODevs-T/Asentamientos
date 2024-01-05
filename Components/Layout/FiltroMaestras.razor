@@ -169,9 +169,11 @@
 
     private async Task CreateData()
     {
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         claims = Enumerable.ToList(user.Claims);
+        
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
 
@@ -344,5 +346,3 @@
     }
 
 }
-
-
