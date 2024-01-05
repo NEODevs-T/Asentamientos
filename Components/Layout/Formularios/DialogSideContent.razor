@@ -1,4 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
+﻿
 
 <EditForm Model="this" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
     <RadzenRow Gap="1rem">
@@ -21,22 +21,24 @@
         </RadzenColumn>           
     </RadzenRow>
     <RadzenRow class="rz-pt-6 rz-pb-4">
-        <RadzenButton Size="ButtonSize.Medium" ButtonType="ButtonType.Submit" ButtonStyle="ButtonStyle.Success" Text="Registrar" />
-        <RadzenButton Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Danger" Text="Cerrar" Click="@(_ => Service.CloseSide())" />
+        <RadzenButton Size="ButtonSize.Medium" ButtonType="ButtonType.Submit" Icon="playlist_add" ButtonStyle="ButtonStyle.Success" Text="Agregar" />
+        <RadzenButton Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Danger" Icon="close_fullscreen" Text="Cerrar" Click="@(_ => Service.CloseSide(null))" />
     </RadzenRow>  
     <DataAnnotationsValidator />
     <ValidationSummary />
 </EditForm>
 @code {
-    [Inject] DialogService? Service { get; set; }
+    [Inject] DialogService Service { get; set; }
     [Parameter]
     public List<CategoriaDTO>? categorias { get; set; }
-    private bool IsValid;
-    private bool value =false;
-    private string sino="No";
+    [Parameter]
+    public int idasentamiento { get; set; }
 
-    private FueraRango? fueraRango;
-    //TODO:Colocar validaciones
+    private bool IsValid;// aprobar validaciones
+    private bool value =false;//accion realizada
+    private string sino="No";
+    CorteDiscDTO corte = new CorteDiscDTO();
+  
     [Required(ErrorMessage = "El campo categoría es requerido")]
     int idcategoria;
 
@@ -49,12 +51,15 @@
         idcategoria = categorias.First().IdCategori;
 
     }
-    public async Task Add()
+    public void Add()
     {
         if (IsValid)
-        {
-            fueraRango = new FueraRango();
-            await fueraRango.AddCorteDiscrepancia(idcategoria, accion);
+        {                 
+            corte.IdAsenta = idasentamiento;
+            corte.IdCategori = idcategoria;
+            corte.CdaccCorr = accion;
+            corte.CdisListo = value;
+            Service.CloseSide(corte);
         }
     }
     private void OnValidSubmit()
@@ -66,6 +71,7 @@
     {
         IsValid = false;
     }
+
     private void Cambio()
     {
         if (value == true)

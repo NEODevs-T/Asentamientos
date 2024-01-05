@@ -1,6 +1,9 @@
 ﻿@inject AuthenticationStateProvider AuthStateProvider
 @inject NotificationService NotificationService
 @inject DialogService DialogService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
 @inject INotifiRadzenServices NotifiRadzenServices
 @inject ICorteDiscrepancia CorteDiscrepanciaDataService
 @using Asentamientos.Components
@@ -16,24 +19,39 @@
 
 @if (valuepais > 0)
 {
+@*     Barra de filtro y opciones *@
+    <RadzenCard Variant="Variant.Filled" Class="rz-my-4 rz-mx-auto rz-background-color-base-50">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Normal" Wrap="FlexWrap.Wrap" >
+      
+        <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
 
+        <RadzenColumn>
+            <RadzenLabel Text="Mostrar todos" Component="allowVirtualization" />
+            <RadzenCheckBox @bind-Value="@allowVirtualization" Name="allowVirtualization" />
+        </RadzenColumn>
 
-
-    <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
-    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem" Class="rz-p-2">
-        <RadzenCheckBox @bind-Value="@allowVirtualization" Name="allowVirtualization" />
-        <RadzenLabel Text="Mostrar todos" Component="allowVirtualization" />
+        <RadzenColumn>
+            <RadzenText TextStyle="TextStyle.Caption"> Regitrar cortes:</RadzenText>
+            <RadzenSwitch @bind-Value=@value />
+        </RadzenColumn>
     </RadzenStack>
+    </RadzenCard>
 
 
-    <RadzenDataList Data="@ListaFueraRango" TItem="Asentum" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" AllowVirtualization=@allowVirtualization Style="@(allowVirtualization ? "height:70%;overflow:auto;" : "")" WrapItems="@(!allowVirtualization)" AllowPaging="@(!allowVirtualization)">
+
+    <RadzenDataList Data="@ListaFueraRango" TItem="Asentum" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" PageSize="5" AllowVirtualization=@allowVirtualization Style="@(allowVirtualization ? "height:70%;overflow:auto;" : "")" WrapItems="@(!allowVirtualization)" AllowPaging="@(!allowVirtualization)">
         <Template Context="lista">
-            <RadzenCard Style="width: 100%; padding: 0;" class="rz-shadow-4">
+            <RadzenCard Style="width: 100%; padding: 0;" class="rz-shadow-2 ">
                 <RadzenRow Gap="0">
-                    <RadzenColumn Size="12" SizeLG="3" Class="@GetClass(lista)">
-                        <RadzenText TextStyle="TextStyle.DisplayH6" TagName="TagName.H5" class="rz-color-base-800">@(lista.IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre)</RadzenText>
-                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-base-900">@(lista.IdRangoNavigation.IdVariableNavigation.Vnombre)</RadzenText>
+                    <RadzenColumn Size="12" SizeLG="4" Class="@GetClass(lista)">
+                        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.Auto" class="rz-color-base-800">@(lista.IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre)</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.IdRangoNavigation.IdVariableNavigation.Vnombre)</RadzenText>
+
                     </RadzenColumn>
+                  @*   <RadzenColumn Size="12" SizeLG="4" Class="@GetClass(lista)">
+                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H5" class="rz-color-base-800">@(lista.IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre)</RadzenText>
+                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.Auto" class="rz-color-base-900">@(lista.IdRangoNavigation.IdVariableNavigation.Vnombre)</RadzenText>
+                    </RadzenColumn> *@
                     <RadzenColumn Size="12" SizeLG="6" Class="rz-p-4">
                         <RadzenRow Gap="0">
                             <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
@@ -55,8 +73,8 @@
                         </RadzenColumn>
 
                         <RadzenColumn Size="12" SizeLG="2" Class="rz-p-4">
-                        @if (lista.CorteDis.Count>0)
-                         {
+                            @if (lista.CorteDis.Count > 0)
+                        {
                             <RadzenColumn Size="12" SizeLG="6" Class="rz-p-4">
                                 <RadzenRow Gap="0">
                                     <RadzenColumn Size="12" SizeMD="6" SizeLG="3">
@@ -67,24 +85,27 @@
                                         <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H6" Class="rz-mb-0 rz-color-base-800">Acción</RadzenText>
                                         <RadzenText TextStyle="TextStyle.H5">@(lista.CorteDis.First().CdaccCorr)</RadzenText>
                                     </RadzenColumn>
-                                    </RadzenRow>
-                                </RadzenColumn>
-                         }
+                                </RadzenRow>
+                            </RadzenColumn>
+                        }
                         else
-                        {                          
+                        {
                             <RadzenButton ButtonStyle="ButtonStyle.Success" Style="width: 100%" Click=@( () => ShowDialog(lista.IdAsenta,lista.IdRangoNavigation.IdVariableNavigation.Vnombre) )>
                                 <RadzenIcon Icon="add_circle_outline" />
                                 Crear Corte
                             </RadzenButton>
                         }
-                        </RadzenColumn>
-                    </RadzenRow>
-                </RadzenCard>
-            </Template>
-        </RadzenDataList>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+        </Template>
+    </RadzenDataList>
 
 }
-
+@if (cortes is not null)
+{
+    cortes.Count();
+}
 
 
 
@@ -94,11 +115,12 @@
     private List<Claim>? claims { get; set; }
 
     private List<Asentum>? ListaFueraRango { get; set; }
-    private List<CorteDiscDTO>? cortes { get; set; }
+    public List<CorteDiscDTO>? cortes { get; set; } = new List<CorteDiscDTO>();
     private List<CategoriaDTO>? categorias { get; set; }
-    private IQueryable<Asentum>? DataFueraRango { get; set; }
+    //private IQueryable<Asentum>? DataFueraRango { get; set; }
 
     bool allowVirtualization = false; //renderizado y paginacion de los datos mostrados del datalist
+    bool value = false; //Carga individula o cargar con  listas el corte
 
 
     //parametros retornado en el componente Hijo
@@ -123,41 +145,56 @@
         var user = authState.User;
         claims = Enumerable.ToList(user.Claims);
 
-    } 
+    }
+
     protected override async Task OnInitializedAsync()
     {
 
         await CreateData();
         await GetCategorias();
+
     }
+
+
     async Task ShowDialog(int IdAse, string variable)
     {
-        var result = await DialogService.OpenSideAsync<DialogSideContent>(
+
+        CorteDiscDTO corte = await DialogService.OpenSideAsync<DialogSideContent>(
             $"Registrar Corte: {variable}",
-        parameters: new Dictionary<string, object?>() { { "categorias", categorias } },
-        options: 
+        parameters: new Dictionary<string, object?>() { { "categorias", categorias }, { "idasentamiento", IdAse } },
+        options:
             new SideDialogOptions { Position = DialogPosition.Right, ShowMask = true, CloseDialogOnOverlayClick = true }
         );
-    
-       
+
+        if (corte is not null)
+        {
+            cortes.Add(corte);
+        }
+
     }
-   
+
     protected async Task GetCategorias()
     {
         categorias = await CorteDiscrepanciaDataService.GetCategorias();
     }
 
-    public async Task AddCorteDiscrepancia(int idcategoria, string accion)
+    public async Task AddListaCorteDiscrepancia(CorteDiscDTO corte)
     {
-        // var result = await CorteDiscrepanciaDataService.AddCortesDiscrepancias(cortes);
-        // if (result is bool && (bool)result)
-        // {
-        //     NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
-        // }
-        // else if (result is string)
-        // {
-        //     NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", $"Error: {result}"));
-        // }
+        //ListaFueraRango.AddRange(cortes);
+
+
+    }
+    public async Task SaveCorteDiscrepancia()
+    {
+        var result = await CorteDiscrepanciaDataService.AddCortesDiscrepancias(cortes);
+        if (result is bool && (bool)result)
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+        }
+        else if (result is string)
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", $"Error: {result}"));
+        }
     }
 
 
@@ -180,5 +217,5 @@
 
 
 
-
 }
+
