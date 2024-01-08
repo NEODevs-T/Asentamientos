@@ -19,14 +19,15 @@ a, .btn-link {
     height: 40%;
 }
 
-.fondo {
-    display: flex;
-    height: 100vh;
-    background-image: url("../img/fondologin.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-}
+ 
+    .fondo {
+        display: flex;
+        height: 100vh;
+        background-image: url("../img/fondologin.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
 
 /*check radzen color*/
 .rz-chkbox-box.rz-state-active {

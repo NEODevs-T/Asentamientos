@@ -179,7 +179,7 @@
 
 @code {
     [CascadingParameter]
-    private List<Claim>? claims { get; set; }
+    private IEnumerable<Claim>? claims { get; set; }
 
     public List<Pai>? pais { get; set; }
     public List<EmpresasV>? empresas { get; set; }
@@ -228,10 +228,11 @@
 
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        claims = Enumerable.ToList(user.Claims);
+        claims =user.Claims;
         
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+        
     
     }
 
@@ -249,7 +250,7 @@
         }
         else
         {
-            valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdPais")).Value);
+            valuepais = int.Parse(claims.FirstOrDefault(c => c.Type.Equals("IdPais"))?.Value);
         }
         await SetEmpresa();
     }
@@ -292,7 +293,7 @@
         }
         else
         {
-            valueempresas = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdEmpresa")).Value);
+            valueempresas = int.Parse(claims.FirstOrDefault(c => c.Type.Equals("IdEmpresa")).Value);
             await SetCentros();
         }
 
@@ -326,8 +327,8 @@
         }
         else
         {
-            valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdCentro")).Value);
-            nombrecentro = claims.FirstOrDefault(c => c.Type.Contains("Centro")).Value;
+            valuecentros = int.Parse(claims.FirstOrDefault(c => c.Type.Equals("IdCentro")).Value);
+            nombrecentro = claims.FirstOrDefault(c => c.Type.Equals("Centro")).Value;
             await SetDivisiones();
         }
 
@@ -357,8 +358,8 @@
 
         else
         {
-            valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdDivision")).Value);
-            nombredivision = claims.FirstOrDefault(c => c.Type.Contains("Division")).Value;
+            valuedivision = int.Parse(claims.FirstOrDefault(c => c.Type.Equals("IdDivision")).Value);
+            nombredivision = claims.FirstOrDefault(c => c.Type.Equals("Division")).Value;
             await SetLineas();
         }
 
@@ -380,8 +381,8 @@
         }
         else
         {
-            valuelinea = int.Parse(claims.FirstOrDefault(c => c.Type.Contains("IdLinea")).Value);
-            nombrelinea = claims.FirstOrDefault(c => c.Type.Equals("Linea")).Value ;
+            valuelinea = int.Parse(claims.FirstOrDefault(c => c.Type.Equals("IdLinea")).Value);
+            nombrelinea = claims.FirstOrDefault(c => c.Type.Equals("Linea")).Value;
         }
 
 

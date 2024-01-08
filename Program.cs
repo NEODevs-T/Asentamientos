@@ -16,6 +16,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 builder.Services.AddScoped<DialogService>();//para calendario de radzen
 builder.Services.AddScoped<NotificationService>();//para notificaciones de radzen
 builder.Services.AddScoped<ContextMenuService>();//para notificaciones de radzen
+builder.Services.AddScoped<TooltipService>();
 
 //* Autenticador
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();

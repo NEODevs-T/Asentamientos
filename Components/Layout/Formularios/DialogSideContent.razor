@@ -1,71 +1,98 @@
 ﻿
 
-<EditForm Model="this" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+<EditForm Model="corte" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
     <RadzenRow Gap="1rem">
         <RadzenColumn Size="12" SizeSM="12">
             <RadzenStack>
                 <RadzenFormField Text="Categoría" >
-                    <RadzenDropDown TValue="int" Data=@categorias TextProperty="Cnombre" ValueProperty="IdCategori" @bind-Value=@idcategoria />
-                </RadzenFormField>  
-                
-                <RadzenFormField Text="Acción Correctiva">                 
-                    <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="accion" />                 
-                </RadzenFormField>               
+                    <RadzenDropDown TValue="int" Data=@categorias.Where(c=>c.Cnombre!="Sin Categorizar") TextProperty="Cnombre" ValueProperty="IdCategori" @bind-Value=corte.IdCategori />
+                </RadzenFormField>
+
+                <RadzenFormField Text="Acción Correctiva">
+                    <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="corte.CdaccCorr" />
+                </RadzenFormField>
             </RadzenStack>
         </RadzenColumn>
-        <RadzenColumn>
-
+        <RadzenColumn Size="12" SizeSM="12">
             <RadzenText>¿Se relizó la acción correctiva?</RadzenText>
-            <RadzenSwitch @bind-Value=@value Change="Cambio" />@sino      
-            
-        </RadzenColumn>           
+            <RadzenSwitch @bind-Value=corte.CdisListo Change="Cambio" />@sino
+        </RadzenColumn>
+        @if (corte.CdisListo)
+        {
+            <RadzenColumn Size="12" SizeSM="12">
+                <RadzenFormField Text="Nuevo Valor">
+                    <RadzenNumeric Step="0.1"  @bind-Value="corte.Avalor"  Min="@Convert.ToDecimal(lmin)" Max="@Convert.ToDecimal(lmax)" />
+                </RadzenFormField>
+            </RadzenColumn>
+            <RadzenText TextStyle="TextStyle.Caption"> El valor debe estar entre @lmin y @lmax</RadzenText>
+        }
     </RadzenRow>
+
     <RadzenRow class="rz-pt-6 rz-pb-4">
         <RadzenButton Size="ButtonSize.Medium" ButtonType="ButtonType.Submit" Icon="playlist_add" ButtonStyle="ButtonStyle.Success" Text="Agregar" />
         <RadzenButton Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Danger" Icon="close_fullscreen" Text="Cerrar" Click="@(_ => Service.CloseSide(null))" />
-    </RadzenRow>  
+    </RadzenRow>
+
     <DataAnnotationsValidator />
     <ValidationSummary />
 </EditForm>
+<style>
+    /*Ajustar el tamaño del RadzenFormField*/
+      .rz-textbox:focus ~ .rz-form-field-label,
+    .rz-textarea:focus ~ .rz-form-field-label,
+  .rz-spinner:focus-within ~ .rz-form-field-label, 
+    .rz-autocomplete:focus-within ~ .rz-form-field-label,
+    .rz-textbox:not(:placeholder-shown) ~ .rz-form-field-label
+     ,:not(.rz-state-empty) ~ .rz-form-field-label, 
+    .rz-variant-filled .rz-textarea:focus ~ .rz-form-field-label, 
+    .rz-variant-flat .rz-textarea:focus ~ .rz-form-field-label, 
+    .rz-variant-filled :not(.rz-state-empty) ~ .rz-form-field-label, 
+    .rz-variant-flat :not(.rz-state-empty) ~ .rz-form-field-label
+    ,.rz-radio-button-list-vertical ~ .rz-form-field-label,
+        .rz-radio-button-list-horizontal ~ .rz-form-field-label,
+    .rz-checkbox-list-vertical ~ .rz-form-field-label, 
+    .rz-checkbox-list-horizontal ~ .rz-form-field-label,
+    .rz-chkbox ~ .rz-form-field-label 
+    {
+        
+        background-color: var(--rz-form-field-label-floating-background-color);
+        font-size: 1rem !important;
+        padding-top: 0rem !important;
+        color: black;
+    
+    }
+</style>
 @code {
     [Inject] DialogService Service { get; set; }
     [Parameter]
     public List<CategoriaDTO>? categorias { get; set; }
     [Parameter]
-    public int idasentamiento { get; set; }
+    public double lmin { get; set; }
+    [Parameter]
+    public double lmax { get; set; }
+
+
 
     private bool IsValid;// aprobar validaciones
-    private bool value =false;//accion realizada
-    private string sino="No";
-    CorteDiscDTO corte = new CorteDiscDTO();
-  
-    [Required(ErrorMessage = "El campo categoría es requerido")]
-    int idcategoria;
-
-    [Required(ErrorMessage = "El campo Acción Correctiva es requerido")]
-    [StringLength(5, ErrorMessage = "El campo {0} no debe tener mas de {1} carácteres")]
-    public string accion { get; set; }
+    private string sino = "No";
+    DialogCorteDTO corte = new DialogCorteDTO();
 
     protected override async Task OnInitializedAsync()
     {
-        idcategoria = categorias.First().IdCategori;
+        corte.IdCategori = categorias.First(c => c.Cnombre != "Sin Categorizar").IdCategori;
+    }
 
-    }
-    public void Add()
-    {
-        if (IsValid)
-        {                 
-            corte.IdAsenta = idasentamiento;
-            corte.IdCategori = idcategoria;
-            corte.CdaccCorr = accion;
-            corte.CdisListo = value;
-            Service.CloseSide(corte);
-        }
-    }
+
     private void OnValidSubmit()
     {
         IsValid = true;
-        Add();
+        if (IsValid)
+        {
+            Service.CloseSide(corte);
+            
+        }
+        
+
     }
     private void OnInvalidSubmit()
     {
@@ -74,13 +101,7 @@
 
     private void Cambio()
     {
-        if (value == true)
-        {
-            sino = "Sí";
-        }
-        else
-        {
-            sino = "No";
-        }
+        sino = corte.CdisListo ? "Sí" : "No";
+        corte.Avalor = lmin;
     }
 }
