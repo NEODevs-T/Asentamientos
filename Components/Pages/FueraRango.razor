@@ -27,9 +27,6 @@
 {
     <RadzenCard Variant="Variant.Filled" Class="rz-my-4 rz-mx-auto rz-background-color-base-50">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Normal" Wrap="FlexWrap.Wrap">
-
-            
-            
             <RadzenColumn class="rz-ml-7">
                 <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
             </RadzenColumn>
@@ -49,20 +46,19 @@
                         <RadzenSwitch @bind-Value=@ModoCorteValue Change="Cambio" />
                         <RadzenText TextStyle="TextStyle.Caption">@textModoCorteValue</RadzenText>
                         </RadzenRow>
-                </RadzenColumn>
-                
+                    </RadzenColumn>
+
                 <RadzenColumn class="rz-ml-7" Visible="@(ModoCorteValue)">
                     <RadzenButton ButtonType="ButtonType.Button" Icon="save_as" Variant="Variant.Flat" Disabled="false" Text="Guardar Lista" ButtonStyle="ButtonStyle.Primary" Click="AddListaCorteDiscrepancia" />
                 </RadzenColumn>
-
             }
-
         </RadzenStack>
     </RadzenCard>
 }
 <RadzenDataList Visible="@(data==1)" Data="@ListaFueraRango" TItem="Asentum" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" PageSize="5" AllowVirtualization=@allowVirtualization WrapItems="@(!allowVirtualization)" AllowPaging="@(!allowVirtualization)" Style="@(allowVirtualization ? "height:70%;overflow:auto;" : "")">
-    <Template Context="lista">
-        <RadzenCard Style="width: 100%; padding: 0;" Class="rz-shadow-2">
+    <Template Context="lista" >
+        @*TODO: Mostar los asentamiento nuevo con idasenta 0 sin que de error*@
+        <RadzenCard Style="width: 100%; padding: 0;" Class="rz-shadow-2" Visible="@(lista.IdAsenta>0)">
             <RadzenRow Gap="0" RowGap="0">
                 <RadzenColumn Size="12" SizeLG="3" Class="@GetClass(lista)">
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-800">@(lista.IdRangoNavigation.IdVariableNavigation.IdSeccionNavigation.Snombre)</RadzenText>
@@ -82,7 +78,7 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" Class="rz-mb-0 rz-color-base-800">Valor Obj.</RadzenText>
                                 <RadzenText TextStyle="TextStyle.Subtitle1">@(lista.IdRangoNavigation.Robj)</RadzenText>
                             </RadzenColumn>
-                            <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-center">
+                            <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-center rz-my-auto">
                                 <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Light" class="unidad-badge" Text=@($"{lista.IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre}") />
                             </RadzenColumn>
 
@@ -103,17 +99,17 @@
                     </RadzenRow>
                 </RadzenColumn>
 
-                <RadzenColumn Size="12" SizeLG="1" Class="rz-p-4">
+                <RadzenColumn Size="12" SizeLG="1" Class="rz-my-auto" >
                     @if (lista.CorteDis.Count == 0)
                     {
-                        <RadzenButton ButtonStyle="ButtonStyle.Success" class="rz-border-radius-8 rz-my-auto" Icon="add_circle_outline"
+                        <RadzenButton ButtonStyle="ButtonStyle.Success" class="rz-border-radius-2" Icon="add_circle_outline"
                                       MouseEnter="@((args) => tooltipService.OpenOnTheTop(args, "Crear Corte",new TooltipOptions{ Duration=1000}))"
                                       Size="ButtonSize.Medium" Style="width: 100%; " Click=@( () => ShowDialog(lista) ) />
 
                     }
                     else
                     {
-                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" class="rz-border-radius-8" Icon="assignment_late"
+                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" class="rz-border-radius-2" Icon="assignment_late"
                                       MouseEnter="@((args) => tooltipService.OpenOnTheTop(args, "Editar Corte",new TooltipOptions{  Duration=1000}))"
                                       Size="ButtonSize.Medium" Style="width: 100%" Click=@( () => ShowDialog(lista) ) />
 
@@ -137,9 +133,6 @@
 
 
 
-
-
-
 @code {
     [CascadingParameter]
     private IEnumerable<Claim>? claims { get; set; }
@@ -154,7 +147,6 @@
     int data = 0; //1-motrar tabla de datos 2-no haydata
 
     string? textModoCorteValue { get; set; } //texto de value para modo de registro de cortes
-
 
     //parametros retornado en el componente Hijo FiltroMaestra
     public int valuepais { get; set; } = 0;
@@ -171,7 +163,6 @@
     //TODO: Crear registro de corte y filtros de consulta por fecha
     //string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
     string fecha1 = "2024-01-03";
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -191,7 +182,6 @@
         else
         {
             ModoCorteValue = true;
-
         }
     }
 
@@ -226,16 +216,19 @@
         cortedialog = await DialogService.OpenSideAsync<DialogSideContent>(
            $"Registrar Corte: {asentamiento.IdRangoNavigation.IdVariableNavigation.Vnombre}",
            parameters: new Dictionary<string, object?>()
-                {
+                    {
                 { "categorias", categorias },
                 { "lmin",asentamiento.IdRangoNavigation.Rmin },
                 {"lmax",asentamiento.IdRangoNavigation.Rmax}
-                },
+                    },
            options: new SideDialogOptions
                { Position = DialogPosition.Right, ShowMask = true, CloseDialogOnOverlayClick = false });
 
         if (cortedialog is not null)
         {
+
+            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);
+
             if (cortedialog.CdisListo)
             {
                 //crear nuevo asentamiento
@@ -244,31 +237,36 @@
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
                 asentamientoNuevo.Avalor = cortedialog.Avalor;
                 asentamientoNuevo.AisActivo = true;
-                
+                elemento.AisActivo = false;
+
                 ListaFueraRango.Add(asentamientoNuevo);
+            }
 
-
-
-            }   
-                //Registrar el corte desde el dto del dialog y el id del asentamiento
-                corte.IdAsenta = asentamiento.IdAsenta;
-                corte.IdCategori = cortedialog.IdCategori;
-                corte.CdaccCorr = cortedialog.CdaccCorr;
-                corte.CdisListo = cortedialog.CdisListo;
+            //Registrar el corte desde el dto del dialog y el id del asentamiento
+            corte.IdAsenta = asentamiento.IdAsenta;
+            corte.IdCategori = cortedialog.IdCategori;
+            corte.CdaccCorr = cortedialog.CdaccCorr;
+            corte.CdisListo = cortedialog.CdisListo;
 
             if (ModoCorteValue)
             {
+                // ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).AisActivo = false;
 
-                
-                ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).AisActivo = false;
+                // //Si se edita el corte se vuelve elimina de la lista.
+                // if (ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Count > 0)
+                // {
+                //     ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Clear();
+                // }
+
+                // ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Add(corte);
 
                 //Si se edita el corte se vuelve elimina de la lista.
-                if (ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Count > 0)
-                {
-                    ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Clear();
-                }
 
-                ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta).CorteDis.Add(corte);
+                if (elemento.CorteDis.Count > 0)
+                {
+                    elemento.CorteDis.Clear();
+                }
+                elemento.CorteDis.Add(corte);
             }
             else
             {
@@ -276,14 +274,13 @@
                 await ConsultarAsentamientos();
             }
 
-
-
         }
 
     }
+
     private async Task Cambio()
     {
-        
+
         if (textModoCorteValue == "Cargar lista total" && !ModoCorteValue)
         {
             if (ListaFueraRango.Any(c => c.CorteDis.Count > 0))
@@ -305,7 +302,6 @@
                 }
 
             }
-
         }
         else
         {
@@ -315,8 +311,6 @@
         await LocalStorage.SetItemAsync("ModoCorteValue", textModoCorteValue);
     }
 
-
-
     protected async Task GetCategorias()
     {
         categorias = await CorteDiscrepanciaDataService.GetCategorias();
@@ -324,17 +318,18 @@
 
     public async Task AddListaCorteDiscrepancia()
     {
-        //TODO:Verficar funcionamiento 
+        var listadocortes = ListaFueraRango.Where(a => a.IdAsenta > 0).ToList();
+        //TODO:Verficar funcionamiento
         bool cargar = true;
-        foreach(var a in ListaFueraRango.Where(a=>a.IdAsenta>0))
+        foreach (var a in listadocortes )
         {
-            if(a.CorteDis is null)
+            if (a.CorteDis.Count==0)
             {
                 cargar = false;
                 break;
             }
         }
-        if(cargar)
+        if (cargar)
         {
             NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
         }
@@ -342,8 +337,6 @@
         {
             NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", "No se han llenado todos los asentamientos fuera de rango"));
         }
-
-
     }
 
     public async Task SaveCorteDiscrepancia()
@@ -359,27 +352,42 @@
         }
     }
 
-
     //retornar Clases
     string GetClass(Asentum lista)
     {
+        if (lista.IdAsenta==0) 
+        {
+            return "rz-p-4"; // Retornar un string vacío
+        }
         return lista.Avalor > lista.IdRangoNavigation.Rmax ? "rz-p-4 variableMax" : "rz-p-4 variableMin";
     }
 
     string GetLabel(Asentum lista)
     {
+        if (lista.IdAsenta == 0) 
+        {
+            return ""; // Retornar un string vacío
+        }
         return lista.Avalor > lista.IdRangoNavigation.Rmax ? "Valor Max." : "Valor Min.";
     }
 
     double GetValue(Asentum lista)
     {
+        if (lista.IdAsenta == 0) 
+        {
+            return 0; 
+        }
         return lista.Avalor > lista.IdRangoNavigation.Rmax ? lista.IdRangoNavigation.Rmax : lista.IdRangoNavigation.Rmin;
     }
 
     string GetClassCorte(int valor)
     {
+        if (valor == 0) 
+        {
+            return "rz-p-4"; // Retornar un string vacío
+        }
         return valor > 0 ? "rz-p-4 cortecargado" : "rz-p-4 ";
-        //return "rz-p-4 ";
+
     }
 
 

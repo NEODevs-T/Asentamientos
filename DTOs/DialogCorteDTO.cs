@@ -8,7 +8,7 @@ namespace Asentamientos.DTOs
         public int IdCategori { get; set; } 
 
         [Required(ErrorMessage = "El campo Acción Correctiva es requerido")]
-        [StringLength(5, ErrorMessage = "El campo {0} no debe tener mas de {1} carácteres")]
+        [StringLength(500, ErrorMessage = "El campo Acción no debe tener mas de {1} carácteres")]
         public string CdaccCorr { get; set; } = null!;
 
         public bool CdisListo { get; set; } = false;
