@@ -19,12 +19,12 @@
     
     <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
 
-    @if(ficha == "" || ficha.Equals("Admin")){
+    @if(!isFicha){
         <RadzenRow class="rz-text-align-Left">
             <RadzenColumn Size="2">
                 <div class="rz-p-sm-2 rz-text-align-left">
                     <RadzenLabel Text="Ficha" />
-                    <RadzenTextBox Style="width: 100%; max-width: 350px;min-width: 90px;" @bind-Value=ficha/>
+                    <RadzenTextBox Name="Ficha" id="Ficha" Style="width: 100%; max-width: 350px;min-width: 90px;" @bind-Value=ficha/>
                 </div>
             </RadzenColumn>
         </RadzenRow>
@@ -87,6 +87,7 @@
     public bool isCargando  {get; set;} = false;
     public bool isOk {get; set;} = false;
     public bool isAsentamientoHoy {get; set;} =  false;
+    public bool isFicha {get; set;} =  true;
     public string grupo {get; set;} = "";
     public string turno {get; set;} = "";
     public string ficha {get; set;} = "";
@@ -104,8 +105,9 @@
         if(user?.Identity is not null && user.Identity.IsAuthenticated){
             claims = user.Claims;
             ficha =  claims.FirstOrDefault(c => c.Type == "Ficha")?.Value ?? "0";
-            if(ficha.Contains("Ficha")){
+            if(ficha.Contains("null")){
                 ficha = "";
+                isFicha = false;
             }
         }
         
@@ -142,11 +144,11 @@
                 valor.Avalor =  listaRango[i].RlimMin;
                 listaAsentamientos.Add(valor);
             }
+            band = true;
         }else{
             NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","Ya se realizo la carga de asentamientos por hoy."));
+            band = false;
         }
-
-        band = true;
         isCargando = false;
     }
 
@@ -154,7 +156,7 @@
     {
         informeAsentamientos.Iagrupo = grupo;
         informeAsentamientos.Iaturno = turno;
-        informeAsentamientos.Iaficha = ficha;
+        informeAsentamientos.Iaficha = ficha.ToUpper();
         informeAsentamientos.Iaobser = "Prueba";
         isOk = await AsentamientoData.AddAsentamientosDelDia(informeAsentamientos,listaAsentamientos);
         if(isOk){

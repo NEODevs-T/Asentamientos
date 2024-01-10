@@ -5,6 +5,8 @@
 @inject IMaestraData MaestaData
 @page "/Impresion/{idLinea:int}/{idProducto:int}/{idSeccion:int}/{idClasiVar:int}"
 
+
+
 <RadzenDataGrid Data="@listaRango" TItem="Rango" AllowVirtualization="true" Style="height:400px" AllowFiltering="true"
     FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
     LogicalFilterOperator="LogicalFilterOperator.Or" AllowSorting="true">

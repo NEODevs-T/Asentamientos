@@ -70,6 +70,12 @@
 
     public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
+            band = false;
+        }
+    }
     private async Task Consultar()
     {
         isCargando = true;
