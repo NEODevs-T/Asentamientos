@@ -1,6 +1,6 @@
 @if(idEmpresa != 0){
     <RadzenRow class="rz-text-align-Left">
-        <RadzenColumn Size="2">
+        <RadzenColumn Size="3">
             @if(turnos is not null){
                 <div class="rz-p-sm-2 rz-text-align-left">
                     <RadzenLabel Text="Turno" />
@@ -12,7 +12,7 @@
                 <CargandoSelect />
             }
         </RadzenColumn>
-        <RadzenColumn Size="2">
+        <RadzenColumn Size="3">
             @if(grupos is not null){
                 <div class="rz-p-sm-2 rz-text-align-left"> 
                     <RadzenLabel Text="Grupo" />
@@ -41,6 +41,7 @@
     public readonly Dictionary<string,string> turnos = new Dictionary<string, string>{{"Primer_turno" ,"1"}, {"Segundo_turno", "2"}, {"Tercer_turno", "3"}};
     public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
     public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
+        public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "0"}};
     public Dictionary<string,string>? grupos = new Dictionary<string, string>();
     protected override async Task OnParametersSetAsync(){
         if(idEmpresa != 0 && idEmpresa != valueEmpresa){
@@ -50,7 +51,7 @@
             }else if(idEmpresa == empresas.CHEMPRO){
                 grupos = grupoPAVECA.ToDictionary();
             }else if(idEmpresa == empresas.PANASA){
-                grupos = grupoPAINSA.ToDictionary();
+                grupos = grupoPANASA.ToDictionary();
             }else if(idEmpresa == empresas.PAINSA){
                 grupos = grupoPAINSA.ToDictionary();
             }else{
