@@ -1,5 +1,6 @@
 ﻿using Asentamientos.Models;
 using Asentamientos.ModelsViews;
+using Asentamientos.ModelsDOCIng;
 
 namespace Asentamientos.Interface
 {
