@@ -4,6 +4,10 @@ html, body {
     font-size: 10pt !important;
 }
 
+textarea {
+    resize: none !important;
+}
+
 a, .btn-link {
     color: #006bb7;
 }

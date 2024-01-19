@@ -1,3 +1,5 @@
+@inject IRotacionData RotacionData
+
 @if(idEmpresa != 0){
     <RadzenRow class="rz-text-align-Left">
         <RadzenColumn Size="3">
@@ -5,7 +7,8 @@
                 <div class="rz-p-sm-2 rz-text-align-left">
                     <RadzenLabel Text="Turno" />
                     <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                            TValue="string" Data=@(turnos.Select(c => c.Value)) AllowClear="true" @bind-Value=turno Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
+                            TValue="string" Data=@(turnos.Select(c => c.Value)) AllowClear="true" @bind-Value=turno Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())"
+                            Disabled="@isDesactivado">
                     </RadzenDropDown>
                 </div>
             }else{
@@ -17,7 +20,8 @@
                 <div class="rz-p-sm-2 rz-text-align-left"> 
                     <RadzenLabel Text="Grupo" />
                     <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                            TValue="string" Data=@(grupos.Select(c => c.Value)) AllowClear="true" @bind-Value=grupo Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
+                            TValue="string" Data=@(grupos.Select(c => c.Value)) AllowClear="true" @bind-Value=grupo Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())"
+                            Disabled="@isDesactivado">
                     </RadzenDropDown>
                 </div>
             }else{
@@ -41,10 +45,19 @@
     public readonly Dictionary<string,string> turnos = new Dictionary<string, string>{{"Primer_turno" ,"1"}, {"Segundo_turno", "2"}, {"Tercer_turno", "3"}};
     public readonly Dictionary<string,string> grupoPAVECA = new Dictionary<string, string>{{"GrupoA", "A"}, {"GrupoB", "B"},{"GrupoC", "C"},{"GrupoD", "D"}};
     public readonly Dictionary<string,string> grupoPAINSA = new Dictionary<string, string>{{"Grupo1", "1"}, {"Grupo2", "2"},{"Grupo3", "3"},{"Grupo4", "4"}};
-        public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "0"}};
+    public readonly Dictionary<string,string> grupoPANASA = new Dictionary<string, string>{{"Grupo1", "0"}};
     public Dictionary<string,string>? grupos = new Dictionary<string, string>();
+    public RotaCalidum rotacion {get; set;} = new RotaCalidum();
+
+    public bool isDesactivado {get; set;} = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        rotacion = await RotacionData.GetRotacion(idEmpresa);
+    }
     protected override async Task OnParametersSetAsync(){
         if(idEmpresa != 0 && idEmpresa != valueEmpresa){
+            valueEmpresa = idEmpresa;
             grupos = null;
             if(idEmpresa == empresas.PAVECA){
                 grupos = grupoPAVECA.ToDictionary();
@@ -56,6 +69,12 @@
                 grupos = grupoPAINSA.ToDictionary();
             }else{
                 grupos = grupoPAVECA.ToDictionary();
+            }
+            if(rotacion.Rcgrupo != null){
+                turno = rotacion.Rcturno.ToString();
+                grupo = rotacion.Rcgrupo;
+                isDesactivado = true;
+                await this.Set();
             }
         }
         valueEmpresa = idEmpresa;

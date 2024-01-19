@@ -6,7 +6,7 @@
 <PageTitle>Impresion de Asentamientos</PageTitle>
 <h1>Impresion</h1>
 
-<FiltroMaestras OnChangelineas="((int l) => this.idLinea = l)" />
+<FiltroMaestras OnChangelineas="((int l) => this.idLinea = l)" OnChangeempresa="((int e) => this.idEmpresa = e)"/>
 
 <br>
 
@@ -22,7 +22,7 @@
 <br>
 
 @if(band){
-    <RadzenDataGrid Class="table .rz-background-color-success" Data="@listaRango" TItem="Rango" AllowVirtualization="true" Style="height:400px"
+    <RadzenDataGrid Class="table .rz-background-color-success" Data="@listaRango" TItem="Rango" AllowVirtualization="true"
                 AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                 AllowSorting="true">
 
@@ -35,6 +35,13 @@
                     <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdSeccionNavigation.Snombre" Title="Sección" />
                     <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.Vnombre" Title="Variable" />
                     <RadzenDataGridColumn TItem="Rango" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
+                    @if(idEmpresa != empresas.PAVECA){
+                        <RadzenDataGridColumn TItem="Rango" Title="3er Turno" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                            <Template Context="data">
+                                <input type="text" style="width: 50%; height:30px" disabled=true> 
+                            </Template>
+                        </RadzenDataGridColumn>
+                    }
                     <RadzenDataGridColumn TItem="Rango" Title="2do Turno" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
                             <input type="text" style="width: 50%; height:30px" disabled=true> 
@@ -67,6 +74,8 @@
     public int idSeccion {get; set;} = 0;
     public int idClasiVar {get; set;} = 0;
     public int idLinea {get; set;} = 0;
+    public int idEmpresa {get; set;} = 0;
+    public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
 
     public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
 
@@ -91,6 +100,6 @@
     }
 
     private void Impresion(){
-        NavigationManager.NavigateTo($"impresion/{idLinea}/{idProducto}/{idSeccion}/{idClasiVar}");
+        NavigationManager.NavigateTo($"impresion/{idLinea}/{idProducto}/{idSeccion}/{idClasiVar}/{idEmpresa}");
     }
 }

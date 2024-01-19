@@ -17,8 +17,14 @@
 @if(idLinea != 0){
     <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
     
-    <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
+    @if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
+        <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
+    }
+}
 
+
+@if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0 && grupo != "" && turno != ""){
+    
     @if(!isFicha){
         <RadzenRow class="rz-text-align-Left">
             <RadzenColumn Size="2">
@@ -29,10 +35,7 @@
             </RadzenColumn>
         </RadzenRow>
     }
-}
 
-
-@if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0 && grupo != "" && turno != ""){
     <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Consultar />
     <br>
     <br>
@@ -40,10 +43,10 @@
 
 
 @if(band){
-    <RadzenDataGrid class="table" Data="@listaAsentamientos" TItem="Asentum" AllowVirtualization="true" Style="height:400px"
+    <RadzenDataGrid class="table rz-mb-1" Data="@listaAsentamientos" TItem="Asentum" AllowVirtualization="true"
                 AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                 AllowSorting="true">
-
+                
                 <Columns>
                     <RadzenDataGridColumn Width="3%" TItem="Asentum" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
@@ -59,7 +62,15 @@
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
                 </Columns>
+                
     </RadzenDataGrid>
+    <RadzenRow class="rz-text-align-Left rz-mt-0" >
+        <RadzenColumn Size="12">
+            <div class="rz-text-align-left">
+                <RadzenTextArea Rows="4" Placeholder="Observación" @bind-Value=informeAsentamientos.Iaobser class="w-100" aria-label="TextArea" />
+            </div>
+        </RadzenColumn>
+    </RadzenRow>
 
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap">
         <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=CargarDatos />
@@ -70,7 +81,7 @@
 }
 
 
-
+@* TODO: Insertar comentario *@
 
 @code {
     [CascadingParameter]
@@ -157,7 +168,6 @@
         informeAsentamientos.Iagrupo = grupo;
         informeAsentamientos.Iaturno = turno;
         informeAsentamientos.Iaficha = ficha.ToUpper();
-        informeAsentamientos.Iaobser = "Prueba";
         isOk = await AsentamientoData.AddAsentamientosDelDia(informeAsentamientos,listaAsentamientos);
         if(isOk){
             NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
