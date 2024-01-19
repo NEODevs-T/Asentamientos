@@ -24,7 +24,7 @@
                     <RadzenNumeric Step="0.1"  @bind-Value="corte.Avalor"  Min="@Convert.ToDecimal(lmin)" Max="@Convert.ToDecimal(lmax)" />
                 </RadzenFormField>
             </RadzenColumn>
-            <RadzenText TextStyle="TextStyle.Caption"> El valor debe estar entre @lmin y @lmax</RadzenText>
+            <RadzenText Visible=limites TextStyle="TextStyle.Caption"> El valor debe estar entre @lmin y @lmax</RadzenText>
         }
     </RadzenRow>
 
@@ -70,16 +70,29 @@
     public double lmin { get; set; }
     [Parameter]
     public double lmax { get; set; }
-
+    [Parameter]
+    public  CorteDiscDTO corteparametro  { get; set; }//en caso de edicion
 
 
     private bool IsValid;// aprobar validaciones
+    private bool limites=false;// mensaje si el varlor esta fuera de rango
     private string sino = "No";
     DialogCorteDTO corte = new DialogCorteDTO();
 
     protected override async Task OnInitializedAsync()
     {
-        corte.IdCategori = categorias.First(c => c.Cnombre != "Sin Categorizar").IdCategori;
+        //todo crear mapeo de dtos
+        if (corteparametro.IdCategori>0)
+        {
+            corte.IdCategori = corteparametro.IdCategori;
+            corte.CdaccCorr = corteparametro.CdaccCorr;
+            corte.CdisListo = corteparametro.CdisListo;
+
+        }
+        else
+        {corte.IdCategori = categorias.First(c => c.Cnombre != "Sin Categorizar").IdCategori;
+
+        }
     }
 
 
@@ -88,8 +101,21 @@
         IsValid = true;
         if (IsValid)
         {
-            Service.CloseSide(corte);
-            
+            if (!corte.CdisListo) {
+                Service.CloseSide(corte);
+            }
+            else
+            {
+                if(corte.Avalor<=lmax && corte.Avalor>=lmin)
+                {
+                    Service.CloseSide(corte);
+                }
+                else
+                {
+                    limites = true;
+                }
+            }
+
         }
         
 

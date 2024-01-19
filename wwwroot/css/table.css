@@ -4,3 +4,9 @@
     --rz-grid-header-font-size: 1.1em !important;
     --rz-grid-header-font-weight: 800;
 }
+.rz-grid-table-fixed .rz-frozen-cell-left,
+.rz-grid-table-fixed .rz-frozen-cell-right,
+.rz-grid-table-fixed .rz-frozen-cell-left-inner,
+.rz-grid-table-fixed .rz-frozen-cell-right-inner {
+background-color:rgb(0, 120, 83);
+}

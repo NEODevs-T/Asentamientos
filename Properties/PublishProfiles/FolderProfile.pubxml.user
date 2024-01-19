@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>\\AZTDSIGO1\Aplicaciones Web\Neo\Asentamientos</_PublishTargetUrl>
+    <History>True|2024-01-10T18:29:53.4358731Z;True|2024-01-10T14:28:57.8932437-04:00;True|2024-01-10T14:19:16.1165885-04:00;True|2024-01-10T14:11:26.5072669-04:00;True|2024-01-10T13:59:31.0813639-04:00;True|2024-01-10T13:46:48.7306482-04:00;True|2024-01-10T13:34:54.0244824-04:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+</Project>

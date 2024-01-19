@@ -8,8 +8,8 @@ namespace Asentamientos.Data
     public class AsentamientoData : IAsentamientoData
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Asentamientos";
-        //private const string BaseUrl = "http://localhost:5021/api/Asentamientos";
+        //private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Asentamientos";
+        private const string BaseUrl = "http://localhost:5021/api/Asentamientos";
         private HttpClient cliente { get; set; } = new HttpClient();
 
         private HttpResponseMessage? mensaje { get; set; } = new HttpResponseMessage();

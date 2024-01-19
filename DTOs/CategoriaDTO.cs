@@ -13,5 +13,6 @@
         public string? Cdescri { get; set; }
 
         public bool Cesta { get; set; }
+        public virtual ICollection<CorteDiscDTO> CorteDisDTO { get; set; } = new List<CorteDiscDTO>();
     }
 }

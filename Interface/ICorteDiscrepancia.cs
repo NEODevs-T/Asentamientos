@@ -7,9 +7,9 @@ namespace Asentamientos.Interface
 {
     public interface ICorteDiscrepancia
     { 
-        Task<List<Asentum>> GetAsentamientosFueraRango(string turno, string fecha, int idcentro );
-        Task<List<CorteDiscDTO>> GetCortesDiscrepancia(string turno, string fecha, int idcentro );
-        Task<object> AddCortesDiscrepancias(List<CorteDiscDTO>? cortes);
+        Task<List<AsentumDTO>> GetAsentamientosFueraRango(string turno, string fecha, int idcentro );
+        Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLinea(string turno, string fecha, int idcentro );
+        Task<object> AddCorteDiscrepancia(CorteDiscDTO corte);
         Task<List<CategoriaDTO>> GetCategorias();
     }
 

@@ -9,6 +9,7 @@ namespace Asentamientos.Data
     public class MaestraData : IMaestraData
     {
         private readonly IHttpClientFactory _clientFactory;
+        //private const string BaseUrl = "http://localhost:5021/api/Maestra/";
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Maestra/";
         private string url = "";
 
