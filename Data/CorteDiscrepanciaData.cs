@@ -10,30 +10,33 @@ namespace Asentamientos.Data
     public class CorteDiscrepaciaData : ICorteDiscrepancia
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
+        private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
+        //private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
 
         public CorteDiscrepaciaData(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<Asentum>> GetAsentamientosFueraRango(string turno, string fecha, int idcentro)
+        public async Task<List<AsentumDTO>> GetAsentamientosFueraRango(string turno, string fecha, int idlinea)
         {
             
             var client = _clientFactory.CreateClient();
-            var result = await client.GetFromJsonAsync<List<Asentum>>($"{BaseUrl}AsentamientoFueraRango/{turno}/{fecha}/{idcentro}");
-            return result ?? new List<Asentum>();
+            var result = await client.GetFromJsonAsync<List<AsentumDTO>>($"{BaseUrl}AsentamientoFueraRango/{turno}/{fecha}/{idlinea}");
+            return result ?? new List<AsentumDTO>();
         }
 
-        public Task<List<CorteDiscDTO>> GetCortesDiscrepancia(string turno, string fecha, int idcentro)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<object> AddCortesDiscrepancias(List<CorteDiscDTO>? cortes)
+        public async Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLinea(string turno, string fecha, int idlinea)
         {
             var client = _clientFactory.CreateClient();
-            var result = await client.PutAsJsonAsync($"{BaseUrl}AddCorte",cortes);
+            var result = await client.GetFromJsonAsync<List<CortesVistaDTO>>($"{BaseUrl}CortesDelDiaLineaPorTurno/{turno}/{fecha}/{idlinea}");
+            return result ?? new List<CortesVistaDTO>();
+        }
+
+        public async Task<object> AddCorteDiscrepancia(CorteDiscDTO corte)
+        {
+            var client = _clientFactory.CreateClient();
+            var result = await client.PostAsJsonAsync($"{BaseUrl}AddCorte",corte);
 
             if (result.IsSuccessStatusCode)
             {

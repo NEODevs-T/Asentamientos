@@ -1,3 +1,5 @@
+using Asentamientos.Data;
+using Asentamientos.Models;
 using System;
 using System.Collections.Generic;
 
@@ -14,4 +16,9 @@ public partial class AsentumDTO
     public double Avalor { get; set; }
 
     public bool AisActivo { get; set; }
+    public virtual ICollection<CorteDiscDTO> CorteDiscDTO { get; set; } = new List<CorteDiscDTO>();
+    public virtual InfoAseDTO InfoAseDTONavigation { get; set; } = null!;
+    public virtual RangoDTO RangoDTONavigation { get; set; } = null!;
+
+
 }

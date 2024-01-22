@@ -146,10 +146,9 @@
                                             TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))">
                             </RadzenDropDown>
 
-                            @if (roleClaim == "SuperAdmin")
-                            {
-                                <RadzenButton Icon="remove" ButtonStyle="ButtonStyle.Warning" Shade="Shade.Dark" Variant="Variant.Text" Size="ButtonSize.Small" class="rz-border-radius-4 rz-shadow-4 mb-2" />
-                            }
+
+                            <RadzenButton Icon="remove" Visible=@(roleClaim == "SuperAdmin") ButtonStyle="ButtonStyle.Warning" Shade="Shade.Dark" Variant="Variant.Text" Size="ButtonSize.Small" class="rz-border-radius-4 rz-shadow-4 mb-2" />
+                            
 
                         </RadzenStack>
 

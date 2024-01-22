@@ -41,7 +41,7 @@
     <NotAuthorized>
         <main>
             <div class="text-center fondo">
-                <RadzenTemplateForm Context="radzen" TItem="UserLoginDto" Data="@user" class="form-signin w-25 m-auto loginform ">
+                <EditForm Context="radzen" Model="@user" class="form-signin w-25  m-auto loginform " OnValidSubmit="@Login" OnInvalidSubmit="OnInvalidSubmit">
 
                     <img class="mb-4" id="logoLogin" src="./img/Neo.png">
                     <h1 class="h3 mb-3 fw-normal">Inicie Sesión</h1>
@@ -52,8 +52,14 @@
                     <RadzenText TextStyle="TextStyle.Subtitle1" class="pt-4" TagName="TagName.H3">Contraseña</RadzenText>
                     <RadzenPassword @bind-Value=user.Password Name="Password" id="contraseña" Placeholder="Contraseña..." class="w-100" />
 
-                    <RadzenButton class="mt-4" ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Disabled="false" Text="Iniciar" ButtonStyle="ButtonStyle.Success" Click=Login />
-                </RadzenTemplateForm>
+                    <RadzenProgressBarCircular ProgressBarStyle="ProgressBarStyle.Success" Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate"  class="mx-auto mt-2" Visible=@(carga) />
+                    <RadzenButton class="mt-4 w-75" ButtonType="ButtonType.Submit"  Shade="Shade.Dark" Variant="Variant.Flat" Disabled="false" Text="Iniciar" Icon="login" Visible=@(!carga) ButtonStyle="ButtonStyle.Success"/>
+
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                </EditForm>
+
 
             </div>
 
@@ -73,10 +79,10 @@
     //private bool _buttonDisabled = true;
     //private BSAlert? _alertRef;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await ProductosVData.GetProductosPorLinea(1);
-    }
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     await ProductosVData.GetProductosPorLinea(1);
+    // }
 
     public async Task Login()
     {
@@ -136,6 +142,11 @@
 
 
     }
+    private void OnInvalidSubmit()
+    {
+        //IsValid = false;
+    }
+
     async Task Logout()
     {
         await LocalStorage.RemoveItemAsync("AsentamientosToken");
