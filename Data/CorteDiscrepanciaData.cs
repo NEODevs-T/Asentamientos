@@ -4,6 +4,11 @@ using Asentamientos.Models;
 using Asentamientos.ModelsViews;
 using Azure;
 using Azure.Identity;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Xml;
 
 namespace Asentamientos.Data
 {
@@ -24,12 +29,27 @@ namespace Asentamientos.Data
             var client = _clientFactory.CreateClient();
             var result = await client.GetFromJsonAsync<List<AsentumDTO>>($"{BaseUrl}AsentamientoFueraRango/{turno}/{fecha}/{idlinea}");
             return result ?? new List<AsentumDTO>();
+        }    
+        public async Task<List<AsentumDTO>> GetAsentamientosFueraRangoFiltros(string turno, string fecha, int idlinea, int idClasiVar, int idSeccion, int idProducto)
+        {
+            
+            var client = _clientFactory.CreateClient();
+            var result = await client.GetFromJsonAsync<List<AsentumDTO>>($"{BaseUrl}AsentamientoFueraRangoFiltros/{turno}/{fecha}/{idlinea}/{idClasiVar}/{idSeccion}/{idProducto}");
+            return result ?? new List<AsentumDTO>();
         }
-
+        //Default operadores?
+        public async Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLineaFiltrado(string turno, string fecha, int idlinea, int idClasiVar, int idSeccion, int idProducto)
+        {
+            var client = _clientFactory.CreateClient();
+            var result = await client.GetFromJsonAsync<List<CortesVistaDTO>>($"{BaseUrl}CortesDelDiaLineaFiltros/{turno}/{fecha}/{idlinea}/{idClasiVar}/{idSeccion}/{idProducto}");
+            return result ?? new List<CortesVistaDTO>();
+            
+           
+        }
         public async Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLinea(string turno, string fecha, int idlinea)
         {
             var client = _clientFactory.CreateClient();
-            var result = await client.GetFromJsonAsync<List<CortesVistaDTO>>($"{BaseUrl}CortesDelDiaLineaPorTurno/{turno}/{fecha}/{idlinea}");
+            var result = await client.GetFromJsonAsync<List<CortesVistaDTO>>($"{BaseUrl}CortesDelDiaLinea/{turno}/{fecha}/{idlinea}");
             return result ?? new List<CortesVistaDTO>();
         }
 
@@ -57,6 +77,29 @@ namespace Asentamientos.Data
             var client = _clientFactory.CreateClient();
             var result = await client.GetFromJsonAsync<List<CategoriaDTO>>($"{BaseUrl}CategoriasCorte");
             return result ?? new List<CategoriaDTO>();
+        }
+
+        public async Task<bool> UpdateAentamientosCortes(List<AsentumDTO> cortes)
+        {
+           
+            try
+            {
+                //foreach (var l in cortes)
+                //{
+                //    l.InfoAseDTONavigation = null;
+                //    l.RangoDTONavigation = null;
+                //    l.CorteDiscDTO.First().CategoriaDTONavigation = null;
+                //}
+                var client = _clientFactory.CreateClient();
+                var result = await client.PutAsJsonAsync($"{BaseUrl}UpdateCorteAsentamientoLista", cortes);
+                return result.IsSuccessStatusCode;
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
         }
     }
 }

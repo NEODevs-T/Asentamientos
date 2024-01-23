@@ -13,7 +13,7 @@
                 </RadzenFormField>
             </RadzenStack>
         </RadzenColumn>
-        <RadzenColumn Size="12" SizeSM="12">
+        <RadzenColumn Size="12" SizeSM="12" Visible=@(rol)>
             <RadzenText>¿Se relizó la acción correctiva?</RadzenText>
             <RadzenSwitch @bind-Value=corte.CdisListo Change="Cambio" />@sino
         </RadzenColumn>
@@ -69,10 +69,11 @@
     [Parameter]
     public double lmin { get; set; }
     [Parameter]
-    public double lmax { get; set; }
+    public double lmax { get; set; } 
     [Parameter]
     public  CorteDiscDTO corteparametro  { get; set; }//en caso de edicion
-
+    [Parameter]
+    public bool rol { get; set; }//si el valor "cenro" es true, se muestra el formulario de plan de acción
 
     private bool IsValid;// aprobar validaciones
     private bool limites=false;// mensaje si el varlor esta fuera de rango
@@ -117,7 +118,7 @@
             }
 
         }
-        
+       
 
     }
     private void OnInvalidSubmit()

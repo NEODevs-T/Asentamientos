@@ -31,8 +31,8 @@ namespace Asentamientos.DTOs
 
         //public virtual Master IdMasterNavigation { get; set; } = null!;
 
-        // public virtual Producto IdProductoNavigation { get; set; } = null!;
-        
-        public virtual VariableDTO VariableDTONavigation { get; set; } = null!;
+        public virtual ProductosDTO? ProductoDTONavigation { get; set; } = null!;
+
+        public virtual VariableDTO? VariableDTONavigation { get; set; } = null!;
     }
 }

@@ -6,6 +6,7 @@ using Asentamientos.Data;
 using Asentamientos.Interface;
 using Asentamientos.Logic;
 using Asentamientos.Components;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,13 @@ builder.Services.AddScoped<IRolLogic,RolLogic>();
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 
+//*serializacion de ciclos de referencia en json
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+});
 
 var app = builder.Build();
 

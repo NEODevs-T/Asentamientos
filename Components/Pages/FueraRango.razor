@@ -5,40 +5,56 @@
 @inject ILocalStorageService LocalStorage
 @inject INotifiRadzenServices NotifiRadzenServices
 @inject ICorteDiscrepancia CorteDiscrepanciaDataService
+@inject IRolLogic RolLogicService
 
 @page "/fuerarango"
-
+@filtrosextras
 <FiltroMaestras OnChangepais="((int p) => this.valuepais = p)"
                 OnChangeempresa="((int e) => this.valueempresa = e)"
                 OnChangecentros="((int c) => this.valuecentros = c)"
                 OnChangedivision="((int d) => this.valuedivision = d)"
                 OnChangelineas="((int l) => this.valuelinea = l)" />
 
-
-@if (valuelinea > 0)
+@if (filtrosextras == true && valuelinea != 0)
 {
-    <FiltrosAsentamientos idLinea="@valuelinea"
-                          OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)"
-                          OnChangeProducto="((int idProducto) => this.idProducto = idProducto)"
-                          OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)" />
+    <FiltrosAsentamientos idLinea="@valuelinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)" />
+
+
 }
-@if (idClasiVar > 0)
+@if (valuelinea != 0)
+{
+    <FiltroGrupoTurno idEmpresa="@valueempresa" OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)" />
+}
+
+@if (valuelinea != 0 && turno is not null)
 {
     @*     Barra de filtro y opciones *@
     <RadzenCard Variant="Variant.Filled" Class="rz-my-4 rz-mx-auto rz-background-color-base-50">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Normal" Wrap="FlexWrap.Wrap">
-            <RadzenColumn class="rz-ml-7">
+            <RadzenColumn class="rz-ml-8">
+                <RadzenLabel Text="Fecha" Component="DatePickerHourFormat" />
+                <RadzenDatePicker @bind-Value=@fecha HourFormat="12" DateFormat="MM/dd/yyyy" Name="DatePickerHourFormat" Style="width:120px;" />
+            </RadzenColumn>
+            <RadzenColumn class="rz-ml-8">
                 <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
             </RadzenColumn>
-
-            @if (data == 1)
+            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Division"])>
+                <RadzenRow>
+                    <RadzenText TextStyle="TextStyle.Caption"> Filtros:</RadzenText>
+                </RadzenRow>
+                <RadzenRow>
+                    @*  <RadzenCheckBox @bind-Value="@filtrosextras" ValueChanged="CambioFiltros" /> *@
+                    <RadzenCheckBox @bind-Value="@filtrosextrasvisual" TValue="bool" Change=@CambioFiltros />
+                </RadzenRow>
+            </RadzenColumn>
+            @if (data == 1 && ListaFueraRango.Count>0)
             {
-                <RadzenColumn class="rz-ml-7">
+                <RadzenColumn class="rz-ml-8">
                     <RadzenLabel Text="Mostrar todos" Component="allowVirtualization" />
                     <RadzenCheckBox @bind-Value="@allowVirtualization" Name="allowVirtualization" />
                 </RadzenColumn>
 
-                <RadzenColumn class="rz-ml-7">
+                <RadzenColumn class="rz-ml-8">
                     <RadzenRow>
                         <RadzenText TextStyle="TextStyle.Caption"> Modo de registro:</RadzenText>
                     </RadzenRow>
@@ -48,23 +64,25 @@
                         </RadzenRow>
                     </RadzenColumn>
 
-                <RadzenColumn class="rz-ml-7" Visible="@(ModoCorteValue)">
+                <RadzenColumn class="rz-ml-8" Visible="@(ModoCorteValue)">
                     <RadzenButton ButtonType="ButtonType.Button" Icon="save_as" Variant="Variant.Flat" Disabled="false" Text="Guardar Lista" ButtonStyle="ButtonStyle.Primary" Click="AddListaCorteDiscrepancia" />
                 </RadzenColumn>
+
             }
         </RadzenStack>
     </RadzenCard>
 }
 <RadzenDataList Visible="@(data==1)" Data="@ListaFueraRango" TItem="AsentumDTO" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" PageSize="5" AllowVirtualization=@allowVirtualization WrapItems="@(!allowVirtualization)" AllowPaging="@(!allowVirtualization)" Style="@(allowVirtualization ? "height:70%;overflow:auto;" : "")">
-    <Template Context="lista" >
+    <Template Context="lista">
         @*TODO: Mostar los asentamiento nuevo con idasenta 0 sin que de error*@
         <RadzenCard Style="width: 100%; padding: 0;" Class="rz-shadow-2" Visible="@(lista.IdAsenta>0)">
             <RadzenRow Gap="0" RowGap="0">
                 <RadzenColumn Size="12" SizeLG="3" Class="@GetClass(lista)">
-                   
-                    <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-800">@(lista.RangoDTONavigation.VariableDTONavigation.SeccionDTONavigation.Snombre)</RadzenText>
 
+                    <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-800">@(lista.RangoDTONavigation.VariableDTONavigation.SeccionDTONavigation.Snombre)</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.ProductoDTONavigation.Pnombre)</RadzenText>
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.VariableDTONavigation.Vnombre)</RadzenText>
+                  
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeLG="8" Class="@GetClassCorte(lista.CorteDiscDTO.Count)">
                     <RadzenRow Gap="0" RowGap="0">
@@ -101,7 +119,7 @@
                     </RadzenRow>
                 </RadzenColumn>
 
-                <RadzenColumn Size="12" SizeLG="1" Class="rz-my-auto" >
+                <RadzenColumn Size="12" SizeLG="1" Class="rz-my-auto">
                     @if (lista.CorteDiscDTO.Count == 0)
                     {
                         <RadzenButton ButtonStyle="ButtonStyle.Success" class="rz-border-radius-2" Icon="add_circle_outline"
@@ -124,8 +142,8 @@
 </RadzenDataList>
 
 <RadzenText Visible="@(data==2)">
-    <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
-    No hay datos...
+    <RadzenIcon Icon="done" IconColor="@Colors.Success" />
+    No hay datos fuera de rango...
 </RadzenText>
 
 @if (loading)
@@ -140,12 +158,15 @@
     private IEnumerable<Claim>? claims { get; set; }
 
     public List<AsentumDTO>? ListaFueraRango { get; set; } = new List<AsentumDTO>();
+    public List<AsentumDTO>? ListaAdd { get; set; } = new List<AsentumDTO>();
     public List<CorteDiscDTO>? cortes { get; set; } = new List<CorteDiscDTO>();
     public List<CategoriaDTO>? categorias { get; set; }
 
     bool allowVirtualization = false; //renderizado y paginacion de los datos mostrados del datalist
     bool ModoCorteValue { get; set; } //Carga individula o cargar con  listas el corte
     bool loading = false; //motrar loading
+    bool filtrosextrasvisual = true; //motrar lfiltros extras
+    bool filtrosextras = true; //motrar lfiltros extras
     int data = 0; //1-motrar tabla de datos 2-no haydata
 
     string? textModoCorteValue { get; set; } //texto de value para modo de registro de cortes
@@ -162,14 +183,22 @@
     public int idSeccion { get; set; } = 0;
     public int idProducto { get; set; } = 0;
 
+    //parametros retornado en el componente Hijo FiltroGrupoTurno
+    public string grupo { get; set; } = "";
+    public string turno { get; set; } = "";
+
     //TODO: Crear registro de corte y filtros de consulta por fecha
-    //string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string fecha1 = "2024-01-10";
+    DateTime fecha = DateTime.Now;
+    //string fecha1 = "2024-01-10";
+
+    Dictionary<string, bool> permisos = new Dictionary<string, bool>();
+    public string? roleClaim { get; set; } //guardar el rol del usuario
+
 
     protected override async Task OnInitializedAsync()
     {
         await CreateData();
-        await GetCategorias();
+
         textModoCorteValue = await LocalStorage.GetItemAsStringAsync("ModoCorteValue");
         if (string.IsNullOrEmpty(textModoCorteValue))
         {
@@ -186,6 +215,9 @@
             textModoCorteValue = "Cargar lista total";
             ModoCorteValue = true;
         }
+
+        permisos = RolLogicService.ListasRol(roleClaim); 
+        await GetCategorias();
     }
 
     private async Task CreateData()
@@ -196,52 +228,78 @@
         {
             claims = user.Claims;
         }
+        //Obtner Rol
+        roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
     }
 
     public async Task ConsultarAsentamientos()
     {
+
         data = 0;
         loading = true;
-        ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango("3", fecha1, valuelinea);
-        data = ListaFueraRango.Count > 0 ? 1 : 2;
-        loading = false;
-        NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Consulta Exitosa"));
+        string fecha1 = fecha.Date.ToString("yyyy-MM-dd");
+        if (filtrosextras)
+        {
+            if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+            {
 
+                ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
+                data = ListaFueraRango.Count > 0 ? 1 : 2;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+            }
+            else
+            {
+                data = 1;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+            }
+        }
+        else
+        {
+            ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango(turno, fecha1, valuelinea);
+
+            data = ListaFueraRango.Count > 0 ? 1 : 2;
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+        }
+        loading = false;
     }
 
     async Task ShowDialog(AsentumDTO asentamiento)
     {
-
         DialogCorteDTO cortedialog = new DialogCorteDTO();
         CorteDiscDTO corte = new CorteDiscDTO();//corte para enviar y recibir en caso de edicion
         AsentumDTO asentamientoNuevo = new AsentumDTO();
 
-        // 
-        if ( asentamiento.CorteDiscDTO.Count>0)
+        //
+        if (asentamiento.CorteDiscDTO.Count > 0)
         {
             corte = asentamiento.CorteDiscDTO.First();
         }
-
-        //dialog para corte 
-
+        //si el usuiario es operador enviar un Definir en el plan de accion
+        if (!permisos["Centros"])
+        {
+            corte.CdaccCorr = "Definir";
+        }
+        //dialog para corte
         cortedialog = await DialogService.OpenSideAsync<DialogSideContent>(
 
            $"Registrar Corte: {asentamiento.RangoDTONavigation.VariableDTONavigation.Vnombre}",
            parameters: new Dictionary<string, object?>()
-                        {
+                                            {
                 { "categorias", categorias },
                 { "lmin",asentamiento.RangoDTONavigation.Rmin },
                 {"lmax",asentamiento.RangoDTONavigation.Rmax},
-                {"corteparametro", corte }
-                    },
+                {"corteparametro", corte },
+                {"rol", permisos["Centro"] }
+                                        },
            options: new SideDialogOptions
-               { Position = DialogPosition.Right, ShowMask = true, 
-                   CloseDialogOnOverlayClick = false 
+               {
+                   Position = DialogPosition.Right,
+                   ShowMask = true,
+                   CloseDialogOnOverlayClick = false
                });
 
         if (cortedialog is not null)
         {
-
             //asentamiento  fuera de rango
             var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);
 
@@ -256,21 +314,19 @@
                 elemento.AisActivo = false;// desactivar el anterior
 
                 ListaFueraRango.Add(asentamientoNuevo);//agrerar a la lista
-            }
 
+            }
             //Registrar el corte desde el dto del dialog y el id del asentamiento
             corte = new CorteDiscDTO();
             corte.IdAsenta = asentamiento.IdAsenta;
             corte.IdCategori = cortedialog.IdCategori;
             corte.CdaccCorr = cortedialog.CdaccCorr;
             corte.CdisListo = cortedialog.CdisListo;
-            corte.AsentumDTONavigation = elemento;
+            // corte.AsentumDTONavigation = elemento;
 
             if (ModoCorteValue)
             {
-
                 //Si se edita el corte,se limpia la lista para añadir corte nuevo.
-
                 if (elemento.CorteDiscDTO.Count > 0)
                 {
                     elemento.CorteDiscDTO.Clear();
@@ -284,14 +340,54 @@
                 await SaveCorteDiscrepancia(corte);
                 await ConsultarAsentamientos();
             }
-
         }
+    }
 
+    private async Task CambioFiltros(bool value)
+    {
+        //Confirmación de actualización de consulta a cambiar modo de filtros
+        if (ModoCorteValue)
+        {
+            if (ListaFueraRango.Any(c => c.CorteDiscDTO.Count > 0))
+            {
+                var result = await DialogService.Confirm("Confirmación",
+                "Si Activa/Desactiva los filtros, se eliminarán los registros cargados. ¿Está seguro/a?",
+                new ConfirmOptions()
+                    {
+                        OkButtonText = "Confirmar",
+                        CancelButtonText = "Cancelar",
+                        ShowClose = false,
+                    }
+
+                );
+                if (!result.Value)
+                {
+                    filtrosextras = filtrosextrasvisual = !value;
+                }
+                else
+                {
+                    filtrosextras = filtrosextrasvisual = value;
+                    await ConsultarAsentamientos();
+                }
+            }
+            else
+            {
+                filtrosextras = filtrosextrasvisual = value;
+                //siempre al desactivar los filtros seactualiza si hay datos en la lista
+                if (!filtrosextras && ListaFueraRango.Count>0)
+                {
+                    await ConsultarAsentamientos();
+                }
+            }
+        }
+        else
+        {
+            filtrosextras = filtrosextrasvisual = value;
+        }
     }
 
     private async Task Cambio()
     {
-
         if (textModoCorteValue == "Cargar lista total" && !ModoCorteValue)
         {
             if (ListaFueraRango.Any(c => c.CorteDiscDTO.Count > 0))
@@ -303,28 +399,25 @@
                         OkButtonText = "Confirmar",
                         CancelButtonText = "Cancelar",
                         ShowClose = false,
-
                     }
-
                 );
                 if (!result.Value)
                 {
                     ModoCorteValue = true;
-                 
+
                 }
                 else
                 {
                     ModoCorteValue = false;
                     await ConsultarAsentamientos();
                 }
-
             }
         }
         else
         {
             ModoCorteValue = true;
         }
-        textModoCorteValue = ModoCorteValue ? "Cargar lista total" : "Indivudal";
+        textModoCorteValue = ModoCorteValue ? "Cargar lista total" : "Individual";
         await LocalStorage.SetItemAsync("ModoCorteValue", textModoCorteValue);
     }
 
@@ -335,12 +428,11 @@
 
     public async Task AddListaCorteDiscrepancia()
     {
-        var listadocortes = ListaFueraRango.Where(a => a.IdAsenta > 0).ToList();
-        //TODO:Verficar funcionamiento
+        var listadocortes = ListaFueraRango.Where(a => a.IdAsenta > 0).ToList();        
         bool cargar = true;
-        foreach (var a in listadocortes )
+        foreach (var a in listadocortes)
         {
-            if (a.CorteDiscDTO.Count==0)
+            if (a.CorteDiscDTO.Count == 0)
             {
                 cargar = false;
                 break;
@@ -348,7 +440,22 @@
         }
         if (cargar)
         {
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+            //TODO: Enviaer copia de la lista, o crear dto de consulta para fuera rango.
+            ListaAdd = ListaFueraRango.ToList();
+
+            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaAdd);
+
+            if (result)
+            {
+                await ConsultarAsentamientos();
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+            }
+            else
+            {
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
+
+            }
+
         }
         else
         {
@@ -372,7 +479,7 @@
     //retornar Clases
     string GetClass(AsentumDTO lista)
     {
-        if (lista.IdAsenta==0 || lista.RangoDTONavigation == null) 
+        if (lista.IdAsenta == 0 || lista.RangoDTONavigation == null)
         {
             return "rz-p-4"; // Retornar un string vacío
         }
@@ -381,7 +488,7 @@
 
     string GetLabel(AsentumDTO lista)
     {
-        if (lista.IdAsenta == 0) 
+        if (lista.IdAsenta == 0)
         {
             return ""; // Retornar un string vacío
         }
@@ -390,21 +497,20 @@
 
     double GetValue(AsentumDTO lista)
     {
-        if (lista.IdAsenta == 0) 
+        if (lista.IdAsenta == 0)
         {
-            return 0; 
+            return 0;
         }
         return lista.Avalor > lista.RangoDTONavigation.Rmax ? lista.RangoDTONavigation.Rmax : lista.RangoDTONavigation.Rmin;
     }
 
     string GetClassCorte(int valor)
     {
-        if (valor == 0) 
+        if (valor == 0)
         {
             return "rz-p-4"; // Retornar un string vacío
         }
         return valor > 0 ? "rz-p-4 cortecargado" : "rz-p-4 ";
-
     }
 
 
