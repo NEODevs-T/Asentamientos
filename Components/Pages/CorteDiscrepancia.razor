@@ -2,9 +2,11 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 @inject TooltipService tooltipService
+@inject DialogService DialogService
 @inject ILocalStorageService LocalStorage
 @inject INotifiRadzenServices NotifiRadzenServices
 @inject ICorteDiscrepancia CorteDiscrepanciaDataService
+@inject IRolLogic RolLogicService
 
 @page "/cortediscrepancia"
 
@@ -15,70 +17,97 @@
                 OnChangelineas="((int l) => this.valuelinea = l)" />
 
 
-@if (valuelinea > 0)
+@if (filtrosextras && valuelinea > 0)
 {
     <FiltrosAsentamientos idLinea="@valuelinea"
                           OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)"
                           OnChangeProducto="((int idProducto) => this.idProducto = idProducto)"
                           OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)" />
 }
+@if (valuelinea != 0)
+{
+    <FiltroGrupoTurno idEmpresa="@valueempresa" OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)" />
+}
+@if (valuelinea != 0 && turno is not null)
+{
+    @*     Barra de filtro y opciones *@
+    <RadzenCard Variant="Variant.Filled" Class="rz-my-4 rz-mx-auto rz-background-color-base-50">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Normal" Wrap="FlexWrap.Wrap">
+            <RadzenColumn class="rz-ml-8">
+                <RadzenLabel Text="Fecha" Component="DatePickerHourFormat" />
+                <RadzenDatePicker @bind-Value=@fecha HourFormat="12" DateFormat="MM/dd/yyyy" Name="DatePickerHourFormat" Style="width:120px;" />
+            </RadzenColumn>
+            <RadzenColumn class="rz-ml-8">
+                <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Visible=@((idSeccion>0 && filtrosextras)|| !filtrosextras) Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarCortes />
+            </RadzenColumn>
+            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Division"])>
+                <RadzenRow>
+                    <RadzenText TextStyle="TextStyle.Caption"> Filtros:</RadzenText>
+                </RadzenRow>
+                <RadzenRow>
+
+                    <RadzenCheckBox @bind-Value="@filtrosextrasvisual" TValue="bool" Change=@CambioFiltros />
+                </RadzenRow>
+            </RadzenColumn>
+        </RadzenStack>
+    </RadzenCard>
+}
 
 
-<RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Visible=@(idSeccion>0) Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarCortes />
-<RadzenCard Class="rz-my-8 pt-3"Style="min-width:720; max-width:1020px;" Visible=@(data==1)>
+<RadzenCard Class="rz-my-8 pt-3" Style="min-width:720; max-width:1020px;" Visible=@(data==1)>
 
     <RadzenDataGrid Data="@listacortes" TItem="CortesVistaDTO" class="w-auto"
-                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" ColumnWidth="70px" 
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                 AllowColumnResize=true GridLines="DataGridGridLines.Both"
-                AllowSorting="true"  >
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" ColumnWidth="70px"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                    AllowColumnResize=true GridLines="DataGridGridLines.Both"
+                    AllowSorting="true">
 
-    <Columns>
+        <Columns>
 
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Vnombre" Title="Variable" Frozen=true Filterable=true Width="200px"/>   
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Filterable=true Width="200px" />
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Width="250px" />
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Cnombre" Title="Categoría" Filterable=true Width="130px" />
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Avalor" Title="Valor" Filterable=false />
-        <RadzenDataGridColumn TItem="CortesVistaDTO" Title="Límite" Filterable=false>
-            
-            <Template Context="valor">
-                @if (valor.Avalor > valor.Rmax)
-                {
-                    @valor.Rmax
-                    <RadzenIcon Icon="warning" IconColor="@Colors.Danger" />
-                }
-                else
-                {
-                    @valor.Rmin
-                    <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
-                }
-                
-            </Template>
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Vnombre" Title="Variable" Frozen=true Filterable=true Width="200px" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Filterable=true Width="200px" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Width="250px" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Cnombre" Title="Categoría" Filterable=true Width="130px" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Avalor" Title="Valor" Filterable=false />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Title="Límite" Filterable=false>
 
-        </RadzenDataGridColumn>
-        @* <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Robj" Title="V. Obj" Filterable=false /> *@
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Unombre" Title="Unidad" Sortable="false" Filterable=false   />
+                <Template Context="valor">
+                    @if (valor.Avalor > valor.Rmax)
+                    {
+                        @valor.Rmax
+                        <RadzenIcon Icon="warning" IconColor="@Colors.Danger" />
+                    }
+                    else
+                    {
+                        @valor.Rmin
+                        <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
+                    }
+
+                </Template>
+
+            </RadzenDataGridColumn>
+            @* <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Robj" Title="V. Obj" Filterable=false /> *@
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Unombre" Title="Unidad" Sortable="false" Filterable=false />
 
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdisListo" Title="Estado" Sortable="false" Filterable="false">
-            <Template Context="est">
-                @if (est.CdisListo)
-                {
-                    
-                    <RadzenIcon Icon="done" IconColor="@Colors.Success" />
-                }
-                else
-                {
-           
-                    <RadzenIcon Icon="info" IconColor="@Colors.Danger" />
-                }
+                <Template Context="est">
+                    @if (est.CdisListo)
+                    {
 
-            </Template>
+                        <RadzenIcon Icon="done" IconColor="@Colors.Success" />
+                    }
+                    else
+                    {
 
-        </RadzenDataGridColumn>
+                        <RadzenIcon Icon="info" IconColor="@Colors.Danger" />
+                    }
 
-    </Columns>
-</RadzenDataGrid>
+                </Template>
+
+            </RadzenDataGridColumn>
+
+        </Columns>
+    </RadzenDataGrid>
 </RadzenCard>
 <RadzenText Visible="@(data==2)">
     <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
@@ -94,9 +123,12 @@
     [CascadingParameter]
     private IEnumerable<Claim>? claims { get; set; }
     public List<CortesVistaDTO>? listacortes { get; set; } = new List<CortesVistaDTO>();
+    public List<CategoriaDTO>? categorias { get; set; }
 
     bool loading = false; //motrar loading
     int data = 0; //1-motrar tabla de datos 2-no haydata
+    bool filtrosextrasvisual = true; //motrar lfiltros extras
+    bool filtrosextras = true; //motrar lfiltros extras
 
     //parametros retornado en el componente Hijo FiltroMaestra
     public int valuepais { get; set; } = 0;
@@ -110,12 +142,23 @@
     public int idSeccion { get; set; } = 0;
     public int idProducto { get; set; } = 0;
 
-   // string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    string fecha1 = "2024-01-10";
+    //parametros retornado en el componente Hijo FiltroGrupoTurno
+    public string grupo { get; set; } = "";
+    public string turno { get; set; } = "";
+
+    //string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
+    //string fecha1 = "2024-01-10";
+
+
+    DateTime fecha = DateTime.Now;
+    Dictionary<string, bool> permisos = new Dictionary<string, bool>();
+    public string? roleClaim { get; set; } //guardar el rol del usuario
+
     protected override async Task OnInitializedAsync()
     {
         await CreateData();
-
+        permisos = RolLogicService.ListasRol(roleClaim);
+        await GetCategorias();
     }
 
     private async Task CreateData()
@@ -126,16 +169,74 @@
         {
             claims = user.Claims;
         }
+        //Obtner Rol
+        roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
     }
 
     public async Task ConsultarCortes()
     {
         data = 0;
         loading = true;
-        listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLinea("3", fecha1, valuelinea);
-        data = listacortes.Count > 0 ? 1 : 2;
+        string fecha1 = fecha.Date.ToString("yyyy-MM-dd");
+      
+        if (filtrosextras)
+        {
+            if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+            {
+
+                listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLineaFiltrado(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
+                data = listacortes.Count > 0 ? 1 : 2;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+            }
+            else
+            {
+                data = 1;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+            }
+        }
+        else
+        {
+            listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLinea(turno, fecha1, valuelinea);
+            data = listacortes.Count > 0 ? 1 : 2;
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+        }
         loading = false;
-        NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Consulta Exitosa"));
 
     }
+    protected async Task GetCategorias()
+    {
+        categorias = await CorteDiscrepanciaDataService.GetCategorias();
+    }
+    private async Task CambioFiltros(bool value)
+    {
+        //Confirmación de actualización de consulta a cambiar modo de filtros
+        if (filtrosextras && !value && listacortes.Count>0)
+        {
+
+            var result = await DialogService.Confirm("Confirmación",
+            "Si Activa/Desactiva los filtros, se eliminarán los registros cargados. ¿Está seguro/a?",
+            new ConfirmOptions()
+                {
+                    OkButtonText = "Confirmar",
+                    CancelButtonText = "Cancelar",
+                    ShowClose = false,
+                }
+
+            );
+            if (!result.Value)
+            {
+                filtrosextras = filtrosextrasvisual = !value;
+            }
+            else
+            {
+                filtrosextras = filtrosextrasvisual = value;
+                await ConsultarCortes();
+            }
+        }
+        else
+        {
+            filtrosextras = filtrosextrasvisual = value;
+        }
+    }
+
 }

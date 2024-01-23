@@ -15,8 +15,8 @@ namespace Asentamientos.Data
     public class CorteDiscrepaciaData : ICorteDiscrepancia
     {
         private readonly IHttpClientFactory _clientFactory;
-        private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
-        //private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
+        //private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
+        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
 
         public CorteDiscrepaciaData(IHttpClientFactory clientFactory)
         {
