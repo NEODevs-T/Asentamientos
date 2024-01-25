@@ -8,7 +8,7 @@
 @inject IRolLogic RolLogicService
 
 @page "/fuerarango"
-@filtrosextras
+
 <FiltroMaestras OnChangepais="((int p) => this.valuepais = p)"
                 OnChangeempresa="((int e) => this.valueempresa = e)"
                 OnChangecentros="((int c) => this.valuecentros = c)"
@@ -99,7 +99,7 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle1">@(lista.RangoDTONavigation.Robj)</RadzenText>
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-center rz-my-auto">
-                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Light" class="unidad-badge" Text=@($"{lista.RangoDTONavigation.VariableDTONavigation.UnidadDTONavigation.Unombre}") />
+                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Light" class="unidad-badge" Text="@(lista.RangoDTONavigation.VariableDTONavigation.UnidadDTONavigation.Unombre)" />
                             </RadzenColumn>
 
                             @if (lista.CorteDiscDTO.Count > 0)
@@ -193,6 +193,7 @@
 
     Dictionary<string, bool> permisos = new Dictionary<string, bool>();
     public string? roleClaim { get; set; } //guardar el rol del usuario
+    public string? Ficha { get; set; } //guardar la ficha del usuario
 
 
     protected override async Task OnInitializedAsync()
@@ -230,6 +231,7 @@
         }
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+        Ficha = claims.FirstOrDefault(c => c.Type.Equals("Ficha"))?.Value;
     }
 
     public async Task ConsultarAsentamientos()
@@ -264,6 +266,7 @@
     }
 
     async Task ShowDialog(AsentumDTO asentamiento)
+
     {
         DialogCorteDTO cortedialog = new DialogCorteDTO();
         CorteDiscDTO corte = new CorteDiscDTO();//corte para enviar y recibir en caso de edicion
@@ -275,7 +278,7 @@
             corte = asentamiento.CorteDiscDTO.First();
         }
         //si el usuiario es operador enviar un Definir en el plan de accion
-        if (!permisos["Centros"])
+        if (!permisos["Centro"])
         {
             corte.CdaccCorr = "Definir";
         }
@@ -323,6 +326,8 @@
             corte.CdaccCorr = cortedialog.CdaccCorr;
             corte.CdisListo = cortedialog.CdisListo;
             // corte.AsentumDTONavigation = elemento;
+
+           // asentamiento.InfoAseDTONavigation.IafichaCor = Ficha;
 
             if (ModoCorteValue)
             {

@@ -1,5 +1,4 @@
 ﻿
-
 <EditForm Model="corte" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
     <RadzenRow Gap="1rem">
         <RadzenColumn Size="12" SizeSM="12">
@@ -8,7 +7,7 @@
                     <RadzenDropDown TValue="int" Data=@categorias.Where(c=>c.Cnombre!="Sin Categorizar") TextProperty="Cnombre" ValueProperty="IdCategori" @bind-Value=corte.IdCategori />
                 </RadzenFormField>
 
-                <RadzenFormField Text="Acción Correctiva">
+                <RadzenFormField Text="Acción Correctiva" Visible=@(rol)>
                     <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="corte.CdaccCorr" />
                 </RadzenFormField>
             </RadzenStack>
@@ -21,7 +20,8 @@
         {
             <RadzenColumn Size="12" SizeSM="12">
                 <RadzenFormField Text="Nuevo Valor">
-                    <RadzenNumeric Step="0.1"  @bind-Value="corte.Avalor"  Min="@Convert.ToDecimal(lmin)" Max="@Convert.ToDecimal(lmax)" />
+                   @*  <RadzenNumeric Step="0.1"  @bind-Value="corte.Avalor"  Min="@Convert.ToDecimal(lmin)" Max="@Convert.ToDecimal(lmax)" /> *@
+                    <RadzenNumeric Step="0.1"  @bind-Value="corte.Avalor"  />
                 </RadzenFormField>
             </RadzenColumn>
             <RadzenText Visible=limites TextStyle="TextStyle.Caption"> El valor debe estar entre @lmin y @lmax</RadzenText>
@@ -83,7 +83,7 @@
     protected override async Task OnInitializedAsync()
     {
         //todo crear mapeo de dtos
-        if (corteparametro.IdCategori>0)
+        if (corteparametro.IdCategori > 0 || corteparametro.CdaccCorr=="Definir")
         {
             corte.IdCategori = corteparametro.IdCategori;
             corte.CdaccCorr = corteparametro.CdaccCorr;
@@ -91,8 +91,8 @@
 
         }
         else
-        {corte.IdCategori = categorias.First(c => c.Cnombre != "Sin Categorizar").IdCategori;
-
+        {
+            corte.IdCategori = categorias.First(c => c.Cnombre != "Sin Categorizar").IdCategori;
         }
     }
 
