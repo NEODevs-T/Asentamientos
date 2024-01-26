@@ -3,16 +3,18 @@
 @inject IJSRuntime JS
 @inject IRangoData RangoData
 @inject IMaestraData MaestaData
+@inject IRotacionLogic RotacionLogic
 @page "/Impresion/{idLinea:int}/{idProducto:int}/{idSeccion:int}/{idClasiVar:int}/{idEmpresa:int}"
 
 @if(listaRango.Count != 0){
-    <RadzenCard Class="rz-mx-auto">
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="">
+    <RadzenStack Class="rz-mx-auto" style="height: 92vh;">
+        <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="">
             <RadzenStack Gap="0" class="rz-display-flex rz-justify-content-center rz-align-items-center">
                 <RadzenText style="text-align: center;" TextStyle="TextStyle.H5">Asentamientos</RadzenText>
                 <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">@listaRango[0].IdVariableNavigation.IdSeccionNavigation.Snombre</RadzenText>
             </RadzenStack>
-            <RadzenRow style="width: 100%;" class="rz-display-flex rz-justify-content-end rz-align-items-top" RowGap="0">
+            <RadzenRow style="width: 100%; text-align: center;" class="rz-display-flex rz-justify-content-end rz-align-items-top" RowGap="0">
+                <RadzenText style="display:flex; justify-content: center; align-items: center;" TextStyle="TextStyle.H6">@fechaImpresion.ToString("dd/MM/yyyy")</RadzenText>
                 <RadzenImage Path="./img/neo.png"  Style="width: 70px; height: 70px;" />
             </RadzenRow>
         </RadzenStack>
@@ -28,6 +30,7 @@
                     }
                     <th>2do Turno</th>
                     <th>1er Turno</th>
+                    <th>Observación</th>
                 </tr>
                 @foreach(var item in listaRango){
                     <tr>
@@ -54,15 +57,21 @@
                         <td>
                             
                         </td>
+                        <td style="width: 30%;">
+                            
+                        </td>
                     </tr>
                 }
             </table>
         </RadzenStack>
-    </RadzenCard>
+    </RadzenStack>
+    <section class="cajaFirma">
+        <div class="firma">
+            <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">Firma del Supervisor</RadzenText>
+        </div>
+    </section>
 
 }
-
-
 
 @code{
     public List<Rango> listaRango {get; set;} = new List<Rango>();
@@ -78,12 +87,14 @@
     [Parameter]
     public int idEmpresa {get; set;} = 0;
     public bool band  {get; set;} =  false;
+    public DateTime fechaImpresion {get; set;}
     public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
     protected override async Task OnInitializedAsync()
     {
         band = false;
         filtros = new FiltrosRangoControlDTO();
         filtros.master = await MaestaData.GetMaestraPorLinea(idLinea);
+        fechaImpresion = RotacionLogic.ObtenerFechaBPCS(idEmpresa);
         filtros.producto = idProducto;
         filtros.seccion = idSeccion;
         filtros.tipo = idClasiVar;
@@ -95,7 +106,7 @@
     {   
         string a = NavigationManager.BaseUri;
         if(listaRango.Count != 0){
-            JS.InvokeVoidAsync("imprimirElemento",NavigationManager.BaseUri);
+            //JS.InvokeVoidAsync("imprimirElemento",NavigationManager.BaseUri);
         }
     }
 }

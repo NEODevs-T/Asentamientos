@@ -42,6 +42,7 @@ builder.Services.AddScoped<ICorteDiscrepancia,CorteDiscrepaciaData>();
 
 //* Logic
 builder.Services.AddScoped<IRolLogic,RolLogic>();
+builder.Services.AddScoped<IRotacionLogic,RotacionLogic>();
 
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();

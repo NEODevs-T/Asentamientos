@@ -44,8 +44,7 @@
 
 @if(band){
     <RadzenDataGrid class="table rz-mb-1" Data="@listaAsentamientos" TItem="Asentum" AllowVirtualization="true"
-                AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
-                AllowSorting="true">
+                AllowSorting="true" AllowColumnResize=true GridLines="DataGridGridLines.Both">
                 
                 <Columns>
                     <RadzenDataGridColumn Width="3%" TItem="Asentum" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">

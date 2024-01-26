@@ -47,7 +47,6 @@ namespace Asentamientos.Logic
             return result;
         }
 
-       
 
     }
 }
