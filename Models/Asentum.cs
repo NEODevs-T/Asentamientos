@@ -15,9 +15,11 @@ public partial class Asentum
 
     public bool AisActivo { get; set; }
 
+    public string? Aobserv { get; set; }
+
     public virtual ICollection<CorteDi> CorteDis { get; set; } = new List<CorteDi>();
 
-    public virtual InfoAse? IdInfoAseNavigation { get; set; } = null!;
+    public virtual InfoAse IdInfoAseNavigation { get; set; } = null!;
 
-    public virtual Rango? IdRangoNavigation { get; set; } = null!;
+    public virtual Rango IdRangoNavigation { get; set; } = null!;
 }
