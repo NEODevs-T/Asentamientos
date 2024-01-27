@@ -12,5 +12,6 @@ namespace Asentamientos.Interface
         Task<List<DivisionesV>> GetDivisiones(int IdCentro);      
         Task<List<LineaV>> GetLineas(int IdDivision);   
         Task<int> GetMaestraPorLinea(int idLinea);  
+        Task<List<EquipoEam>> GetEquiposEAMPorLinea(int idLinea);  
     }
 }

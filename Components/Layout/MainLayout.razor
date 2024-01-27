@@ -121,8 +121,8 @@
                 }
                 else
                 {
-                    mensaje = "Accediendo...";
-                    NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", mensaje));
+                    // mensaje = "Accediendo...";
+                    // NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", mensaje));
 
                     Console.WriteLine(ValidarToken);
                     await LocalStorage.SetItemAsync("AsentamientosToken", ValidarToken);

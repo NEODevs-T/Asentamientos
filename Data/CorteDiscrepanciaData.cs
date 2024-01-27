@@ -9,14 +9,15 @@ using System.Text.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Xml;
+using Asentamientos.Components;
 
 namespace Asentamientos.Data
 {
     public class CorteDiscrepaciaData : ICorteDiscrepancia
     {
         private readonly IHttpClientFactory _clientFactory;
-        //private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
-        private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
+        private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
+       // private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
 
         public CorteDiscrepaciaData(IHttpClientFactory clientFactory)
         {
@@ -59,16 +60,14 @@ namespace Asentamientos.Data
             var result = await client.PostAsJsonAsync($"{BaseUrl}AddCorte",corte);
 
             if (result.IsSuccessStatusCode)
-            {
-                
+            {               
                 return true;
             }
             else
             {    
                 //TODO:Crear mensaje o log
                 var error = await result.Content.ReadAsStringAsync();
-                return error;      
-                 
+                return error;                     
             }
         }
 
@@ -80,26 +79,36 @@ namespace Asentamientos.Data
         }
 
         public async Task<bool> UpdateAentamientosCortes(List<AsentumDTO> cortes)
-        {
-           
+        {          
             try
             {
-                //foreach (var l in cortes)
-                //{
-                //    l.InfoAseDTONavigation = null;
-                //    l.RangoDTONavigation = null;
-                //    l.CorteDiscDTO.First().CategoriaDTONavigation = null;
-                //}
+              
                 var client = _clientFactory.CreateClient();
                 var result = await client.PutAsJsonAsync($"{BaseUrl}UpdateCorteAsentamientoLista", cortes);
                 return result.IsSuccessStatusCode;
 
             }
-            catch (Exception ex)
+            catch 
             {
                 return false;
             }
+        }
 
+        public async Task<bool> UpdateCorte(CorteDiscDTO corte)
+        {
+
+            try
+            {
+
+                var client = _clientFactory.CreateClient();
+                var result = await client.PutAsJsonAsync($"{BaseUrl}UpdateCorte", corte);
+                return result.IsSuccessStatusCode;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

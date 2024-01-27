@@ -38,6 +38,7 @@ builder.Services.AddScoped<IAsentamientoData,AsentamientoData>();
 builder.Services.AddScoped<IValoresDeAsentamientosVData,ValoresDeAsentamientosVData>();
 builder.Services.AddScoped<IVaribleData,VariableData>();
 builder.Services.AddScoped<ICorteDiscrepancia,CorteDiscrepaciaData>();
+builder.Services.AddScoped<ILibroNovedades,LibroNovedadesData>();
 
 //* Logic
 builder.Services.AddScoped<IRolLogic,RolLogic>();

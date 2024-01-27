@@ -38,7 +38,7 @@
             <RadzenColumn class="rz-ml-8">
                 <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
             </RadzenColumn>
-            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Division"])>
+            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Centro"])>
                 <RadzenRow>
                     <RadzenText TextStyle="TextStyle.Caption"> Filtros:</RadzenText>
                 </RadzenRow>
@@ -240,27 +240,34 @@
         data = 0;
         loading = true;
         string fecha1 = fecha.Date.ToString("yyyy-MM-dd");
-        if (filtrosextras)
+        if (!string.IsNullOrEmpty(grupo) && !string.IsNullOrEmpty(turno))
         {
-            if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+            if (filtrosextras)
             {
+                if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+                {
 
-                ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
-                data = ListaFueraRango.Count > 0 ? 1 : 2;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                    ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
+                    data = ListaFueraRango.Count > 0 ? 1 : 2;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                }
+                else
+                {
+                    data = 1;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                }
             }
             else
             {
-                data = 1;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango(turno, fecha1, valuelinea);
+
+                data = ListaFueraRango.Count > 0 ? 1 : 2;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
             }
         }
         else
         {
-            ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango(turno, fecha1, valuelinea);
-
-            data = ListaFueraRango.Count > 0 ? 1 : 2;
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros grupo y turno."));
         }
         loading = false;
     }
@@ -304,10 +311,24 @@
         if (cortedialog is not null)
         {
             //asentamiento  fuera de rango
-            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);
+            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);     
+            
+            //Registrar el corte desde el dto del dialog y el id del asentamiento
+            corte = new CorteDiscDTO();
+            corte.IdAsenta = asentamiento.IdAsenta;
+            corte.IdCategori = cortedialog.IdCategori;
+            corte.CdaccCorr = cortedialog.CdaccCorr;
+            corte.CdisLibro = false;
+            corte.CdfechAcci = DateTime.Now;
+            corte.CdisListo = cortedialog.CdisListo;
+            // corte.AsentumDTONavigation = elemento;
 
             if (cortedialog.CdisListo)
             {
+                //Listo Fecha Listo
+
+                corte.CdfechList = DateTime.Now;
+
                 //crear nuevo asentamiento
                 asentamientoNuevo.IdInfoAse = asentamiento.IdInfoAse;
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
@@ -319,13 +340,7 @@
                 ListaFueraRango.Add(asentamientoNuevo);//agrerar a la lista
 
             }
-            //Registrar el corte desde el dto del dialog y el id del asentamiento
-            corte = new CorteDiscDTO();
-            corte.IdAsenta = asentamiento.IdAsenta;
-            corte.IdCategori = cortedialog.IdCategori;
-            corte.CdaccCorr = cortedialog.CdaccCorr;
-            corte.CdisListo = cortedialog.CdisListo;
-            // corte.AsentumDTONavigation = elemento;
+       
 
            // asentamiento.InfoAseDTONavigation.IafichaCor = Ficha;
 
@@ -446,9 +461,9 @@
         if (cargar)
         {
             //TODO: Enviaer copia de la lista, o crear dto de consulta para fuera rango.
-            ListaAdd = ListaFueraRango.ToList();
+            //ListaAdd = ListaFueraRango.ToList();
 
-            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaAdd);
+            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaFueraRango);
 
             if (result)
             {

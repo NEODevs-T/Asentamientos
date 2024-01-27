@@ -64,5 +64,12 @@ namespace Asentamientos.Data
             var result = await client.GetFromJsonAsync<List<LineaV>>($"{BaseUrl}GetLineas/{IdDivision}");
             return result ?? new List<LineaV>();
         }
+
+        public async Task<List<EquipoEam>> GetEquiposEAMPorLinea(int idLinea)
+        {
+            var client = _clientFactory.CreateClient();
+            var result = await client.GetFromJsonAsync<List<EquipoEam>>($"{BaseUrl}GetEquiposEAMPorLinea/{idLinea}");
+            return result ?? new List<EquipoEam>();
+        }
     }
 }

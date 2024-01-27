@@ -27,7 +27,7 @@
 .textarea, .textarea:active {
     resize: none !important;
     height: 200px !important;
-    width: 500px !important; 
+    width: 400px !important; 
    
 }
 .rz-switch.rz-switch-checked .rz-switch-circle {
@@ -55,4 +55,3 @@
     text-overflow: ellipsis;
     white-space: normal;
 }
-
