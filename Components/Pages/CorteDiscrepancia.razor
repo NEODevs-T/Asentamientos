@@ -230,7 +230,6 @@
             {
                 if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
                 {
-
                     listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLineaFiltrado(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
                     data = listacortes.Count > 0 ? 1 : 2;
                     NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
