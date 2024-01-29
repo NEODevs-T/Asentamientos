@@ -7,7 +7,7 @@
     <RadzenRow class="rz-text-align-Left">
         <AuthorizeView Roles="SuperAdmin, SuperUser">
 
-            <RadzenColumn>
+            <RadzenColumn Size="3">
                 @if (pais == null)
                 {
                     <CargandoSelect />
@@ -29,7 +29,7 @@
 
         <AuthorizeView Roles="Admin,SuperAdmin, SuperUser">
 
-            <RadzenColumn>
+            <RadzenColumn Size="3">
                 @if (valuepais > 0 && empresas is not null)
                 {
                     <div class="rz-p-sm-2 rz-text-align-left">
@@ -51,7 +51,7 @@
             </RadzenColumn>
         </AuthorizeView>
 
-        <RadzenColumn>
+        <RadzenColumn Size="3">
 
             @if (valueempresas > 0 && (centros is not null || !string.IsNullOrEmpty(nombrecentro)))
             {
@@ -86,7 +86,7 @@
             }
         </RadzenColumn>
 
-        <RadzenColumn>
+        <RadzenColumn Size="3">
             @if (valuecentros > 0 && (divisiones is not null || !string.IsNullOrEmpty(nombredivision)))
             {
                 <div class="rz-p-sm-2 rz-text-align-left">
@@ -129,7 +129,7 @@
             }
         </RadzenColumn>
 
-        <RadzenColumn>
+        <RadzenColumn Size="3">
             @if (valuedivision > 0 && (lineas is not null || !string.IsNullOrEmpty(nombrelinea)))
             {
                 <div class="rz-p-sm-2 rz-text-align-left">
@@ -142,7 +142,7 @@
                     {
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap" Style=" width: 100%; max-width: 350px;min-width: 90px; ">
 
-                            <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
+                              <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                                             TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => Set())">
                             </RadzenDropDown>
 
@@ -166,7 +166,7 @@
                 <p><em>Seleccione una División...</em></p>
             }
         </RadzenColumn>
-     @*    <RadzenColumn>
+@*         <RadzenColumn>
             <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Filled" Disabled="false" Text="Filtrar" Icon="filter_alt" ButtonStyle="ButtonStyle.Success" Click=Set />
             </div>

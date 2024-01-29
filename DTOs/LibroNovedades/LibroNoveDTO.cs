@@ -14,7 +14,7 @@ public class LibroNoveDTO
     public string IdEquipo { get; set; } = null!;
 
     [Required(ErrorMessage = "El campo Discrepancia es requerido")]
-    [StringLength(150, ErrorMessage = "El campo Discrepancia no debe tener más de {1} carácteres")]
+    [StringLength(250, ErrorMessage = "El campo Discrepancia no debe tener más de {1} carácteres")]
     public string Lndiscrepa { get; set; } = null!; 
 
     public double LntiePerMi { get; set; }
