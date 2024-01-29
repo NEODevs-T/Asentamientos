@@ -27,7 +27,7 @@ namespace Asentamientos.Data
             return band;
         }
 
-        public async Task<bool> AddAsentamientosDelDia(InfoAse infoAsentamientos, List<Asentum> listaAsentamiento){
+        public async Task<bool> AddAsentamientosDelDia(int idEmpresa,InfoAse infoAsentamientos, List<Asentum> listaAsentamiento){
             bool band = false;
             InformeConAsentamientosDTO asentamientosData = new InformeConAsentamientosDTO();
             asentamientosData.InformaDeAsentamientosDTO = new InfoAseDTO();
@@ -44,9 +44,10 @@ namespace Asentamientos.Data
                 asentamientosData.AsentamientosDTO[i].Avalor =  listaAsentamiento[i].Avalor;
                 asentamientosData.AsentamientosDTO[i].AisActivo = listaAsentamiento[i].AisActivo;
                 asentamientosData.AsentamientosDTO[i].IdRango = listaAsentamiento[i].IdRango;
+                asentamientosData.AsentamientosDTO[i].Aobserv = listaAsentamiento[i].Aobserv;
             }
 
-            url = $"{BaseUrl}/AddAsentamientosDelDia";
+            url = $"{BaseUrl}/AddAsentamientosDelDia/{idEmpresa}";
             cliente =  _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url,asentamientosData);
             //var error = await mensaje.Content.ReadAsStringAsync();

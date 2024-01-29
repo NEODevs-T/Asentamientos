@@ -56,10 +56,15 @@
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.Vnombre" Title="Variable" />
                     <RadzenDataGridColumn TItem="Asentum" Title="Valor" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
-                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="@Convert.ToDecimal(data.IdRangoNavigation.RlimMin)" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 25%;"/>
+                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="0" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 25%;"/>
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
+                    <RadzenDataGridColumn TItem="Asentum" Title="Observación" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <RadzenTextArea @bind-Value="data.Aobserv" style="width: 100%;"/>
+                        </Template>
+                    </RadzenDataGridColumn>
                 </Columns>
                 
     </RadzenDataGrid>
@@ -167,7 +172,7 @@
         informeAsentamientos.Iagrupo = grupo;
         informeAsentamientos.Iaturno = turno;
         informeAsentamientos.Iaficha = ficha.ToUpper();
-        isOk = await AsentamientoData.AddAsentamientosDelDia(informeAsentamientos,listaAsentamientos);
+        isOk = await AsentamientoData.AddAsentamientosDelDia(idEmpresa,informeAsentamientos,listaAsentamientos);
         if(isOk){
             NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
             informeAsentamientos = new InfoAse();
