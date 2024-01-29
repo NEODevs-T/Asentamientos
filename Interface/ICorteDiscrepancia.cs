@@ -12,6 +12,7 @@ namespace Asentamientos.Interface
         Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLinea(string turno, string fecha, int idcentro);
         Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLineaFiltrado(string turno, string fecha, int idcentro,int idClasiVar, int idSeccion, int idProducto);
         Task<bool> UpdateAentamientosCortes(List<AsentumDTO> cortes);
+        Task<bool> UpdateCorte(CorteDiscDTO corte);
         Task<object> AddCorteDiscrepancia(CorteDiscDTO corte);
         Task<List<CategoriaDTO>> GetCategorias();
     }

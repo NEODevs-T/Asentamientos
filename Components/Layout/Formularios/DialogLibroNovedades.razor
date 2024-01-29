@@ -1,0 +1,209 @@
+﻿@inject NotificationService NotificationService
+@inject ILibroNovedades LibroNovedadesService
+@inject IMaestraData MaestraService
+
+<div class="hexagon"></div>
+
+
+@if (ClasificacionesTPM.Count > 0 && ListaEquipos.Count > 0)
+{
+    <EditForm Model="FormNovedades" OnValidSubmit="@InsertarEnLibroNovedades" OnInvalidSubmit="OnInvalidSubmit">
+        <RadzenRow Gap="1rem">
+            <RadzenColumn Size="12" SizeSM="12">
+                <RadzenStack>
+                    <RadzenFormField Text="Clasificación">
+                        <RadzenDropDown TValue="int" Data=@ClasificacionesTPM TextProperty="Ctpmnom" ValueProperty="IdCtpm" @bind-Value=FormNovedades.IdCtpm />
+                    </RadzenFormField>
+
+                    <RadzenFormField Text="Código de Equipo">
+                        <RadzenDropDown  AllowFiltering="true"
+                                        TValue="string" Data=@ListaFiltradaEquipos LoadData=@LoadData ValueProperty="EcodEquiEam" AllowClear="true" FilterDelay="100" @bind-Value=FormNovedades.IdEquipo>
+                            <Template Context="item">
+                                @item.EcodEquiEam - @item.EnombreEam 
+                            </Template>
+                        </RadzenDropDown>
+                    </RadzenFormField>
+
+                    <RadzenFormField Text="Novedad">
+                        <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="FormNovedades.Lndiscrepa" />
+                    </RadzenFormField>
+
+                    <RadzenFormField Text="Observación">
+                        <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="FormNovedades.Lnobserv" />
+                    </RadzenFormField>
+                </RadzenStack>
+            </RadzenColumn>
+
+        </RadzenRow>
+
+        <RadzenRow class="rz-pt-6 rz-pb-4" Visible=(!disabled)>
+            <RadzenButton Size="ButtonSize.Medium" ButtonType="ButtonType.Submit" BusyText="Guardando..." IsBusy=busy Icon="playlist_add" ButtonStyle="ButtonStyle.Success" Text="Agregar" />
+            <RadzenButton Size="ButtonSize.Medium" ButtonStyle="ButtonStyle.Danger" Icon="close_fullscreen" IsBusy=busy Text="Cerrar" Click="@(_ => Service.CloseSide(false))" />
+        </RadzenRow>
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+    </EditForm>
+}
+else
+{
+    <Load />
+}
+
+<style>
+    /*Ajustar el tamaño del RadzenFormField*/
+    .rz-textbox:focus ~ .rz-form-field-label,
+    .rz-textarea:focus ~ .rz-form-field-label,
+    .rz-spinner:focus-within ~ .rz-form-field-label,
+    .rz-autocomplete:focus-within ~ .rz-form-field-label,
+    .rz-textbox:not(:placeholder-shown) ~ .rz-form-field-label, :not(.rz-state-empty) ~ .rz-form-field-label,
+    .rz-variant-filled .rz-textarea:focus ~ .rz-form-field-label,
+    .rz-variant-flat .rz-textarea:focus ~ .rz-form-field-label,
+    .rz-variant-filled :not(.rz-state-empty) ~ .rz-form-field-label,
+    .rz-variant-flat :not(.rz-state-empty) ~ .rz-form-field-label, .rz-radio-button-list-vertical ~ .rz-form-field-label,
+    .rz-radio-button-list-horizontal ~ .rz-form-field-label,
+    .rz-checkbox-list-vertical ~ .rz-form-field-label,
+    .rz-checkbox-list-horizontal ~ .rz-form-field-label,
+    .rz-chkbox ~ .rz-form-field-label, .rz-dropdown-label,.rz-inputtext {
+        background-color: var(--rz-form-field-label-floating-background-color);
+        font-size: 1rem !important;
+        padding-top: 0rem !important;
+        color: black;
+    }
+
+</style>
+@code {
+    [Inject] DialogService Service { get; set; }
+
+    [Parameter]
+    public string Novedad { get; set; }
+    [Parameter]
+    public string Plan { get; set; }
+    [Parameter]
+    public int IdLinea { get; set; }
+    [Parameter]
+    public string Ficha { get; set; }
+    [Parameter]
+    public string grupo { get; set; }
+    [Parameter]
+    public string turno { get; set; }
+
+    bool busy = false;//boton
+    bool success = false;//registro exitoso
+    bool disabled = false;//evitar mas insercciones
+
+    List<ClasifiTpmDTO> ClasificacionesTPM = new List<ClasifiTpmDTO>();
+    List<LibroNoveDTO> ListaAddNovedades = new List<LibroNoveDTO>();
+    List<EquipoEam> ListaEquipos = new List<EquipoEam>();
+    List<EquipoEam> ListaFiltradaEquipos = new List<EquipoEam>();
+    LibroNoveDTO FormNovedades = new LibroNoveDTO();
+
+    private bool IsValid;// aprobar validaciones
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ClasificacionesTPM = await LibroNovedadesService.GetClasificacionTPM();
+            ListaFiltradaEquipos = ListaEquipos = await MaestraService.GetEquiposEAMPorLinea(IdLinea);
+            FormNovedades.Lndiscrepa = Novedad;
+            FormNovedades.Lnobserv = Plan;
+
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(NotificationSeverity.Error, "Error inesperado.", ex.Message);
+        }
+    }
+
+    async Task InsertarEnLibroNovedades()
+    {
+        IsValid = true;
+        busy = true;
+       // disabled = true;
+        
+        if (IsValid)
+        {
+            FormNovedades.IdLinea = IdLinea;
+            FormNovedades.Lnfecha = DateTime.Now;
+            FormNovedades.LnfichaRes = Ficha;
+            FormNovedades.Lngrupo = grupo;
+            FormNovedades.Lnturno = turno;
+            FormNovedades.IdMaquina = FormNovedades.IdEquipo;
+
+            if (Plan != "Definir")
+
+            {
+                try
+                {
+                   //ListaAddNovedades.Add(FormNovedades);
+                   //success = await LibroNovedadesService.AddNovedad(ListaAddNovedades);
+                    if(success)
+                    {
+                        NotificationService.Notify(NotificationSeverity.Success, "Envío al libro de novedades exitoso.");
+                        Service.CloseSide(true); 
+                    }
+                    else
+                    {
+                        NotificationService.Notify(NotificationSeverity.Warning, "No se realizó el envío al libro de novedades.");
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    NotificationService.Notify(NotificationSeverity.Error, "Error inesperado.", ex.Message);
+                }
+            }
+            else
+            {
+                NotificationService.Notify(NotificationSeverity.Warning, "Primero debe definir una acción correctiva.");
+            }
+
+
+        }
+       // disabled = false;
+        busy = false;
+
+    }
+    private void OnInvalidSubmit()
+    {
+        IsValid = false;
+    }
+
+
+    // void LoadData(LoadDataArgs args)
+    // {
+
+    //     if (!string.IsNullOrEmpty(args.Filter))
+    //     {
+    //         ListaFiltradaEquipos = ListaEquipos.Where(c => c.EcodEquiEam.ToLower().Contains(args.Filter.ToLower()) || c.EnombreEam.ToLower().Contains(args.Filter.ToLower())).ToList();
+    //         InvokeAsync(StateHasChanged);
+    //     }
+    //     if (string.IsNullOrEmpty(args.Filter))
+    //     {
+    //         ListaFiltradaEquipos = ListaEquipos.ToList();
+    //         InvokeAsync(StateHasChanged);
+    //     }
+
+
+    // }
+    void LoadData(LoadDataArgs args)
+    {
+        var oldList = ListaFiltradaEquipos;
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            ListaFiltradaEquipos = ListaEquipos.Where(c => c.EcodEquiEam.ToUpperInvariant().Contains(args.Filter.ToUpperInvariant()) || c.EnombreEam.ToUpperInvariant().Contains(args.Filter.ToUpperInvariant())).ToList();
+        }
+        else
+        {
+            ListaFiltradaEquipos = ListaEquipos.ToList();
+        }
+
+        if (!ListaFiltradaEquipos.SequenceEqual(oldList))
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+
+}

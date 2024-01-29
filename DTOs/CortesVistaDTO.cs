@@ -5,6 +5,10 @@
         public int IdCategori { get; set; }
         public string CdaccCorr { get; set; } = null!;
         public bool CdisListo { get; set; }
+        public bool CdisLibro { get; set; }
+        public DateTime? CdfechAcci { get; set; } = null!;
+        public DateTime? CdfechList { get; set; } = null!;
+
         public int IdAsenta { get; set; }
         public double Avalor { get; set; }
         public string Cnombre { get; set; } = null!;
@@ -24,5 +28,7 @@
         public string SNombre { get; set; } = null!;
         public string Vnombre { get; set; } = null!;
         public string? Vdescri { get; set; }
+        public int IdInfoAse { get; set; }
+
     }
 }

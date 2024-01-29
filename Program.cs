@@ -6,7 +6,6 @@ using Asentamientos.Data;
 using Asentamientos.Interface;
 using Asentamientos.Logic;
 using Asentamientos.Components;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +38,7 @@ builder.Services.AddScoped<IAsentamientoData,AsentamientoData>();
 builder.Services.AddScoped<IValoresDeAsentamientosVData,ValoresDeAsentamientosVData>();
 builder.Services.AddScoped<IVaribleData,VariableData>();
 builder.Services.AddScoped<ICorteDiscrepancia,CorteDiscrepaciaData>();
+builder.Services.AddScoped<ILibroNovedades,LibroNovedadesData>();
 
 //* Logic
 builder.Services.AddScoped<IRolLogic,RolLogic>();
@@ -47,13 +47,6 @@ builder.Services.AddScoped<IRotacionLogic,RotacionLogic>();
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 
-//*serializacion de ciclos de referencia en json
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-
-});
 
 var app = builder.Build();
 

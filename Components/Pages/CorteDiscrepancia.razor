@@ -31,7 +31,7 @@
 @if (valuelinea != 0 && turno is not null)
 {
     @*     Barra de filtro y opciones *@
-    <RadzenCard Variant="Variant.Filled" Class="rz-my-4 rz-mx-auto rz-background-color-base-50">
+    <RadzenCard Variant="Variant.Filled" Class="rz-my-4  rz-background-color-base-50">
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" JustifyContent="JustifyContent.Normal" Wrap="FlexWrap.Wrap">
             <RadzenColumn class="rz-ml-8">
                 <RadzenLabel Text="Fecha" Component="DatePickerHourFormat" />
@@ -40,7 +40,7 @@
             <RadzenColumn class="rz-ml-8">
                 <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Visible=@((idSeccion>0 && filtrosextras)|| !filtrosextras) Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarCortes />
             </RadzenColumn>
-            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Division"])>
+            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Centro"])>
                 <RadzenRow>
                     <RadzenText TextStyle="TextStyle.Caption"> Filtros:</RadzenText>
                 </RadzenRow>
@@ -52,54 +52,98 @@
         </RadzenStack>
     </RadzenCard>
 }
+<RadzenCard Style=" padding: 0;" Class="rz-shadow-2 rz-mx-auto w-auto">
 
 
-<RadzenCard Class="rz-my-8 pt-3" Style="min-width:720; max-width:1020px;" Visible=@(data==1)>
-
-    <RadzenDataGrid Data="@listacortes" TItem="CortesVistaDTO" class="w-auto"
-                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" ColumnWidth="70px"
+    <RadzenDataGrid Visible=@(data==1) Data="@listacortes" TItem="CortesVistaDTO"
+                    AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
                     AllowColumnResize=true GridLines="DataGridGridLines.Both"
-                    AllowSorting="true">
+                    AllowSorting="true" IsLoading=loaddata>
 
         <Columns>
 
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Vnombre" Title="Variable" Frozen=true Filterable=true Width="200px" />
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Filterable=true Width="200px" />
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Width="250px" />
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Cnombre" Title="Categoría" Filterable=true Width="130px" />
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Avalor" Title="Valor" Filterable=false />
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Title="Límite" Filterable=false>
-
-                <Template Context="valor">
-                    @if (valor.Avalor > valor.Rmax)
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Pnombre" Title="Producto" Sortable="false" Filterable=true Width="10%" Visible=!filtrosextras />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Vnombre" Title="Variable" Sortable="false" Filterable=true Width="15%" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Sortable="false" Filterable=true Width="15%" Visible=!filtrosextras />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Sortable="false" Width="20%">
+                <Template Context="data">
+                    @if (data.CdaccCorr=="Definir")
                     {
-                        @valor.Rmax
-                        <RadzenIcon Icon="warning" IconColor="@Colors.Danger" />
+                        <span style='color: var(--rz-danger-darker)'>@data.CdaccCorr</span>
                     }
                     else
                     {
-                        @valor.Rmin
-                        <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
+                        @data.CdaccCorr
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Cnombre" Title="Categoría" Sortable="false" Filterable=true Width="12%" />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Avalor" Title="Valor" Filterable=false Width="18%">
+                <Template Context="valor">
+                    @*  @($"{valor.Avalor}  {valor.Unombre}") *@
+                    @if (valor.Avalor > valor.Rmax)
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Light" Shade="Shade.Lighter" class="unidad-badge" Text="@($"{valor.Avalor}  {valor.Unombre}")"
+                                         MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args,$"{@valor.Rmax} límite max." ,
+                            new TooltipOptions{   Duration=1500,Style = "background-color: var(--rz-danger-light); color:var(--rz-base-800);"}))" />
+
+                            <RadzenIcon Icon="warning" IconColor="@Colors.Danger" MouseEnter="@((args) => tooltipService.OpenOnTheRight(args,  $"V. Objetivo: {valor.Robj}",
+                            new TooltipOptions{   Duration=1000,Style = "background-color: var(--rz-danger-light); color:var(--rz-base-800);"}))" />
+                        </RadzenStack>
+                    }
+                    else
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Light" Shade="Shade.Light" class="unidad-badge" Text="@($"{valor.Avalor}  {valor.Unombre}")"
+                                         MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args,  $"{@valor.Rmin} límite min." ,
+                        new TooltipOptions{   Duration=1500,Style = "background-color: var(--rz-warning-light); color:var(--rz-base-800);"}))" />
+
+                            <RadzenIcon Icon="warning" IconColor="@Colors.Warning" MouseEnter="@((args) => tooltipService.OpenOnTheRight(args,$"V. Objetivo: {valor.Robj}",
+                        new TooltipOptions{   Duration=1000,Style = "background-color: var(--rz-warning-light); color:var(--rz-base-800);"}))" />
+                        </RadzenStack>
                     }
 
                 </Template>
-
             </RadzenDataGridColumn>
-            @* <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Robj" Title="V. Obj" Filterable=false /> *@
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Unombre" Title="Unidad" Sortable="false" Filterable=false />
 
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdisListo" Title="Estado" Sortable="false" Filterable="false">
+
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdisListo" Title="Estado" Sortable="true" Filterable="false" Width="10%">
                 <Template Context="est">
                     @if (est.CdisListo)
                     {
 
-                        <RadzenIcon Icon="done" IconColor="@Colors.Success" />
+                        <RadzenIcon Icon="done" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto" 
+                        IconColor="@Colors.Success" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "Resuelto.",
+                         new TooltipOptions{ Style = "background-color: var(--rz-success-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
+                    }
+                    else if (!est.CdisListo && !est.CdisLibro)
+                    {
+                        <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap">
+                        <RadzenIcon Icon="info" IconColor="@Colors.Danger" Style="font-size:25px;" class="m-auto" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Dicrepancia.",
+                         new TooltipOptions{ Style = "background-color: var(--rz-danger-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
+                            @if (permisos["Centro"])
+                            {
+                                <div class="m-auto">
+                                    <RadzenButton Icon="assignment_late" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Warning" Click=@( () => ShowDialog(est) )
+                                                  MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "Editar Corte",
+                                new TooltipOptions{ Style = "background-color: var(--rz-warning-lighter);  color:var(--rz-base-800);", Duration=1000} ))" class="rz-border-radius-10 rz-shadow-2" />
+
+                                    <RadzenButton Icon="auto_stories" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Info" Click=@( () => ShowDialogLibro(est) )
+                                                  MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "Libro de Novedades",
+                                new TooltipOptions{   Duration=1000,Style = "background-color: var(--rz-info-lighter);  color:var(--rz-base-800);"}))" class="rz-border-radius-10 rz-shadow-2" />
+                                </div>
+                            }
+                        </RadzenStack>
                     }
                     else
                     {
 
-                        <RadzenIcon Icon="info" IconColor="@Colors.Danger" />
+                    <RadzenIcon Icon="assignment_late" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto"
+                                IconColor="@Colors.Warning" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Libro Novedades",
+                         new TooltipOptions{ Style = "background-color: var(--rz-warning-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
                     }
 
                 </Template>
@@ -108,7 +152,9 @@
 
         </Columns>
     </RadzenDataGrid>
+
 </RadzenCard>
+
 <RadzenText Visible="@(data==2)">
     <RadzenIcon Icon="warning" IconColor="@Colors.Warning" />
     No hay datos...
@@ -126,6 +172,7 @@
     public List<CategoriaDTO>? categorias { get; set; }
 
     bool loading = false; //motrar loading
+    bool loaddata = false; //motrar loading
     int data = 0; //1-motrar tabla de datos 2-no haydata
     bool filtrosextrasvisual = true; //motrar lfiltros extras
     bool filtrosextras = true; //motrar lfiltros extras
@@ -146,13 +193,11 @@
     public string grupo { get; set; } = "";
     public string turno { get; set; } = "";
 
-    //string fecha1 = DateTime.Now.Date.ToString("yyyy-MM-dd");
-    //string fecha1 = "2024-01-10";
-
 
     DateTime fecha = DateTime.Now;
     Dictionary<string, bool> permisos = new Dictionary<string, bool>();
     public string? roleClaim { get; set; } //guardar el rol del usuario
+    public string? Ficha { get; set; } //guardar la ficha del usuario
 
     protected override async Task OnInitializedAsync()
     {
@@ -171,6 +216,7 @@
         }
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+        Ficha = claims.FirstOrDefault(c => c.Type.Equals("Ficha"))?.Value;
     }
 
     public async Task ConsultarCortes()
@@ -178,31 +224,193 @@
         data = 0;
         loading = true;
         string fecha1 = fecha.Date.ToString("yyyy-MM-dd");
-      
-        if (filtrosextras)
+        if (!string.IsNullOrEmpty(grupo) && !string.IsNullOrEmpty(turno))
         {
-            if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+            if (filtrosextras)
             {
+                if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+                {
 
-                listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLineaFiltrado(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
-                data = listacortes.Count > 0 ? 1 : 2;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                    listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLineaFiltrado(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
+                    data = listacortes.Count > 0 ? 1 : 2;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                }
+                else
+                {
+                    data = 1;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                }
             }
             else
             {
-                data = 1;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLinea(turno, fecha1, valuelinea);
+                data = listacortes.Count > 0 ? 1 : 2;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
             }
         }
         else
         {
-            listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLinea(turno, fecha1, valuelinea);
-            data = listacortes.Count > 0 ? 1 : 2;
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros grupo y turno."));
         }
         loading = false;
-
     }
+
+
+    async Task ShowDialogLibro(CortesVistaDTO corte)
+    {
+        string Novedad;
+        bool success;//update el campo bool de corte a libro
+       
+        if (corte.Avalor > corte.Rmax)
+        {
+            Novedad = $"Valor de {corte.Vnombre} ({corte.SNombre})  con el producto {corte.Pnombre}, en: {corte.Avalor} {corte.Unombre}. Mayor al máximo permisible  ({corte.Rmax} {corte.Unombre}).";
+        }
+        else
+        {
+            Novedad = $"Valor de {corte.Vnombre} ({corte.SNombre})  con el producto {corte.Pnombre}, en: {corte.Avalor} {corte.Unombre}. Menor al mínimo permisible ({corte.Rmin} {corte.Unombre}).";
+        }
+
+        success = await DialogService.OpenSideAsync<DialogLibroNovedades>(
+
+             $"Crear Novedad a : {corte.Vnombre}",
+             parameters: new Dictionary<string, object?>()
+                                                         {
+
+                    { "Novedad",Novedad},
+                    { "Plan",corte.CdaccCorr },
+                    { "IdLinea",valuelinea },
+                    { "Ficha",Ficha },
+                    { "Turno",turno },
+                    { "Grupo",grupo },
+
+                                                     },
+             options: new SideDialogOptions
+                 {
+                     Position = DialogPosition.Right,
+                     ShowMask = true,
+                     CloseDialogOnOverlayClick = false,
+                     ShowClose = false,
+                     Width="40%"                     
+    }); 
+    loaddata = true;
+    ///TODO: add el update real
+        if (success)
+        {
+            CorteDiscDTO corteupdate = LlenarCorte(corte);
+            corteupdate.CdisLibro = true;
+            corteupdate.CdfechList = DateTime.Now;
+
+            var result = await CorteDiscrepanciaDataService.UpdateCorte(corteupdate);
+            if (result)
+            {
+                await ConsultarCortes();
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+            }
+            else {
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención","Ocurrió un error en la actualización"));
+            }
+
+        }
+    loaddata = false;
+    }
+
+    async Task ShowDialog(CortesVistaDTO corteeditar)
+    {
+        DialogCorteDTO cortedialog = new DialogCorteDTO();
+        List<AsentumDTO> ListaSendAsenta = new List<AsentumDTO>(); //Lista para editar en el api
+
+        //Llenar corte antes del dialog
+        CorteDiscDTO corte = LlenarCorte(corteeditar);
+
+        //LLenar asentamiento en curso
+        AsentumDTO asentamientoNuevo = LlenarAsentamiento(corteeditar);
+        ListaSendAsenta.Add(asentamientoNuevo);
+
+        cortedialog = await DialogService.OpenSideAsync<DialogSideContent>(
+            $"Registrar Corte: {corteeditar.Vnombre}",
+            parameters: new Dictionary<string, object?>()
+                    {
+            { "categorias", categorias },
+            { "lmin",corteeditar.Rmin },
+            {"lmax",corteeditar.Rmax},
+            {"corteparametro", corte },
+            {"rol", permisos["Centro"] }
+                    },
+            options: new SideDialogOptions
+                {
+                    Position = DialogPosition.Right,
+                    ShowMask = true,
+                    CloseDialogOnOverlayClick = false
+                });
+
+        loaddata = true;
+        if (cortedialog is not null)
+        {
+            var elemento = ListaSendAsenta.First(a => a.IdAsenta > 0);
+
+            if (cortedialog.CdisListo)
+            {
+                //desactivar anterior
+                ListaSendAsenta.Where(a => a.IdAsenta > 0).ToList().ForEach(a => a.AisActivo = false);
+
+                //crear nuevo asentamiento
+                asentamientoNuevo = LlenarAsentamiento(corteeditar);
+                asentamientoNuevo.Avalor = cortedialog.Avalor;
+                asentamientoNuevo.AisActivo = true;
+
+                ListaSendAsenta.Add(asentamientoNuevo);
+                elemento.AisActivo = false;//Desactivar anterior para insertar el nuevo.
+
+            }
+
+            //Registrar el corte desde el dto del dialog y el id del asentamiento
+            corte = LlenarCorte(corteeditar);
+            corte.IdCategori = cortedialog.IdCategori;
+            corte.CdaccCorr = cortedialog.CdaccCorr;
+            corte.CdisListo = cortedialog.CdisListo;
+
+
+            elemento.CorteDiscDTO.Add(corte);//agregar el corte
+
+            //LLenar lista de asentamiento
+            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaSendAsenta);
+
+            if (result)
+            {
+                await ConsultarCortes();
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+            }
+            else
+            {
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
+            }
+        }
+        loaddata = false;
+    }
+
+    CorteDiscDTO LlenarCorte(CortesVistaDTO corteeditar)
+    {
+
+        CorteDiscDTO corte = new CorteDiscDTO();
+        corte.IdCorteDis = corteeditar.IdCorteDis;
+        corte.IdCategori = corteeditar.IdCategori;
+        corte.IdAsenta = corteeditar.IdAsenta;
+        corte.CdaccCorr = corteeditar.CdaccCorr;
+        corte.CdisListo = corteeditar.CdisListo;
+        return corte;
+    }
+
+    AsentumDTO LlenarAsentamiento(CortesVistaDTO corteeditar)
+    {
+        AsentumDTO asentamientoNuevo = new AsentumDTO();
+        asentamientoNuevo.IdAsenta = corteeditar.IdAsenta;
+        asentamientoNuevo.IdInfoAse = corteeditar.IdInfoAse;
+        asentamientoNuevo.IdRango = corteeditar.IdRango;
+        asentamientoNuevo.Avalor = corteeditar.Avalor;
+        asentamientoNuevo.AisActivo = true;
+        return asentamientoNuevo;
+    }
+
     protected async Task GetCategorias()
     {
         categorias = await CorteDiscrepanciaDataService.GetCategorias();
@@ -210,7 +418,7 @@
     private async Task CambioFiltros(bool value)
     {
         //Confirmación de actualización de consulta a cambiar modo de filtros
-        if (filtrosextras && !value && listacortes.Count>0)
+        if (filtrosextras && !value && listacortes.Count > 0)
         {
 
             var result = await DialogService.Confirm("Confirmación",
@@ -238,5 +446,4 @@
             filtrosextras = filtrosextrasvisual = value;
         }
     }
-
 }

@@ -8,7 +8,7 @@
 @inject IRolLogic RolLogicService
 
 @page "/fuerarango"
-@filtrosextras
+
 <FiltroMaestras OnChangepais="((int p) => this.valuepais = p)"
                 OnChangeempresa="((int e) => this.valueempresa = e)"
                 OnChangecentros="((int c) => this.valuecentros = c)"
@@ -38,7 +38,7 @@
             <RadzenColumn class="rz-ml-8">
                 <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarAsentamientos />
             </RadzenColumn>
-            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Division"])>
+            <RadzenColumn class="rz-ml-8" Visible=@(permisos["Centro"])>
                 <RadzenRow>
                     <RadzenText TextStyle="TextStyle.Caption"> Filtros:</RadzenText>
                 </RadzenRow>
@@ -99,7 +99,7 @@
                                 <RadzenText TextStyle="TextStyle.Subtitle1">@(lista.RangoDTONavigation.Robj)</RadzenText>
                             </RadzenColumn>
                             <RadzenColumn Size="12" SizeMD="6" SizeLG="3" Class="rz-text-align-start rz-text-align-lg-center rz-my-auto">
-                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Light" class="unidad-badge" Text=@($"{lista.RangoDTONavigation.VariableDTONavigation.UnidadDTONavigation.Unombre}") />
+                                <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Light" class="unidad-badge" Text="@(lista.RangoDTONavigation.VariableDTONavigation.UnidadDTONavigation.Unombre)" />
                             </RadzenColumn>
 
                             @if (lista.CorteDiscDTO.Count > 0)
@@ -193,6 +193,7 @@
 
     Dictionary<string, bool> permisos = new Dictionary<string, bool>();
     public string? roleClaim { get; set; } //guardar el rol del usuario
+    public string? Ficha { get; set; } //guardar la ficha del usuario
 
 
     protected override async Task OnInitializedAsync()
@@ -230,6 +231,7 @@
         }
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
+        Ficha = claims.FirstOrDefault(c => c.Type.Equals("Ficha"))?.Value;
     }
 
     public async Task ConsultarAsentamientos()
@@ -238,32 +240,40 @@
         data = 0;
         loading = true;
         string fecha1 = fecha.Date.ToString("yyyy-MM-dd");
-        if (filtrosextras)
+        if (!string.IsNullOrEmpty(grupo) && !string.IsNullOrEmpty(turno))
         {
-            if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+            if (filtrosextras)
             {
+                if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+                {
 
-                ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
-                data = ListaFueraRango.Count > 0 ? 1 : 2;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                    ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
+                    data = ListaFueraRango.Count > 0 ? 1 : 2;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+                }
+                else
+                {
+                    data = 1;
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                }
             }
             else
             {
-                data = 1;
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros para consultar."));
+                ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango(turno, fecha1, valuelinea);
+
+                data = ListaFueraRango.Count > 0 ? 1 : 2;
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
             }
         }
         else
         {
-            ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRango(turno, fecha1, valuelinea);
-
-            data = ListaFueraRango.Count > 0 ? 1 : 2;
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", "Datos Actualizados"));
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "", "Seleccione los los filtros grupo y turno."));
         }
         loading = false;
     }
 
     async Task ShowDialog(AsentumDTO asentamiento)
+
     {
         DialogCorteDTO cortedialog = new DialogCorteDTO();
         CorteDiscDTO corte = new CorteDiscDTO();//corte para enviar y recibir en caso de edicion
@@ -275,7 +285,7 @@
             corte = asentamiento.CorteDiscDTO.First();
         }
         //si el usuiario es operador enviar un Definir en el plan de accion
-        if (!permisos["Centros"])
+        if (!permisos["Centro"])
         {
             corte.CdaccCorr = "Definir";
         }
@@ -301,10 +311,24 @@
         if (cortedialog is not null)
         {
             //asentamiento  fuera de rango
-            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);
+            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);     
+            
+            //Registrar el corte desde el dto del dialog y el id del asentamiento
+            corte = new CorteDiscDTO();
+            corte.IdAsenta = asentamiento.IdAsenta;
+            corte.IdCategori = cortedialog.IdCategori;
+            corte.CdaccCorr = cortedialog.CdaccCorr;
+            corte.CdisLibro = false;
+            corte.CdfechAcci = DateTime.Now;
+            corte.CdisListo = cortedialog.CdisListo;
+            // corte.AsentumDTONavigation = elemento;
 
             if (cortedialog.CdisListo)
             {
+                //Listo Fecha Listo
+
+                corte.CdfechList = DateTime.Now;
+
                 //crear nuevo asentamiento
                 asentamientoNuevo.IdInfoAse = asentamiento.IdInfoAse;
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
@@ -316,13 +340,9 @@
                 ListaFueraRango.Add(asentamientoNuevo);//agrerar a la lista
 
             }
-            //Registrar el corte desde el dto del dialog y el id del asentamiento
-            corte = new CorteDiscDTO();
-            corte.IdAsenta = asentamiento.IdAsenta;
-            corte.IdCategori = cortedialog.IdCategori;
-            corte.CdaccCorr = cortedialog.CdaccCorr;
-            corte.CdisListo = cortedialog.CdisListo;
-            // corte.AsentumDTONavigation = elemento;
+       
+
+           // asentamiento.InfoAseDTONavigation.IafichaCor = Ficha;
 
             if (ModoCorteValue)
             {
@@ -441,9 +461,9 @@
         if (cargar)
         {
             //TODO: Enviaer copia de la lista, o crear dto de consulta para fuera rango.
-            ListaAdd = ListaFueraRango.ToList();
+            //ListaAdd = ListaFueraRango.ToList();
 
-            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaAdd);
+            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaFueraRango);
 
             if (result)
             {

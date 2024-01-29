@@ -143,7 +143,7 @@
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap" Style=" width: 100%; max-width: 350px;min-width: 90px; ">
 
                             <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                                            TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))">
+                                            TValue="int" Data=lineas TextProperty="Linea" ValueProperty="IdLinea" AllowClear="true" @bind-Value=valuelinea Style="width: 100%; max-width: 350px;min-width: 90px;" SearchTextChanged="@(args => searchTextChanged(args))" Change="@(args => Set())">
                             </RadzenDropDown>
 
 
@@ -166,11 +166,11 @@
                 <p><em>Seleccione una División...</em></p>
             }
         </RadzenColumn>
-        <RadzenColumn>
+     @*    <RadzenColumn>
             <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Filled" Disabled="false" Text="Filtrar" Icon="filter_alt" ButtonStyle="ButtonStyle.Success" Click=Set />
             </div>
-        </RadzenColumn>
+        </RadzenColumn> *@
     </RadzenRow>
 
 </CascadingAuthenticationState>
@@ -218,7 +218,7 @@
     public string? nombrelinea { get; set; } = null;
 
     public string? roleClaim { get; set; } //guardar el rol del usuario
-    //public List<string> roles = new List<string>();//lista con rol a comparar
+                                           //public List<string> roles = new List<string>();//lista con rol a comparar
     Dictionary<string, bool> permisos = new Dictionary<string, bool>();
 
     private async Task CreateData()
@@ -227,11 +227,11 @@
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         claims =user.Claims;
-        
+
         //Obtner Rol
         roleClaim = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value;
-        
-    
+
+
     }
 
 
@@ -363,6 +363,7 @@
 
     }
 
+
     private async Task SetLineas()
     {
 
@@ -389,7 +390,6 @@
     {
         StateHasChanged();
     }
-
 
     private async Task Set()
     {
