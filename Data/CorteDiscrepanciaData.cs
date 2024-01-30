@@ -16,7 +16,7 @@ namespace Asentamientos.Data
     public class CorteDiscrepaciaData : ICorteDiscrepancia
     {
         private readonly IHttpClientFactory _clientFactory;
-       // private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
+       //private const string BaseUrl = "http://localhost:5021/api/CorteDiscrepancia/";
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/CorteDiscrepancia/";
         
         public CorteDiscrepaciaData(IHttpClientFactory clientFactory)
@@ -44,7 +44,6 @@ namespace Asentamientos.Data
             var client = _clientFactory.CreateClient();
             var result = await client.GetFromJsonAsync<List<CortesVistaDTO>>($"{BaseUrl}CortesDelDiaLineaFiltros/{turno}/{fecha}/{idlinea}/{idClasiVar}/{idSeccion}/{idProducto}");
             return result ?? new List<CortesVistaDTO>();
-            
            
         }
         public async Task<List<CortesVistaDTO>> GetCortesDiscrepanciaLinea(string turno, string fecha, int idlinea)
@@ -96,14 +95,11 @@ namespace Asentamientos.Data
 
         public async Task<bool> UpdateCorte(CorteDiscDTO corte)
         {
-
             try
             {
-
                 var client = _clientFactory.CreateClient();
                 var result = await client.PutAsJsonAsync($"{BaseUrl}UpdateCorte", corte);
                 return result.IsSuccessStatusCode;
-
             }
             catch
             {

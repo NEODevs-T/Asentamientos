@@ -259,7 +259,7 @@
     {
         string Novedad;
         bool success;//update el campo bool de corte a libro
-       
+
         if (corte.Avalor > corte.Rmax)
         {
             Novedad = $"Valor de {corte.Vnombre} ({corte.SNombre})  con el producto {corte.Pnombre}, en: {corte.Avalor} {corte.Unombre}. Mayor al máximo permisible  ({corte.Rmax} {corte.Unombre}).";
@@ -291,26 +291,18 @@
                      ShowClose = false,
                      Width="40%"                     
     }); 
-    loaddata = true;
-    ///TODO: add el update real
+        loaddata = true;
+        ///TODO: add el update real
         if (success)
         {
             CorteDiscDTO corteupdate = LlenarCorte(corte);
             corteupdate.CdisLibro = true;
             corteupdate.CdfechList = DateTime.Now;
+            await UpdateCorte(corteupdate);
 
-            var result = await CorteDiscrepanciaDataService.UpdateCorte(corteupdate);
-            if (result)
-            {
-                await ConsultarCortes();
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
-            }
-            else {
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención","Ocurrió un error en la actualización"));
-            }
 
         }
-    loaddata = false;
+        loaddata = false;
     }
 
     async Task ShowDialog(CortesVistaDTO corteeditar)
@@ -345,10 +337,12 @@
         loaddata = true;
         if (cortedialog is not null)
         {
-            var elemento = ListaSendAsenta.First(a => a.IdAsenta > 0);
+            var elemento = ListaSendAsenta.First(a => a.IdAsenta > 0); 
+            corte = LlenarCorte(corteeditar);
 
             if (cortedialog.CdisListo)
             {
+
                 //desactivar anterior
                 ListaSendAsenta.Where(a => a.IdAsenta > 0).ToList().ForEach(a => a.AisActivo = false);
 
@@ -356,33 +350,39 @@
                 asentamientoNuevo = LlenarAsentamiento(corteeditar);
                 asentamientoNuevo.Avalor = cortedialog.Avalor;
                 asentamientoNuevo.AisActivo = true;
+                asentamientoNuevo.Aobserv = cortedialog.Aobserv;
 
                 ListaSendAsenta.Add(asentamientoNuevo);
+                asentamientoNuevo.IdAsenta = 0;//Eliminar Id para insertar nuevo valor
                 elemento.AisActivo = false;//Desactivar anterior para insertar el nuevo.
 
+                // corte llisto fecha
+                corte.CdfechList = DateTime.Now;
             }
 
             //Registrar el corte desde el dto del dialog y el id del asentamiento
-            corte = LlenarCorte(corteeditar);
             corte.IdCategori = cortedialog.IdCategori;
-            corte.CdaccCorr = cortedialog.CdaccCorr;
             corte.CdisListo = cortedialog.CdisListo;
+            if (corte.CdaccCorr != cortedialog.CdaccCorr)
+            { 
+                corte.CdaccCorr = cortedialog.CdaccCorr;               
+                corte.CdfechAcci = DateTime.Now;               
+            }
 
+            //si se llena un asentamiento nuevo se envia la listo sino solo se actualiza el corte 
 
-            elemento.CorteDiscDTO.Add(corte);//agregar el corte
-
-            //LLenar lista de asentamiento
-            var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaSendAsenta);
-
-            if (result)
-            {
-                await ConsultarCortes();
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+            if(corte.CdisListo)
+            {   
+                //agregar el corte
+                elemento.CorteDiscDTO.Add(corte);
+                //LLenar lista de asentamiento
+                await UpdateListaCortes(ListaSendAsenta);
             }
             else
             {
-                NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
+                await UpdateCorte(corte);
             }
+
         }
         loaddata = false;
     }
@@ -408,6 +408,36 @@
         asentamientoNuevo.Avalor = corteeditar.Avalor;
         asentamientoNuevo.AisActivo = true;
         return asentamientoNuevo;
+    }
+
+    public async Task UpdateListaCortes(List<AsentumDTO> ListaSendAsenta)
+    {
+        //LLenar lista de asentamiento
+        var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaSendAsenta);
+
+        if (result)
+        {
+            await ConsultarCortes();
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+        }
+        else
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
+        }
+    }   
+    
+    public async Task UpdateCorte(CorteDiscDTO corteupdate)
+    {
+        var result = await CorteDiscrepanciaDataService.UpdateCorte(corteupdate);
+        if (result)
+        {
+            await ConsultarCortes();
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+        }
+        else
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", "Ocurrió un error en la actualización"));
+        }
     }
 
     protected async Task GetCategorias()

@@ -4,7 +4,7 @@ using Asentamientos.ModelsViews;
 using System;
 
 namespace Asentamientos.Interface
-{
+{ 
     public interface ICorteDiscrepancia
     { 
         Task<List<AsentumDTO>> GetAsentamientosFueraRangoFiltros(string turno, string fecha, int idlinea, int idClasiVar, int idSeccion, int idProducto);
@@ -15,6 +15,5 @@ namespace Asentamientos.Interface
         Task<bool> UpdateCorte(CorteDiscDTO corte);
         Task<object> AddCorteDiscrepancia(CorteDiscDTO corte);
         Task<List<CategoriaDTO>> GetCategorias();
-    }
-       
+    }     
 }
