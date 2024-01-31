@@ -56,7 +56,7 @@
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.Vnombre" Title="Variable" />
                     <RadzenDataGridColumn TItem="Asentum" Title="Valor" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
-                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="0" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 25%;"/>
+                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="@Convert.ToDecimal(data.IdRangoNavigation.RlimMin)" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 100%;"/>
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
