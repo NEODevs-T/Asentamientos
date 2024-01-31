@@ -136,8 +136,8 @@ else
             {
                 try
                 {
-                   //ListaAddNovedades.Add(FormNovedades);
-                   //success = await LibroNovedadesService.AddNovedad(ListaAddNovedades);
+                   ListaAddNovedades.Add(FormNovedades);
+                   success = await LibroNovedadesService.AddNovedad(ListaAddNovedades);
                     if(success)
                     {
                         NotificationService.Notify(NotificationSeverity.Success, "Envío al libro de novedades exitoso.");

@@ -312,7 +312,7 @@
         {
             //asentamiento  fuera de rango
             var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);     
-            
+
             //Registrar el corte desde el dto del dialog y el id del asentamiento
             corte = new CorteDiscDTO();
             corte.IdAsenta = asentamiento.IdAsenta;
@@ -334,15 +334,16 @@
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
                 asentamientoNuevo.Avalor = cortedialog.Avalor;
+                asentamientoNuevo.Aobserv = cortedialog.Aobserv;
                 asentamientoNuevo.AisActivo = true;
                 elemento.AisActivo = false;// desactivar el anterior
 
                 ListaFueraRango.Add(asentamientoNuevo);//agrerar a la lista
 
             }
-       
 
-           // asentamiento.InfoAseDTONavigation.IafichaCor = Ficha;
+
+            // asentamiento.InfoAseDTONavigation.IafichaCor = Ficha;
 
             if (ModoCorteValue)
             {
@@ -354,10 +355,21 @@
                 elemento.CorteDiscDTO.Add(corte);
             }
             else
-            {
+            {   
                 elemento.InfoAseDTONavigation = null;
                 elemento.RangoDTONavigation = null;
-                await SaveCorteDiscrepancia(corte);
+                if (corte.CdisListo)
+                {
+                    List<AsentumDTO> insertasenta = new List<AsentumDTO>();
+                    insertasenta.Add(ListaFueraRango.First(a => a.IdAsenta == corte.IdAsenta));
+                    insertasenta.Add(asentamientoNuevo);
+
+                    await UpdateListaCortes(insertasenta);
+                }
+                else
+                {
+                      await SaveCorteDiscrepancia(corte);
+                }             
                 await ConsultarAsentamientos();
             }
         }
@@ -461,8 +473,6 @@
         if (cargar)
         {
             //TODO: Enviaer copia de la lista, o crear dto de consulta para fuera rango.
-            //ListaAdd = ListaFueraRango.ToList();
-
             var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaFueraRango);
 
             if (result)
@@ -473,9 +483,7 @@
             else
             {
                 NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
-
             }
-
         }
         else
         {
@@ -493,6 +501,21 @@
         else if (result is string)
         {
             NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", $"Error: {result}"));
+        }
+    }
+
+    public async Task UpdateListaCortes(List<AsentumDTO> ListaSendAsenta)
+    {
+        //LLenar lista de asentamiento
+        var result = await CorteDiscrepanciaDataService.UpdateAentamientosCortes(ListaSendAsenta);
+
+        if (result)
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito", "", "Registro Exitoso"));
+        }
+        else
+        {
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
         }
     }
 

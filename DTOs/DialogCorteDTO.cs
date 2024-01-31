@@ -14,5 +14,8 @@ namespace Asentamientos.DTOs
         public bool CdisListo { get; set; } = false;
 
         public double Avalor { get; set; }
+
+        [StringLength(300, ErrorMessage = "El campo Observación no debe tener mas de {1} carácteres")]
+        public string? Aobserv { get; set; }
     }
 }
