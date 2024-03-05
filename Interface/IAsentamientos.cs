@@ -5,8 +5,8 @@ using Asentamientos.DTOs;
 namespace Asentamientos.Interface
 {
     public interface IAsentamientoData{
-        Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros, FiltroGTDTO filtroGT);
-        Task<bool> AddAsentamientosDelDia(int idEmpresa,InfoAse infoAsentamientos, List<Asentum> listaAsentamiento);
+        Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros,int idEmpresa, int idCentro);
+        Task<bool> AddAsentamientosDelDia(int idEmpresa,int idPais,int idCentro,InfoAse infoAsentamientos, List<Asentum> listaAsentamiento);
         // Task<string> UpdateAsentamientosDelDia(long idInforme,InformeConAsentamientosDTO asentamientos);
     }
 

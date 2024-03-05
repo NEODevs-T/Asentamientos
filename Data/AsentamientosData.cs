@@ -19,15 +19,15 @@ namespace Asentamientos.Data
         {
             _clientFactory = clientFactory;
         }
-        public async Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros, FiltroGTDTO filtroGT){
+        public async Task<bool> GetIsAsentamientoHoy(FiltrosRangoControlDTO filtros,int idEmpresa, int idCentro){
             bool band;
-            url = $"{BaseUrl}/GetIsAsentamientoHoy?producto={filtros.producto}&master={filtros.master}&tipo={filtros.tipo}&seccion={filtros.seccion}&grupo={filtroGT.grupo}&turno={filtroGT.turno}";
+            url = $"{BaseUrl}/GetIsAsentamientoHoy/{idEmpresa}/{idCentro}?producto={filtros.producto}&master={filtros.master}&tipo={filtros.tipo}&seccion={filtros.seccion}";
             cliente = _clientFactory.CreateClient();
             band = await cliente.GetFromJsonAsync<bool>(url);
             return band;
         }
 
-        public async Task<bool> AddAsentamientosDelDia(int idEmpresa,InfoAse infoAsentamientos, List<Asentum> listaAsentamiento){
+        public async Task<bool> AddAsentamientosDelDia(int idEmpresa,int idPais,int idCentro,InfoAse infoAsentamientos, List<Asentum> listaAsentamiento){
             bool band = false;
             InformeConAsentamientosDTO asentamientosData = new InformeConAsentamientosDTO();
             asentamientosData.InformaDeAsentamientosDTO = new InfoAseDTO();
@@ -47,7 +47,7 @@ namespace Asentamientos.Data
                 asentamientosData.AsentamientosDTO[i].Aobserv = listaAsentamiento[i].Aobserv;
             }
 
-            url = $"{BaseUrl}/AddAsentamientosDelDia/{idEmpresa}";
+            url = $"{BaseUrl}/AddAsentamientosDelDia/{idEmpresa}/{idPais}/{idCentro}";
             cliente =  _clientFactory.CreateClient();
             mensaje = await cliente.PostAsJsonAsync(url,asentamientosData);
             //var error = await mensaje.Content.ReadAsStringAsync();

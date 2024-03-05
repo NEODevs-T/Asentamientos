@@ -11,7 +11,7 @@
 
 <h1>Asentamientos</h1>
 
-<FiltroMaestras OnChangeempresa="((int e) => this.idEmpresa = e)" OnChangelineas="((int l) => this.idLinea = l)" />
+<FiltroMaestras OnChangepais="((int p) => this.idPais = p)" OnChangecentros="((int c) => this.idCentro = c)" OnChangeempresa="((int e) => this.idEmpresa = e)" OnChangelineas="((int l) => this.idLinea = l)" />
 
 
 @if(idLinea != 0){
@@ -92,6 +92,8 @@
     private IEnumerable<Claim>? claims { get; set; }
     public int idLinea {get; set;} = 0;
     public int idEmpresa {get; set;} = 0;
+    public int idCentro {get; set;} = 0;
+    public int idPais {get; set;} = 0;
     public int idClasiVar {get; set;} = 0;
     public int idSeccion {get; set;} = 0;
     public int idProducto {get; set;} = 0;
@@ -146,7 +148,7 @@
         filtroGT.turno = turno;
         filtroGT.grupo = grupo;
 
-        isAsentamientoHoy = await AsentamientoData.GetIsAsentamientoHoy(filtros,filtroGT);
+        isAsentamientoHoy = await AsentamientoData.GetIsAsentamientoHoy(filtros,idEmpresa,idCentro);
 
         if(!isAsentamientoHoy){
             listaRango = await RangoData.GetRangoDeControl(filtros);
@@ -172,7 +174,7 @@
         informeAsentamientos.Iagrupo = grupo;
         informeAsentamientos.Iaturno = turno;
         informeAsentamientos.Iaficha = ficha.ToUpper();
-        isOk = await AsentamientoData.AddAsentamientosDelDia(idEmpresa,informeAsentamientos,listaAsentamientos);
+        isOk = await AsentamientoData.AddAsentamientosDelDia(idEmpresa,idPais,idCentro,informeAsentamientos,listaAsentamientos);
         if(isOk){
             NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
             informeAsentamientos = new InfoAse();
