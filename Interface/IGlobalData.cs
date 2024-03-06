@@ -6,6 +6,6 @@ namespace Asentamientos.Interface
 {
     public interface IRotacionData   
     {
-        Task<RotaCalidum> GetRotacion(int IdPais);     
+        Task<RotaCalidum> GetRotacion(int idEmpresa,int idCentro);     
     }
 }

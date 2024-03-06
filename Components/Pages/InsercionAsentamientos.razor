@@ -18,7 +18,7 @@
     <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
     
     @if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
-        <FiltroGrupoTurno idEmpresa="@idEmpresa"  OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
+        <FiltroGrupoTurno idEmpresa="@idEmpresa" idCentro="@idCentro" OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
     }
 }
 

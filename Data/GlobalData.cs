@@ -15,11 +15,11 @@ namespace Asentamientos.Data
             
             _clientFactory = clientFactory;
         }
-        public async Task<RotaCalidum> GetRotacion(int IdPais){
+        public async Task<RotaCalidum> GetRotacion(int idEmpresa,int idCentro){
             try
             {
                 var client = _clientFactory.CreateClient();
-                var result = await client.GetFromJsonAsync<RotaCalidum>($"{BaseUrl}GetRotacion/{IdPais}");
+                var result = await client.GetFromJsonAsync<RotaCalidum>($"{BaseUrl}GetRotacion/{idEmpresa}/{idCentro}");
                 return result ?? new RotaCalidum();
             }
             catch

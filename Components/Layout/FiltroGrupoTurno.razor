@@ -11,7 +11,7 @@
                     <RadzenLabel Text="Turno" />
                     <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                             TValue="string" Data=@(turnos.Select(c => c.Value)) AllowClear="true" @bind-Value=turno Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())"
-                            Disabled="@isDesactivado">
+                            Disabled="@isDesactivadoTurno">
                     </RadzenDropDown>
                 </div>
             }else{
@@ -24,7 +24,7 @@
                     <RadzenLabel Text="Grupo" />
                     <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
                             TValue="string" Data=@(grupos.Select(c => c.Value)) AllowClear="true" @bind-Value=grupo Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())"
-                            Disabled="@isDesactivado">
+                            Disabled="@isDesactivadoGrupo">
                     </RadzenDropDown>
                 </div>
             }else{
@@ -37,6 +37,8 @@
 @code{
     [Parameter]
     public int idEmpresa {get; set;}  = 1;
+    [Parameter]
+    public int idCentro {get; set;}  = 1;
     [Parameter]
     public EventCallback<string> OnChangeGrupo { get; set; }
     [Parameter]
@@ -55,14 +57,15 @@
     public Dictionary<string,string>? grupos = new Dictionary<string, string>();
     public Dictionary<string, bool> acessos = new Dictionary<string, bool>();
     public RotaCalidum rotacion {get; set;} = new RotaCalidum();
-    public bool isDesactivado {get; set;} = false;
+    public bool isDesactivadoTurno {get; set;} = false;
+    public bool isDesactivadoGrupo {get; set;} = false;
     
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await AuthStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
         claims = user.Claims;
-        rotacion = await RotacionData.GetRotacion(idEmpresa);
+        rotacion = await RotacionData.GetRotacion(idEmpresa,idCentro);
         rol = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value ?? "";
         if(rol != ""){
             acessos = RolLogicService.ListasRol(rol);
@@ -84,10 +87,19 @@
                 grupos = grupoPAVECA.ToDictionary();
             }
             
-            if(rotacion.Rcgrupo != null && !acessos["Centro"]){
+            if(rotacion.Rcgrupo == "0"){
+                turno = rotacion.Rcturno.ToString();
+                if(!acessos["Centro"]){
+                    isDesactivadoTurno = true;
+                }
+                await this.Set();
+            }else{
                 turno = rotacion.Rcturno.ToString();
                 grupo = rotacion.Rcgrupo;
-                isDesactivado = true;
+                if(!acessos["Centro"]){
+                    isDesactivadoGrupo = true;
+                    isDesactivadoTurno = true;
+                }
                 await this.Set();
             }
         }
