@@ -12,6 +12,7 @@
         public int IdAsenta { get; set; }
         public double Avalor { get; set; }
         public string Cnombre { get; set; } = null!;
+        public string? Aobserv { get; set; }
         public int IdRango  { get; set; }
         public double Rmin { get; set; }
         public double Rmax { get; set; }

@@ -325,8 +325,8 @@
             { "lmin",corteeditar.Rmin },
             {"lmax",corteeditar.Rmax},
             {"corteparametro", corte },
-            {"rol", permisos["Centro"] }
-                    },
+            {"rol", permisos["Centro"] },
+                  {"obser", corteeditar.Aobserv }    },
             options: new SideDialogOptions
                 {
                     Position = DialogPosition.Right,
@@ -368,6 +368,10 @@
                 corte.CdaccCorr = cortedialog.CdaccCorr;               
                 corte.CdfechAcci = DateTime.Now;               
             }
+            else
+            {
+                corte.CdfechAcci = corteeditar.CdfechAcci;
+            }
 
             //si se llena un asentamiento nuevo se envia la listo sino solo se actualiza el corte 
 
@@ -406,6 +410,7 @@
         asentamientoNuevo.IdInfoAse = corteeditar.IdInfoAse;
         asentamientoNuevo.IdRango = corteeditar.IdRango;
         asentamientoNuevo.Avalor = corteeditar.Avalor;
+        asentamientoNuevo.Aobserv = corteeditar.Aobserv;
         asentamientoNuevo.AisActivo = true;
         return asentamientoNuevo;
     }

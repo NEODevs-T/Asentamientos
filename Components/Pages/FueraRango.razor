@@ -47,7 +47,7 @@
                     <RadzenCheckBox @bind-Value="@filtrosextrasvisual" TValue="bool" Change=@CambioFiltros />
                 </RadzenRow>
             </RadzenColumn>
-            @if (data == 1 && ListaFueraRango.Count>0)
+            @if (data == 1 && ListaFueraRango.Count > 0)
             {
                 <RadzenColumn class="rz-ml-8">
                     <RadzenLabel Text="Mostrar todos" Component="allowVirtualization" />
@@ -82,7 +82,7 @@
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-800">@(lista.RangoDTONavigation.VariableDTONavigation.SeccionDTONavigation.Snombre)</RadzenText>
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.ProductoDTONavigation.Pnombre)</RadzenText>
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.VariableDTONavigation.Vnombre)</RadzenText>
-                  
+
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeLG="8" Class="@GetClassCorte(lista.CorteDiscDTO.Count)">
                     <RadzenRow Gap="0" RowGap="0">
@@ -201,6 +201,7 @@
         await CreateData();
 
         textModoCorteValue = await LocalStorage.GetItemAsStringAsync("ModoCorteValue");
+      
         if (string.IsNullOrEmpty(textModoCorteValue))
         {
             textModoCorteValue = "Individual";
@@ -217,7 +218,7 @@
             ModoCorteValue = true;
         }
 
-        permisos = RolLogicService.ListasRol(roleClaim); 
+        permisos = RolLogicService.ListasRol(roleClaim);
         await GetCategorias();
     }
 
@@ -294,13 +295,15 @@
 
            $"Registrar Corte: {asentamiento.RangoDTONavigation.VariableDTONavigation.Vnombre}",
            parameters: new Dictionary<string, object?>()
-                                            {
+                                                {
                 { "categorias", categorias },
                 { "lmin",asentamiento.RangoDTONavigation.Rmin },
                 {"lmax",asentamiento.RangoDTONavigation.Rmax},
                 {"corteparametro", corte },
-                {"rol", permisos["Centro"] }
-                                        },
+                {"rol", permisos["Centro"] },
+                {"obser", asentamiento.Aobserv }
+                },
+
            options: new SideDialogOptions
                {
                    Position = DialogPosition.Right,
@@ -311,7 +314,7 @@
         if (cortedialog is not null)
         {
             //asentamiento  fuera de rango
-            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);     
+            var elemento = ListaFueraRango.First(a => a.IdAsenta == asentamiento.IdAsenta);
 
             //Registrar el corte desde el dto del dialog y el id del asentamiento
             corte = new CorteDiscDTO();
@@ -325,10 +328,10 @@
 
             if (cortedialog.CdisListo)
             {
+
                 //Listo Fecha Listo
-
                 corte.CdfechList = DateTime.Now;
-
+             
                 //crear nuevo asentamiento
                 asentamientoNuevo.IdInfoAse = asentamiento.IdInfoAse;
                 asentamientoNuevo.IdRango = asentamiento.IdRango;
@@ -355,21 +358,25 @@
                 elemento.CorteDiscDTO.Add(corte);
             }
             else
-            {   
+            {
                 elemento.InfoAseDTONavigation = null;
                 elemento.RangoDTONavigation = null;
+                elemento.CorteDiscDTO.Add(corte);
+
                 if (corte.CdisListo)
                 {
                     List<AsentumDTO> insertasenta = new List<AsentumDTO>();
                     insertasenta.Add(ListaFueraRango.First(a => a.IdAsenta == corte.IdAsenta));
+
+                    
                     insertasenta.Add(asentamientoNuevo);
 
                     await UpdateListaCortes(insertasenta);
                 }
                 else
                 {
-                      await SaveCorteDiscrepancia(corte);
-                }             
+                    await SaveCorteDiscrepancia(corte);
+                }
                 await ConsultarAsentamientos();
             }
         }
@@ -406,7 +413,7 @@
             {
                 filtrosextras = filtrosextrasvisual = value;
                 //siempre al desactivar los filtros seactualiza si hay datos en la lista
-                if (!filtrosextras && ListaFueraRango.Count>0)
+                if (!filtrosextras && ListaFueraRango.Count > 0)
                 {
                     await ConsultarAsentamientos();
                 }
@@ -450,7 +457,7 @@
             ModoCorteValue = true;
         }
         textModoCorteValue = ModoCorteValue ? "Cargar lista total" : "Individual";
-        await LocalStorage.SetItemAsync("ModoCorteValue", textModoCorteValue);
+        await LocalStorage.SetItemAsStringAsync("ModoCorteValue", textModoCorteValue);
     }
 
     protected async Task GetCategorias()
@@ -460,7 +467,7 @@
 
     public async Task AddListaCorteDiscrepancia()
     {
-        var listadocortes = ListaFueraRango.Where(a => a.IdAsenta > 0).ToList();        
+        var listadocortes = ListaFueraRango.Where(a => a.IdAsenta > 0).ToList();
         bool cargar = true;
         foreach (var a in listadocortes)
         {

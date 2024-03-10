@@ -8,7 +8,7 @@
                 </RadzenFormField>
 
                 <RadzenFormField Text="Acción Correctiva" Visible=@(rol)>
-                    <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="corte.CdaccCorr" />
+                    <RadzenTextArea class="w-100 textarea" aria-label="TextArea" @bind-Value="corte.CdaccCorr"  />
                 </RadzenFormField>
             </RadzenStack>
         </RadzenColumn>
@@ -75,10 +75,13 @@
     [Parameter]
     public CorteDiscDTO corteparametro { get; set; }//en caso de edicion
     [Parameter]
-    public bool rol { get; set; }//si el valor "cenro" es true, se muestra el formulario de plan de acción
+    public bool rol { get; set; }//si el valor "cenro" es true, se muestra el formulario de plan de acción [Parameter]
+    [Parameter]
+    public string obser { get; set; }//observacion del asentamiento
 
     private bool IsValid;// aprobar validaciones
     private bool limites = false;// mensaje si el varlor esta fuera de rango
+    private bool modificado = false;// 
     private string sino = "No";
     DialogCorteDTO corte = new DialogCorteDTO();
 
@@ -104,20 +107,28 @@
         IsValid = true;
         if (IsValid)
         {
-            if (!corte.CdisListo)
+            //evitar enviar nulos
+            if (corte.CdaccCorr != corteparametro.CdaccCorr || corte.IdCategori != corteparametro.IdCategori || corte.CdisListo!=corteparametro.CdisListo)
             {
-                Service.CloseSide(corte);
-            }
-            else
-            {
-                if (corte.Avalor <= lmax && corte.Avalor >= lmin)
+                if (!corte.CdisListo)
                 {
                     Service.CloseSide(corte);
                 }
                 else
                 {
-                    limites = true;
+                    if (corte.Avalor <= lmax && corte.Avalor >= lmin)
+                    {
+                        Service.CloseSide(corte);
+                    }
+                    else
+                    {
+                        limites = true;
+                    }
                 }
+            }
+            else
+            {
+                Service.CloseSide(null);
             }
 
         }
