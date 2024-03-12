@@ -68,7 +68,7 @@
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Sortable="false" Filterable=true Width="15%" Visible=!filtrosextras />
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Sortable="false" Width="20%">
                 <Template Context="data">
-                    @if (data.CdaccCorr=="Definir")
+                    @if (data.CdaccCorr == "Definir")
                     {
                         <span style='color: var(--rz-danger-darker)'>@data.CdaccCorr</span>
                     }
@@ -115,14 +115,14 @@
                     @if (est.CdisListo)
                     {
 
-                        <RadzenIcon Icon="done" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto" 
-                        IconColor="@Colors.Success" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "Resuelto.",
+                        <RadzenIcon Icon="done" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto"
+                                    IconColor="@Colors.Success" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "Resuelto.",
                          new TooltipOptions{ Style = "background-color: var(--rz-success-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
                     }
                     else if (!est.CdisListo && !est.CdisLibro)
                     {
                         <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap">
-                        <RadzenIcon Icon="info" IconColor="@Colors.Danger" Style="font-size:25px;" class="m-auto" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Dicrepancia.",
+                            <RadzenIcon Icon="info" IconColor="@Colors.Danger" Style="font-size:25px;" class="m-auto" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Dicrepancia.",
                          new TooltipOptions{ Style = "background-color: var(--rz-danger-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
                             @if (permisos["Centro"])
                             {
@@ -141,8 +141,8 @@
                     else
                     {
 
-                    <RadzenIcon Icon="assignment_late" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto"
-                                IconColor="@Colors.Warning" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Libro Novedades",
+                        <RadzenIcon Icon="assignment_late" Style="display: flex; justify-content: center; font-size:30px; font-weight: 800;" class="m-auto"
+                                    IconColor="@Colors.Warning" MouseEnter="@((args) => tooltipService.OpenOnTheLeft(args, "En Libro Novedades",
                          new TooltipOptions{ Style = "background-color: var(--rz-warning-lighter);  color:var(--rz-base-800);", Duration=1000} ))" />
                     }
 
@@ -273,7 +273,7 @@
 
              $"Crear Novedad a : {corte.Vnombre}",
              parameters: new Dictionary<string, object?>()
-                                                         {
+                                                             {
 
                     { "Novedad",Novedad},
                     { "Plan",corte.CdaccCorr },
@@ -282,20 +282,21 @@
                     { "Turno",turno },
                     { "Grupo",grupo },
 
-                                                     },
+                                                         },
              options: new SideDialogOptions
                  {
                      Position = DialogPosition.Right,
                      ShowMask = true,
                      CloseDialogOnOverlayClick = false,
                      ShowClose = false,
-                     Width="40%"                     
-    }); 
+                     Width = "40%"
+                 });
         loaddata = true;
         ///TODO: add el update real
         if (success)
         {
             CorteDiscDTO corteupdate = LlenarCorte(corte);
+            corteupdate.CdfechAcci = corte.CdfechAcci;
             corteupdate.CdisLibro = true;
             corteupdate.CdfechList = DateTime.Now;
             await UpdateCorte(corteupdate);
@@ -320,7 +321,7 @@
         cortedialog = await DialogService.OpenSideAsync<DialogSideContent>(
             $"Registrar Corte: {corteeditar.Vnombre}",
             parameters: new Dictionary<string, object?>()
-                    {
+                        {
             { "categorias", categorias },
             { "lmin",corteeditar.Rmin },
             {"lmax",corteeditar.Rmax},
@@ -337,7 +338,7 @@
         loaddata = true;
         if (cortedialog is not null)
         {
-            var elemento = ListaSendAsenta.First(a => a.IdAsenta > 0); 
+            var elemento = ListaSendAsenta.First(a => a.IdAsenta > 0);
             corte = LlenarCorte(corteeditar);
 
             if (cortedialog.CdisListo)
@@ -364,19 +365,19 @@
             corte.IdCategori = cortedialog.IdCategori;
             corte.CdisListo = cortedialog.CdisListo;
             if (corte.CdaccCorr != cortedialog.CdaccCorr)
-            { 
-                corte.CdaccCorr = cortedialog.CdaccCorr;               
-                corte.CdfechAcci = DateTime.Now;               
+            {
+                corte.CdaccCorr = cortedialog.CdaccCorr;
+                corte.CdfechAcci = DateTime.Now;
             }
             else
             {
                 corte.CdfechAcci = corteeditar.CdfechAcci;
             }
 
-            //si se llena un asentamiento nuevo se envia la listo sino solo se actualiza el corte 
+            //si se llena un asentamiento nuevo se envia la listo sino solo se actualiza el corte
 
-            if(corte.CdisListo)
-            {   
+            if (corte.CdisListo)
+            {
                 //agregar el corte
                 elemento.CorteDiscDTO.Add(corte);
                 //LLenar lista de asentamiento
@@ -429,8 +430,8 @@
         {
             NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", "No se pudo registrar."));
         }
-    }   
-    
+    }
+
     public async Task UpdateCorte(CorteDiscDTO corteupdate)
     {
         var result = await CorteDiscrepanciaDataService.UpdateCorte(corteupdate);
