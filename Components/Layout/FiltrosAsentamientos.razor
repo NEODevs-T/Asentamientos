@@ -1,7 +1,9 @@
 @inject IProductosVData ProductosVData
 @inject ISeccionesVData SeccionesVData
+@inject NotificationService NotificationService
 @inject IVaribleData VariableData
-
+@inject IGlobalData GlobalData
+@inject INotifiRadzenServices  NotifiRadzenServices
 
 <RadzenRow class="rz-text-align-Left">
     <RadzenColumn Size="3">
@@ -9,7 +11,7 @@
             <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenLabel Text="Productos" />
                 <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                    TValue="int" Data=productos TextProperty="Producto" ValueProperty="IdProducto" AllowClear="true" @bind-Value=idProducto Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
+                    TValue="int" Data=productos TextProperty="Codigo" ValueProperty="IdProducto" AllowClear="true" @bind-Value=idProducto Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
                 </RadzenDropDown>
             </div>
         }else{
@@ -61,16 +63,31 @@
     List<ProductosV>? productos = null;
     List<SeccionesV>? secciones = null;
     List<VarClasificacionV>? clasificacion = null;
+    List<OrdenFabricacionDTO> ordenFabricacionDTOList = new List<OrdenFabricacionDTO>();
     protected override async Task OnParametersSetAsync()
     {
         if(idLinea != 0 && idLinea != valueLinea){
+            int cantidadProductos;
+
             valueLinea = idLinea;
+
             productos = null;
             secciones = null;
             clasificacion = null;
+
             productos = await ProductosVData.GetProductosPorLinea(idLinea);
             secciones = await SeccionesVData.GetSeccionesPorLinea(idLinea);
             clasificacion = await VariableData.GetClasificacionVarPorLinea(idLinea);
+            //TODO: Filtrar producto
+            ordenFabricacionDTOList = await GlobalData.GetProductosActuales(idLinea);
+
+            cantidadProductos = ordenFabricacionDTOList.Count;
+
+            if(cantidadProductos != 0){
+                productos.RemoveAll(p => ordenFabricacionDTOList.All(o => o.CodProducto != p.Codigo));
+            }else{
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","No se encontro ordenes de fabricacion abiertas"));
+            }
         }
         valueLinea = idLinea;
     }

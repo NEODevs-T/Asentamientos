@@ -1,5 +1,5 @@
 @inject AuthenticationStateProvider AuthStateProvider
-@inject IRotacionData RotacionData
+@inject IGlobalData GlobalData
 @inject IRolLogic RolLogicService
 
 
@@ -65,7 +65,7 @@
         AuthenticationState authState = await AuthStateProvider.GetAuthenticationStateAsync();
         ClaimsPrincipal user = authState.User;
         claims = user.Claims;
-        rotacion = await RotacionData.GetRotacion(idEmpresa,idCentro);
+        rotacion = await GlobalData.GetRotacion(idEmpresa,idCentro);
         rol = claims.FirstOrDefault(c => c.Type.Contains("role"))?.Value ?? "";
         if(rol != ""){
             acessos = RolLogicService.ListasRol(rol);
