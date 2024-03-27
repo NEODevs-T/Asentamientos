@@ -171,18 +171,22 @@
 
     private async Task CargarDatos()
     {
-        informeAsentamientos.Iagrupo = grupo;
-        informeAsentamientos.Iaturno = turno;
-        informeAsentamientos.Iaficha = ficha.ToUpper();
-        isOk = await AsentamientoData.AddAsentamientosDelDia(idEmpresa,idPais,idCentro,informeAsentamientos,listaAsentamientos);
-        if(isOk){
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
-            informeAsentamientos = new InfoAse();
-            listaAsentamientos = new List<Asentum>();
-            isCargando = false;
-            band = false;
+        if(ficha.Trim() != ""){
+            informeAsentamientos.Iagrupo = grupo;
+            informeAsentamientos.Iaturno = turno;
+            informeAsentamientos.Iaficha = ficha.ToUpper();
+            isOk = await AsentamientoData.AddAsentamientosDelDia(idEmpresa,idPais,idCentro,informeAsentamientos,listaAsentamientos);
+            if(isOk){
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("exito","","Registro exitoso"));
+                informeAsentamientos = new InfoAse();
+                listaAsentamientos = new List<Asentum>();
+                isCargando = false;
+                band = false;
+            }else{
+                NotificationService.Notify(NotifiRadzenServices.Notificacion("error","","Erro al insertar. Intente nuevamente"));
+            }
         }else{
-            NotificationService.Notify(NotifiRadzenServices.Notificacion("error","","Erro al insertar. Intente nuevamente"));
+            NotificationService.Notify(NotifiRadzenServices.Notificacion("error","","Coloque la ficha"));
         }
     }
 }
