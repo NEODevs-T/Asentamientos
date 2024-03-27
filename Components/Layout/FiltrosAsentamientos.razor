@@ -11,7 +11,7 @@
             <div class="rz-p-sm-2 rz-text-align-left">
                 <RadzenLabel Text="Productos" />
                 <RadzenDropDown FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterOperator="StringFilterOperator.StartsWith" AllowFiltering="true"
-                    TValue="int" Data=productos TextProperty="Codigo" ValueProperty="IdProducto" AllowClear="true" @bind-Value=idProducto Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
+                    TValue="int" Data=productos TextProperty="DescProducto" ValueProperty="IdProducto" AllowClear="true" @bind-Value=idProducto Style="width: 100%; max-width: 350px;min-width: 90px;" Change="@(arg => Set())">
                 </RadzenDropDown>
             </div>
         }else{
@@ -75,17 +75,18 @@
             secciones = null;
             clasificacion = null;
 
+            ordenFabricacionDTOList = await GlobalData.GetProductosActuales(idLinea);
             productos = await ProductosVData.GetProductosPorLinea(idLinea);
             secciones = await SeccionesVData.GetSeccionesPorLinea(idLinea);
             clasificacion = await VariableData.GetClasificacionVarPorLinea(idLinea);
-            //TODO: Filtrar producto
-            ordenFabricacionDTOList = await GlobalData.GetProductosActuales(idLinea);
 
             cantidadProductos = ordenFabricacionDTOList.Count;
 
             if(cantidadProductos != 0){
                 productos.RemoveAll(p => ordenFabricacionDTOList.All(o => o.CodProducto != p.Codigo));
+                productos.ForEach(f => f.DescProducto = ordenFabricacionDTOList.Where(o => o.CodProducto.Equals(f.Codigo)).First().DescProducto);
             }else{
+                productos.ForEach(f => f.DescProducto = f.Codigo);
                 NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","No se encontro ordenes de fabricacion abiertas"));
             }
         }
