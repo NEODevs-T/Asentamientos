@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Asentamientos.ModelsViews;
 
@@ -20,4 +21,6 @@ public partial class ProductosV
     public string Codigo { get; set; } = null!;
 
     public bool Estado { get; set; }
+    [NotMapped]
+    public string? DescProducto { get; set; }
 }
