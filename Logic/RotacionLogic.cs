@@ -9,7 +9,7 @@ namespace Asentamientos.Logic
         {
             DateTime fecha = DateTime.Now;
             if(idEmpresa ==  empresas.PAVECA){
-                if(fecha.Hour > 18 && fecha.Hour <= 23){
+                if(fecha.Hour >= 18 && fecha.Hour <= 24){
                     fecha = fecha.AddDays(1);
                 }
             }else if(idEmpresa == empresas.CHEMPRO){
