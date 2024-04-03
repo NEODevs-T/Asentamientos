@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Asentamientos.Models;
 
@@ -22,4 +23,7 @@ public partial class Asentum
     public virtual InfoAse IdInfoAseNavigation { get; set; } = null!;
 
     public virtual Rango IdRangoNavigation { get; set; } = null!;
+
+    [NotMapped]
+    public bool isCambiado { get; set; }
 }

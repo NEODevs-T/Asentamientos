@@ -14,7 +14,7 @@
     <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
 }
 
-@if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
+@if(idClasiVar != 0 && idProducto != 0){
     <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=Consultar />
 }
 
@@ -22,6 +22,12 @@
 <br>
 
 @if(band){
+
+    <RadzenButton Variant="Variant.Outlined" Click=Impresion  Text="Impresión" ButtonStyle="ButtonStyle.Warning" />
+
+    <br>
+    <br>
+
     <RadzenDataGrid Class="table .rz-background-color-success" Data="@listaRango" TItem="Rango" AllowVirtualization="true"
                 AllowSorting="true" AllowColumnResize=true GridLines="DataGridGridLines.Both">
 
@@ -58,11 +64,6 @@
                     </RadzenDataGridColumn>
                 </Columns>
     </RadzenDataGrid>
-
-    <br>
-    <br>
-
-    <RadzenButton Variant="Variant.Outlined" Click=Impresion  Text="Impresión" ButtonStyle="ButtonStyle.Warning" />
 }else if(isCargando){
     <Load/>
 }
@@ -82,7 +83,7 @@
     public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
 
     public FiltrosRangoControlDTO  filtros = new FiltrosRangoControlDTO();
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){

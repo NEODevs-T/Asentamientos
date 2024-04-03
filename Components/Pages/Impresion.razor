@@ -6,71 +6,87 @@
 @inject IRotacionLogic RotacionLogic
 @page "/Impresion/{idLinea:int}/{idProducto:int}/{idSeccion:int}/{idClasiVar:int}/{idEmpresa:int}"
 
-@if(listaRango.Count != 0){
-    <RadzenStack Class="rz-mx-auto" style="height: 92vh;">
-        <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="">
-            <RadzenStack Gap="0" class="rz-display-flex rz-justify-content-center rz-align-items-center">
-                <RadzenText style="text-align: center;" TextStyle="TextStyle.H5">Asentamientos</RadzenText>
-                <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">@listaRango[0].IdVariableNavigation.IdSeccionNavigation.Snombre</RadzenText>
-            </RadzenStack>
-            <RadzenRow style="width: 100%; text-align: center;" class="rz-display-flex rz-justify-content-end rz-align-items-top" RowGap="0">
-                <RadzenText style="display:flex; justify-content: center; align-items: center;" TextStyle="TextStyle.H6">@fechaImpresion.ToString("dd/MM/yyyy")</RadzenText>
-                <RadzenImage Path="./img/neo.png"  Style="width: 70px; height: 70px;" />
-            </RadzenRow>
-        </RadzenStack>
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-pt-5">
-            <table style="width: 100%;"class="tableImpresion">
-                <tr class="encabezadoTableImpresion">
-                    <th>#</th>
-                    <th>Sección</th>
-                    <th>Variable</th>
-                    <th>Unidad</th>
-                    @if(idEmpresa != empresas.PAVECA){
-                        <th>3do Turno</th>
-                    }
-                    <th>2do Turno</th>
-                    <th>1er Turno</th>
-                    <th>Observación</th>
-                </tr>
-                @foreach(var item in listaRango){
-                    <tr>
-                        <td>
-                            @(listaRango.IndexOf(item) + 1)
-                        </td>
-                        <td>
-                            @item.IdVariableNavigation.IdSeccionNavigation.Snombre
-                        </td>
-                        <td>
-                            @item.IdVariableNavigation.Vnombre
-                        </td>
-                        <td>
-                            @item.IdVariableNavigation.IdUnidadNavigation.Unombre
-                        </td>
-                        @if(idEmpresa != empresas.PAVECA){
-                            <td>
-                                
-                            </td>
-                        }
-                        <td>
-                            
-                        </td>
-                        <td>
-                            
-                        </td>
-                        <td style="width: 30%;">
-                            
-                        </td>
-                    </tr>
-                }
-            </table>
-        </RadzenStack>
-    </RadzenStack>
-    <section class="cajaFirma">
-        <div class="firma">
-            <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">Firma del Supervisor</RadzenText>
-        </div>
-    </section>
 
+
+@if(listaRango.Count != 0){
+    @if(listaRangoGruping != null){
+        @foreach(var itemPadre in listaRangoGruping){
+            <div style="min-height: 100vh;">
+                <RadzenStack Class="rz-mx-auto" style="min-height: 100vh;">
+                    <RadzenStack  Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="">
+                        <RadzenStack Gap="0" class="rz-display-flex rz-justify-content-center rz-align-items-center">
+                            <RadzenText style="text-align: center;" TextStyle="TextStyle.H5">Asentamientos</RadzenText>
+                            <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">NEO</RadzenText>
+                        </RadzenStack>
+                        <RadzenRow style="width: 100%; text-align: center;" class="rz-display-flex rz-justify-content-end rz-align-items-top" RowGap="0">
+                            <RadzenText style="display:flex; justify-content: center; align-items: center;" TextStyle="TextStyle.H6">@fechaImpresion.ToString("dd/MM/yyyy")</RadzenText>
+                            <RadzenImage Path="./img/neo.png"  Style="width: 70px; height: 70px;" />
+                        </RadzenRow>
+                    </RadzenStack>
+                    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-pt-5">
+                        <table style="min-width: 100%;"class="tableImpresion">
+                            <tr class="encabezadoTableImpresion">
+                                <th>#</th>
+                                <th>Sección</th>
+                                <th>Variable</th>
+                                <th>Unidad</th>
+                                @if(idEmpresa != empresas.PAVECA){
+                                    <th>3do Turno</th>
+                                }
+                                <th>2do Turno</th>
+                                <th>1er Turno</th>
+                                <th>Observación</th>
+                            </tr>
+                            @foreach(var item in itemPadre){
+                                <tr>
+                                    <td>
+                                        @(listaRango.IndexOf(item) + 1)
+                                    </td>
+                                    <td>
+                                        @item.IdVariableNavigation.IdSeccionNavigation.Snombre
+                                    </td>
+                                    <td>
+                                        @item.IdVariableNavigation.Vnombre
+                                    </td>
+                                    <td>
+                                        @item.IdVariableNavigation.IdUnidadNavigation.Unombre
+                                    </td>
+                                    @if(idEmpresa != empresas.PAVECA){
+                                        <td>
+                                            
+                                        </td>
+                                    }
+                                    <td>
+                                        
+                                    </td>
+                                    <td>
+                                        
+                                    </td>
+                                    <td style="width: 30%;">
+                                        
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        
+                    </RadzenStack>
+                        <section class="cajaFirma">
+                        @if(idEmpresa != empresas.PAVECA){
+                            <div class="firma">
+                                <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">Firma del Supervisor 3er turno</RadzenText>
+                            </div>
+                        }
+                        <div class="firma">
+                            <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">Firma del Supervisor 2do turno</RadzenText>
+                        </div>
+                        <div class="firma">
+                            <RadzenText style="text-align: center;" TextStyle="TextStyle.H6">Firma del Supervisor 1er turno</RadzenText>
+                        </div>
+                    </section>
+                </RadzenStack>
+            </div>
+        }
+    }
 }
 
 @code{
@@ -89,6 +105,9 @@
     public bool band  {get; set;} =  false;
     public DateTime fechaImpresion {get; set;}
     public (int PAVECA, int CHEMPRO, int PANASA, int PAINSA) empresas = (PAVECA: 1,CHEMPRO: 2, PANASA: 3,PAINSA: 4);
+
+    public IEnumerable<IGrouping<int,Rango>>? listaRangoGruping  {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         band = false;
@@ -100,6 +119,12 @@
         filtros.tipo = idClasiVar;
         listaRango = new List<Rango>();
         listaRango = await RangoData.GetRangoDeControl(filtros);
+
+        if(idSeccion == 0 && idEmpresa == empresas.PAVECA){
+            listaRangoGruping = listaRango.GroupBy(r => r.IdVariableNavigation.IdSeccionNavigation.IdGrupo);
+        }else{
+            listaRangoGruping = listaRango.GroupBy(r => 1);
+        }
     }
 
     protected override void OnParametersSet()

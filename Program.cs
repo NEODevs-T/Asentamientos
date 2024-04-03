@@ -47,6 +47,9 @@ builder.Services.AddScoped<IRotacionLogic,RotacionLogic>();
 //* Services
 builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 
+//* Host
+builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
+
 
 var app = builder.Build();
 

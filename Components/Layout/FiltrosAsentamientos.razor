@@ -67,9 +67,15 @@
     protected override async Task OnParametersSetAsync()
     {
         if(idLinea != 0 && idLinea != valueLinea){
-            int cantidadProductos;
-
             valueLinea = idLinea;
+
+            int cantidadProductos;
+            SeccionesV todas = new SeccionesV();
+            todas.IdMaster = 0;
+            todas.IdLinea = 0;
+            todas.IdSeccion = 0;
+            todas.Seccion = "Todas";
+            todas.Estado = true;
 
             productos = null;
             secciones = null;
@@ -78,6 +84,7 @@
             ordenFabricacionDTOList = await GlobalData.GetProductosActuales(idLinea);
             productos = await ProductosVData.GetProductosPorLinea(idLinea);
             secciones = await SeccionesVData.GetSeccionesPorLinea(idLinea);
+            secciones.Add(todas);
             clasificacion = await VariableData.GetClasificacionVarPorLinea(idLinea);
 
             cantidadProductos = ordenFabricacionDTOList.Count;

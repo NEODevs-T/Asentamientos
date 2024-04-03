@@ -21,6 +21,8 @@ public partial class ProductosV
     public string Codigo { get; set; } = null!;
 
     public bool Estado { get; set; }
+    
     [NotMapped]
     public string? DescProducto { get; set; }
 }
+

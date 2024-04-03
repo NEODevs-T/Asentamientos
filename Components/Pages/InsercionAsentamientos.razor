@@ -1,5 +1,6 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
+@inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IRangoData RangoData
 @inject IMaestraData MaestaData
@@ -17,13 +18,13 @@
 @if(idLinea != 0){
     <FiltrosAsentamientos idLinea="@idLinea" OnChangeClasificacion="((int idClasiVar) => this.idClasiVar = idClasiVar)" OnChangeProducto="((int idProducto) => this.idProducto = idProducto)" OnChangeSeccion="((int idSeccion) => this.idSeccion = idSeccion)"/>
     
-    @if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0){
+    @if(idClasiVar != 0 &&  idProducto != 0){
         <FiltroGrupoTurno idEmpresa="@idEmpresa" idCentro="@idCentro" OnChangeGrupo="((string g) => this.grupo = g)" OnChangeTurno="((string t) => this.turno = t)"/>
     }
 }
 
 
-@if(idClasiVar != 0 && idSeccion != 0 && idProducto != 0 && grupo != "" && turno != ""){
+@if(idClasiVar != 0 && idProducto != 0 && grupo != "" && turno != ""){
     
     @if(!isFicha){
         <RadzenRow class="rz-text-align-Left">
@@ -56,7 +57,7 @@
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.Vnombre" Title="Variable" />
                     <RadzenDataGridColumn TItem="Asentum" Title="Valor" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                         <Template Context="data">
-                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor" Min="@Convert.ToDecimal(data.IdRangoNavigation.RlimMin)" Max="@Convert.ToDecimal(data.IdRangoNavigation.RlimMax)" style="width: 100%;"/>
+                            <RadzenNumeric Step="0.5" @bind-Value="data.Avalor"  style="width: 100%;"/>
                         </Template>
                     </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Asentum" Filterable="false" Sortable="false" TextAlign="TextAlign.Center" Property="IdRangoNavigation.IdVariableNavigation.IdUnidadNavigation.Unombre" Title="Unidad" />
@@ -77,15 +78,12 @@
     </RadzenRow>
 
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.End" JustifyContent="JustifyContent.SpaceBetween" Wrap="FlexWrap.NoWrap">
-        <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=CargarDatos />
+        <RadzenButton class="mt-4" ButtonType="ButtonType.Button" Variant="Variant.Outlined" Disabled="false" Text="Registrar" ButtonStyle="ButtonStyle.Success" Click=Revision />
     </RadzenStack>
     
 }else if(isCargando){
     <Load/>
 }
-
-
-@* TODO: Insertar comentario *@
 
 @code {
     [CascadingParameter]
@@ -105,6 +103,7 @@
     public bool isOk {get; set;} = false;
     public bool isAsentamientoHoy {get; set;} =  false;
     public bool isFicha {get; set;} =  true;
+    public bool? isSeguro {get; set;} =  false;
     public string grupo {get; set;} = "";
     public string turno {get; set;} = "";
     public string ficha {get; set;} = "";
@@ -113,10 +112,10 @@
     public FiltroGTDTO filtroGT {get; set;} = new FiltroGTDTO();
     public InformeConAsentamientosDTO asentamientos {get; set;} = new InformeConAsentamientosDTO();
     public  List<Asentum> listaAsentamientos {get; set;} = new List<Asentum>();
+    public  List<double>? listaValorAsentamientosOriginal {get; set;} = null;
     public InfoAse informeAsentamientos {get; set;} = new InfoAse();
     protected override async Task OnInitializedAsync()
     {
-        
         AuthenticationState? authState = await AuthStateProvider.GetAuthenticationStateAsync();;
         ClaimsPrincipal? user = authState?.User;
         if(user?.Identity is not null && user.Identity.IsAuthenticated){
@@ -128,6 +127,31 @@
             }
         }
         
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(!firstRender){
+            if(listaValorAsentamientosOriginal != null){
+                double min;
+                double max;
+                double valor;
+                for(int i = 0;i < listaAsentamientos.Count; i++){
+                    valor = listaAsentamientos[i].Avalor;
+                    if(valor != listaValorAsentamientosOriginal[i]){
+                        min = listaAsentamientos[i].IdRangoNavigation.RlimMin;
+                        max = listaAsentamientos[i].IdRangoNavigation.RlimMax;
+                        if(min > valor){
+                            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia",$"La variable numero {listaAsentamientos.IndexOf(listaAsentamientos[i]) + 1}:",$"Es menor que el minimo permitido ({listaAsentamientos[i].IdRangoNavigation.RlimMin})."));
+                        }else if(valor > max){
+                            NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia",$"La variable numero {listaAsentamientos.IndexOf(listaAsentamientos[i]) + 1}:",$"Es mayor que el maximo permitido ({listaAsentamientos[i].IdRangoNavigation.RlimMax})."));
+                        }
+                        listaValorAsentamientosOriginal[i] = valor;
+                        listaAsentamientos[i].isCambiado = true;         
+                    }
+                }
+            }
+        }
     }
 
     private async Task Consultar()
@@ -159,14 +183,50 @@
                 valor.IdRango = valor.IdRangoNavigation.IdRango;
                 valor.AisActivo = true;
                 valor.Avalor =  0;
+                valor.isCambiado = false;
                 listaAsentamientos.Add(valor);
             }
+            clonar();
             band = true;
         }else{
             NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","Ya se realizo la carga de asentamientos por hoy."));
             band = false;
         }
         isCargando = false;
+    }
+
+    private void clonar(){
+        listaValorAsentamientosOriginal = new List<double>(listaAsentamientos.Count);
+        double valorCopia;
+        Asentum asentamiento;
+
+        for(int i = 0; listaValorAsentamientosOriginal.Capacity > i ; i++){
+        
+                asentamiento = listaAsentamientos[i]; 
+                valorCopia = asentamiento.Avalor;
+                listaValorAsentamientosOriginal.Add(valorCopia);
+            
+        }
+    }
+
+    private async void Revision()
+    {
+        foreach(var item in listaAsentamientos){
+            if(!item.isCambiado){
+                isSeguro = await DialogService.Confirm("No se han llenado todos los campos. <br/> ¿Desea guardar igualmemnte?", "Advertencia", new ConfirmOptions() 
+                {OkButtonText = "Si", CancelButtonText = "No" });
+                if(isSeguro ?? false){
+                    await CargarDatos();
+                    Console.WriteLine("Entro");
+                }
+                break;
+            }
+
+            if(listaAsentamientos.IndexOf(item) == (listaAsentamientos.Count - 1)){
+                await CargarDatos();
+                break;
+            }
+        }
     }
 
     private async Task CargarDatos()

@@ -1,7 +1,7 @@
 :root {
     --rz-grid-header-color: white !important;  /* Color del texto del encabezado */
     --rz-grid-header-background-color: rgb(0, 120, 83) !important;  /* Color de fondo del encabezado */
-    --rz-grid-header-font-size: 1.1em !important;
+    --rz-grid-header-font-size: 1em !important;
     --rz-grid-header-font-weight: 800;
 }
 .tableImpresion tr{
@@ -12,7 +12,7 @@
 .encabezadoTableImpresion{
     color: white;
     background-color: rgb(0, 120, 83);
-    font-size: 1.1em;
+    font-size: 10px;
     font-weight: 800;
     width: 14%;
     text-align: center;
@@ -24,9 +24,9 @@
 }
 
 .tableImpresion tr td{
-
     border: solid 0.5px black;
-    height: 40px;
+    height: 25px;
+    font-size: 10px;
 }
 
 .separadorTablaImpresion{
@@ -43,10 +43,11 @@
     justify-content: end;
     align-items: end;
     height: 5%;
+    margin-top: 100px;
 }
 .firma{
     border-top: 1px solid #000; 
-    margin: 20px 0;
+    margin: 20px 10px;
     width: 20%;
 }
 
