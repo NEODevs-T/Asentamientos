@@ -80,7 +80,7 @@
                 <RadzenColumn Size="12" SizeLG="3" Class="@GetClass(lista)">
 
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-800">@(lista.RangoDTONavigation.VariableDTONavigation.SeccionDTONavigation.Snombre)</RadzenText>
-                    <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.ProductoDTONavigation.Pnombre)</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.ProductoDTONavigation.Pnombre)-@(lista.RangoDTONavigation.ProductoDTONavigation.Pcodigo)</RadzenText>
                     <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.Auto" class="rz-color-base-900">@(lista.RangoDTONavigation.VariableDTONavigation.Vnombre)</RadzenText>
 
                 </RadzenColumn>
@@ -245,7 +245,7 @@
         {
             if (filtrosextras)
             {
-                if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+                if (idClasiVar > 0 && idProducto > 0)
                 {
 
                     ListaFueraRango = await CorteDiscrepanciaDataService.GetAsentamientosFueraRangoFiltros(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);

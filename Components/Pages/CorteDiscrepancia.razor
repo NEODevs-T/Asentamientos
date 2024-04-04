@@ -38,7 +38,7 @@
                 <RadzenDatePicker @bind-Value=@fecha HourFormat="12" DateFormat="MM/dd/yyyy" Name="DatePickerHourFormat" Style="width:120px;" />
             </RadzenColumn>
             <RadzenColumn class="rz-ml-8">
-                <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Visible=@((idSeccion>0 && filtrosextras)|| !filtrosextras) Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarCortes />
+                <RadzenButton ButtonType="ButtonType.Button" Icon="search" Variant="Variant.Flat" Visible=@((idProducto>0 && filtrosextras)|| !filtrosextras) Text="Consultar" ButtonStyle="ButtonStyle.Success" Click=ConsultarCortes />
             </RadzenColumn>
             <RadzenColumn class="rz-ml-8" Visible=@(permisos["Centro"])>
                 <RadzenRow>
@@ -63,7 +63,7 @@
 
         <Columns>
 
-            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Pnombre" Title="Producto" Sortable="false" Filterable=true Width="10%" Visible=!filtrosextras />
+            <RadzenDataGridColumn TItem="CortesVistaDTO" Property="PCodigo" Title="Producto" Sortable="false" Filterable=true Width="10%" Visible=!filtrosextras />
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="Vnombre" Title="Variable" Sortable="false" Filterable=true Width="15%" />
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="SNombre" Title="Sección" Sortable="false" Filterable=true Width="15%" Visible=!filtrosextras />
             <RadzenDataGridColumn TItem="CortesVistaDTO" Property="CdaccCorr" Title="Acción" Sortable="false" Width="20%">
@@ -228,7 +228,7 @@
         {
             if (filtrosextras)
             {
-                if (idClasiVar > 0 && idSeccion > 0 && idProducto > 0)
+                if (idClasiVar > 0 && idProducto > 0)
                 {
                     listacortes = await CorteDiscrepanciaDataService.GetCortesDiscrepanciaLineaFiltrado(turno, fecha1, valuelinea, idClasiVar, idSeccion, idProducto);
                     data = listacortes.Count > 0 ? 1 : 2;
