@@ -93,7 +93,7 @@
                 productos.RemoveAll(p => ordenFabricacionDTOList.All(o => o.CodProducto != p.Codigo));
                 productos.ForEach(f => f.DescProducto = ordenFabricacionDTOList.Where(o => o.CodProducto.Equals(f.Codigo)).First().DescProducto);
             }else{
-                productos.ForEach(f => f.DescProducto = f.Codigo);
+                productos.ForEach(f =>  (f.DescProducto == null) ? f.DescProducto = f.Codigo : f.DescProducto = f.DescProducto );
                 NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia","","No se encontro ordenes de fabricacion abiertas"));
             }
         }
