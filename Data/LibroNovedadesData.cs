@@ -23,7 +23,7 @@ namespace Asentamientos.Data
         public async Task<bool> AddNovedad(List<LibroNoveDTO> novedades)
         {
             var client = _clientFactory.CreateClient();
-            var result = await client.PostAsJsonAsync($"{BaseUrl}LibroNove/AddLibroNovedades", novedades);
+            var result = await client.PostAsJsonAsync($"{BaseUrl}LibroNove/AddLibroNovedadesPorCorte", novedades);
 
             if (result.IsSuccessStatusCode)
             {

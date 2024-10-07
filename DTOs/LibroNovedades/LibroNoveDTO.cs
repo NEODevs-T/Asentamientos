@@ -44,4 +44,5 @@ public class LibroNoveDTO
     public int IdCtpm { get; set; } 
 
     public int? LnisResu { get; set; }
+    public int IdMaster { get; set; }
 }
