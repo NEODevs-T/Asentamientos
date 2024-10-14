@@ -93,26 +93,31 @@
             carga = true;
             var result = await Http.PostAsJsonAsync("http://neo.paveca.com.ve/Authentication/api/Auth/Login", user);
             //var result = await Http.PostAsJsonAsync("http://localhost:5090/api/Auth/Login", user);
-            var ValidarToken = await result.Content.ReadAsStringAsync();
+            var validarToken = await result.Content.ReadAsStringAsync();
 
-            if (ValidarToken != null)
+            if (validarToken != null)
             {
 
-                if (ValidarToken == "NotFoundUser")
+                if (validarToken == "NotFoundUser")
                 {
                     mensaje = "Verifique el usuario.";
                     NotificationService.Notify(NotifiRadzenServices.Notificacion("advertencia", "Atención", mensaje));
 
                     carga = false;
                 }
-                else if (ValidarToken == "WrongPassword")
+                else if (validarToken == "WrongPassword")
                 {
                     mensaje = "Contraseña Incorrecta.";
                     NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", mensaje));
 
                     carga = false;
-                }
-                else if (ValidarToken == "null")
+                }else if(validarToken == "DeactivatedUser"){
+                    mensaje = "El usuario esta desactivado en este proyecto";
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", mensaje));
+                }else if(validarToken == "DeactivatedUserAll"){
+                    mensaje = "El usuario esta desactivado";
+                    NotificationService.Notify(NotifiRadzenServices.Notificacion("error", "Atención", mensaje));
+                }else if (validarToken == "null")
                 {
 
                     mensaje = "Este usuario no está registrado en este proyecto.";
@@ -124,8 +129,8 @@
                     // mensaje = "Accediendo...";
                     // NotificationService.Notify(NotifiRadzenServices.Notificacion("info", "", mensaje));
 
-                    Console.WriteLine(ValidarToken);
-                    await LocalStorage.SetItemAsync("AsentamientosToken", ValidarToken);
+                    Console.WriteLine(validarToken);
+                    await LocalStorage.SetItemAsync("AsentamientosToken", validarToken);
                     var authState = await AuthStateProvider.GetAuthenticationStateAsync();
                     var userA = authState.User;
                     claims = Enumerable.ToList(userA.Claims);

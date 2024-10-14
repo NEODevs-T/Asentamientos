@@ -1,11 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@inject  Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @* <base href="/asentamientos/" /> *@
-    <base href="/" />
+    @* <base href="~/asentamientos/" /> *@
+    <base href="@baseUrl" />
     <link rel="shortcut icon" href="./images/neo.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
@@ -34,6 +35,14 @@
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
     <script src="js/imprimir.js"></script>
+    @code {
+        public string baseUrl { get; set; }
+
+        protected override void OnInitialized()
+        {
+            baseUrl = HttpContextAccessor.HttpContext.Request.PathBase.HasValue ? HttpContextAccessor.HttpContext.Request.PathBase.ToString() : "/";
+        }
+    }
 </body>
 
 </html>

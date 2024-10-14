@@ -51,6 +51,8 @@ builder.Services.AddScoped<INotifiRadzenServices,NotifiRadzenServices>();
 builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 
