@@ -10,6 +10,7 @@ namespace Asentamientos.Data
     {
         private readonly IHttpClientFactory _clientFactory;
         private const string BaseUrl = "http://neo.paveca.com.ve/apineomaster/api/Global/";
+        private const string BaseUrlBPCS = "http://neo.paveca.com.ve/apineomaster/api/BPCS/";
         private string url = "";
         public GlobalData( IHttpClientFactory clientFactory)
         {
@@ -34,7 +35,7 @@ namespace Asentamientos.Data
             {
 
                 List<OrdenFabricacionDTO> ordenFabricacionDTOsList;
-                url = $"{BaseUrl}GetProductosActuales/{idLinea}";
+                url = $"{BaseUrlBPCS}GetProductosActuales/{idLinea}";
                 var cliente = _clientFactory.CreateClient();
                 ordenFabricacionDTOsList = await cliente.GetFromJsonAsync<List<OrdenFabricacionDTO>>(url) ?? new List<OrdenFabricacionDTO>();
                 return ordenFabricacionDTOsList;

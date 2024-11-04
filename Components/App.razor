@@ -1,12 +1,13 @@
 ﻿@inject  Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject IJSRuntime JS
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @* <base href="~/asentamientos/" /> *@
     <base href="@baseUrl" />
+    @* <base href="/" /> *@
     <link rel="shortcut icon" href="./images/neo.ico" type="image/x-icon">
 
     <link rel="stylesheet" href="_content/Radzen.Blazor/css/material-base.css">
@@ -37,16 +38,17 @@
     <script src="js/imprimir.js"></script>
     @code {
         public string baseUrl { get; set; }
+        [Inject]
+        private IWebHostEnvironment Env { get; set; }
 
-        protected override void OnInitialized()
+        protected async override void OnInitialized()
         {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            if (Env.IsDevelopment())
             {
-                baseUrl = HttpContextAccessor.HttpContext.Request.PathBase.HasValue ? HttpContextAccessor.HttpContext.Request.PathBase.ToString() : "/";
+                baseUrl =  "/";
             }else{
-                baseUrl = HttpContextAccessor.HttpContext.Request.PathBase.HasValue ? HttpContextAccessor.HttpContext.Request.PathBase.ToString() : "/asentamientos";
+                baseUrl =  "/asentamientos/";
             }
-            
         }
     }
 </body>
